@@ -342,7 +342,8 @@ textarea.share{width:100%;min-height:150px;border:2px solid var(--line);border-r
 .sheet-in img{width:auto;max-width:100%;max-height:52vh}
 .sharenote{margin:0;text-align:center;font-size:13px}
 /* fights: taps anywhere steer the wizard, so the page must not scroll or select */
-body.fighting{touch-action:none;user-select:none;-webkit-user-select:none}
+html,body{touch-action:manipulation}   /* no double-tap zoom anywhere (iPhone Safari zoomed in on fast taps) */
+body.fighting,body.fighting *{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #m-btn{touch-action:none}
 /* choices: every option looks the same, none is highlighted */
 .choice button,.dlg .choice button,.choice button+button,.dlg .choice button+button{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
@@ -1505,6 +1506,7 @@ const unlockSkills=(set,lv,iq,early)=>{const open=set.filter((s,i)=>lv>=LV_UNLOC
 // what the first locked slot still needs, e.g. 'Lv.7' or 'Lv.7 지능100'
 const lockHint=(i,lv,iq)=>[lv<LV_UNLOCK[i]?'Lv.'+LV_UNLOCK[i]:'',iq<INT_UNLOCK[i]?TT_("19kb6kw",`지능${INT_UNLOCK[i]}`,[INT_UNLOCK[i]]):''].filter(Boolean).join(' ');
 const WANTED_HP=2.4;
+const HIT_CAP=[1,1,0.40,0.40,0.40], HIT_INV=0.5, BOSS_ATK=[1.2,1.1,0.9,0.85,1.1];   // share of max health a single hit can take, by stage; seconds of invulnerability after a hit; a boss's attack by stage
 const CLASH_TIME=4.6, CLASH_PUSH=0.05, CLASH_PULL=[0.30,0.32,0.34,0.36,0.38], CLASH_WIN=0.06, CLASH_LOSE=1.0;   // clash: longest it lasts, line moved per tap, the boss's pull per second by stage, boss health lost on a win, share of a special hit taken on a loss   // a wanted monster has this much more health than a normal one
 // Path traits: a knight is sturdy but must close in; a ranger shoots fast and crits often but is fragile.
 const CLASS_MOD={wizard:{hp:1,taken:1,atk:1,range:9999,crit:0,spd:640},warrior:{hp:1.18,taken:0.85,atk:1,range:330,crit:0,spd:520},archer:{hp:0.9,taken:1,atk:0.87,range:9999,crit:0.08,spd:820}};
@@ -1668,7 +1670,7 @@ function createBattle(st,seed,o){
     // health is compressed so a rat and an ogre last about as long
     const hp=30*Math.pow(d.hp/30,0.45)*HPMUL[s]*hb,y=LANE_Y[1]+(d.fly?-26:boss?-6:0);
     return {d,name:(wanted?TT_("1n70oxe",'현상범 '):'')+d.n,boss:!!boss,elite:!!wanted,wanted:!!wanted,x:W+70,y,ty:y,lane:1,jy:0,stopX:boss?W-250:W-190,hp,max:hp,
-      atk:d.atk*ATKMUL[s]*(boss?1.2*(sm.bossAtk||1):wanted?1.7:1)*risk*fierce,sp:0,ai:d.ai,rng:0,size,exp:(boss?24:wanted?10:3.2)*(s+1),slow:0,hitT:0,enraged:false,ph:rng()*6,atkAnim:0,stun:0,
+      atk:d.atk*ATKMUL[s]*(boss?BOSS_ATK[s]*(sm.bossAtk||1):wanted?1.7:1)*risk*fierce,sp:0,ai:d.ai,rng:0,size,exp:(boss?24:wanted?10:3.2)*(s+1),slow:0,hitT:0,enraged:false,ph:rng()*6,atkAnim:0,stun:0,
       windT:0,laneT:0,act:(boss&&d.acts)?1:0,lock:0,ready:false,rest:1.0,patT:0,sched:[]};
   }
   // one monster per wave: the fight is always one on one
@@ -1684,15 +1686,16 @@ function createBattle(st,seed,o){
     if(TR.has('singer'))text(WX+10,wiz.y-95,TT_("1rk7nu1",'♪ 응원가! 공격이 느려졌다'),'#ffd34d',18,1.6);
   }
   function hurtWiz(dmg,src,sure){
-    if(B.result||B.inv>0)return;
+    if(B.result||B.inv>0||wiz.ifr>0)return;
     if(!sure&&rng()<C.dodge*0.5){text(WX+10,wiz.y-70,TT_("1lfnlm7",'휙!'),'#5fb4ff',20);snd('dodge');return}
     if(MD.guardian&&!B.guardUsed){B.guardUsed=true;text(WX+10,wiz.y-70,TT_("8v8x9s",'결계!'),'#8fe3ff',22);snd('block');return}
     dmg*=C.CM.taken*(1-armor)*(B.mightT>0?0.85:1);
+    dmg=Math.min(dmg,HIT_CAP[s]*wiz.max);
     if(MD.thorns&&src&&!src.dead)hurtMob(src,dmg*0.3,'#c6f26a');
     if(B.shieldHP>0){const a=Math.min(B.shieldHP,dmg);B.shieldHP-=a;dmg-=a;if(dmg<=0){text(WX+10,wiz.y-70,TT_("175spco",'보호막'),'#8fe3ff',18);snd('block');return}}
     dmg=Math.round(dmg);
     if(MD.unyield&&!B.unyieldUsed&&wiz.hp-dmg<=0){B.unyieldUsed=true;B.inv=3;wiz.hp=1;text(WX,wiz.y-90,TT_("1nbuh6w",'불굴!'),'#ffd34d',28,1.4);snd('heal');return}
-    wiz.hp-=dmg;wiz.hit=0.18;B.shake=Math.min(8,B.shake+3);snd('hurt');
+    wiz.hp-=dmg;wiz.hit=0.18;wiz.ifr=HIT_INV;B.shake=Math.min(8,B.shake+3);snd('hurt');
     text(WX+rr(-14,14),wiz.y-60,'-'+dmg,'#ff5c8a',20);
     if(wiz.hp<=0&&B.revive){B.revive=false;B.revived=true;wiz.hp=Math.round(wiz.max*0.5);text(WX,wiz.y-90,TT_("7kb0xe",'다시 일어났다!'),'#ffb000',26,1.6);snd('heal');return}
     if(wiz.hp<=0){wiz.hp=0;B.result='lose';B.killedBy=src?src.name:TT_("oxs4mv",'몬스터');return}
@@ -1895,7 +1898,7 @@ function createBattle(st,seed,o){
     for(const x of B.texts){x.t-=dt;x.y-=36*dt}
     B.texts=B.texts.filter(x=>x.t>0);
     if(wiz.callout){wiz.callout.t-=dt;if(wiz.callout.t<=0)wiz.callout=null}
-    wiz.hit=Math.max(0,wiz.hit-dt);wiz.cast=Math.max(0,wiz.cast-dt);wiz.hop=Math.max(0,wiz.hop-dt);wiz.joy=Math.max(0,(wiz.joy||0)-dt);
+    wiz.hit=Math.max(0,wiz.hit-dt);wiz.ifr=Math.max(0,(wiz.ifr||0)-dt);wiz.cast=Math.max(0,wiz.cast-dt);wiz.hop=Math.max(0,wiz.hop-dt);wiz.joy=Math.max(0,(wiz.joy||0)-dt);
     wiz.y+=(LANE_Y[wiz.lane]-wiz.y)*Math.min(1,dt*HOP_K[s]);
     for(const f of B.fx)f.t+=dt;
     if(B.result){B.fx=B.fx.filter(f=>f.t<f.life);B.notes.length=0;return}
@@ -3193,7 +3196,7 @@ function drawWizard(B,time){
   if(B.shieldHP>0&&!B.result){G.globalAlpha=0.5+0.2*Math.sin(time*5);ring(x,cy,11,Math.ceil(SP[fr].h/2)+3,'#8fe3ff');G.globalAlpha=1}
   if(B.result==='lose'){blit(fr,x,cy+1,{tint:'#b7b4cf'});blit('ghost',x,cy-16-Math.round((time*6)%8),{alpha:.85});return}
   const bob=walking?-step:(Math.sin(time*2.5)>0.7?-1:0);
-  blit(fr,x+coward,cy+bob+arc+joy+(B.form==='ghost'?Math.round(Math.sin(time*3)*1.5)-2:0),B.form==='ghost'?{alpha:0.7}:{});
+  blit(fr,x+coward,cy+bob+arc+joy+(B.form==='ghost'?Math.round(Math.sin(time*3)*1.5)-2:0),B.form==='ghost'?{alpha:0.7}:(w.ifr>0&&Math.floor(w.ifr*16)%2?{alpha:0.4}:{}));
   if(B.form&&FORM_WEAPON[B.form])drawFormWeapon(B,x,cy+bob+arc+joy,time);
   if(w.hit>0.06)blit(fr,x,cy+bob,{tint:'#ff6f9f',alpha:0.55});
   if(w.cast>0){const gx=x+5,gy=y-2+bob;disc(gx,gy,2+Math.round(w.cast*10),'rgba(255,255,255,.45)');disc(gx,gy,2,'#ffffff')}
@@ -4272,6 +4275,11 @@ function showDex(back){
 
 // ===== INPUT: during a fight every tap anywhere hops the wizard one lane down (the bottom lane wraps to the top) =====
 let FIGHT=false,CLASHIV=0;
+const TAPSCR=['s-mash','s-react','s-timing','s-trial','s-quiz'],tapping=()=>FIGHT||TAPSCR.includes(screen);
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>{if(tapping())e.preventDefault()}));
+let lastTouchEnd=0;
+document.addEventListener('touchend',e=>{const n=Date.now();if(tapping()&&n-lastTouchEnd<400&&!(e.target.closest&&e.target.closest('button,a,.hsheet,.sheet')))e.preventDefault();lastTouchEnd=n},{passive:false});
+document.addEventListener('touchstart',e=>{if(FIGHT&&e.touches.length>1)e.preventDefault()},{passive:false});
 function laneTap(){if(FIGHT&&VIEW&&VIEW.tap)VIEW.tap()}
 // one finger only: a second finger that lands while the first is down is not a primary pointer
 document.addEventListener('pointerdown',e=>{
