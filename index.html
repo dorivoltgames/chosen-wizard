@@ -11,6 +11,56 @@ var l=((function(){try{return localStorage.getItem('chosen-wizard-lang')}catch(e
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@400;700&display=swap">
+<script>
+// ONE store H5 Game SDK, lifecycle only. Active only when opened as the ONE store execution URL (?os=1); a normal visit never loads it.
+(function(){
+  if(!/[?&]os=1(&|$)/.test(location.search))return;
+  var SDK_URL='https://h5sdk.onestore.net/lib/v1.1.0/onestore-h5-sdk.min.js';
+  var sdk=null,env=null,loaded=false,started=false;
+  function warn(m,e){try{console.warn('[onestore] '+m,e&&e.reason,e&&e.message)}catch(_){}}
+  function pause(){
+    try{if(typeof SND!=='undefined'&&SND.ctx&&SND.ctx.state==='running')SND.ctx.suspend()}catch(e){}
+    try{if(typeof raf!=='undefined')cancelAnimationFrame(raf)}catch(e){}
+  }
+  function resume(e){
+    try{if(e&&e.ringerSilent===true&&typeof sndToggle==='function'&&typeof SND!=='undefined'&&SND.on){sndToggle(false);paintSnd()}}catch(_){}
+    try{if(typeof SND!=='undefined'&&SND.ctx&&SND.on)SND.ctx.resume()}catch(_){}
+    try{if(typeof screen!=='undefined'&&screen==='s-life'){cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(frame)}}catch(_){}
+  }
+  // Android back key: the game closes its own sheets first, anything else goes to the app's exit prompt
+  function back(){
+    try{
+      var a=document.getElementById('sheet'),h=document.getElementById('hist-sheet');
+      if(a&&!a.hidden){a.hidden=true;return true}
+      if(h&&!h.hidden&&typeof histClose==='function'){histClose();return true}
+    }catch(e){}
+    return false;
+  }
+  function go(){
+    if(!env||!loaded||started||!sdk)return;
+    started=true;
+    try{
+      var sa=env.safeArea;
+      if(sa)document.documentElement.style.padding='max(env(safe-area-inset-top,0px),'+(sa.top||0)+'px) '+(sa.right||0)+'px max(env(safe-area-inset-bottom,0px),'+(sa.bottom||0)+'px) '+(sa.left||0)+'px';
+      // a silenced phone starts silent, unless the player chose a sound setting before
+      if(env.ringerSilent===true&&typeof sndWant!=='undefined'&&localStorage.getItem(SND_KEY)===null){sndWant=false;paintSnd()}
+    }catch(e){}
+    try{sdk.setLoadingProgress(100)}catch(e){}
+    sdk.startGameAsync().catch(function(e){warn('startGameAsync',e)});
+  }
+  addEventListener('load',function(){loaded=true;go()});
+  import(SDK_URL).then(function(m){
+    sdk=m.createSDK();
+    sdk.on('pause',pause);
+    sdk.on('resume',resume);
+    try{sdk.onBackPressed(back)}catch(e){warn('onBackPressed',e)}
+    return sdk.initializeAsync();
+  }).then(function(info){
+    if(!info||info.err){sdk=null;return}   // not inside the ONE store app: play as a normal web page
+    env=info;go();
+  }).catch(function(e){sdk=null;warn('init',e)});
+})();
+</script>
 <style>
 /* Layout: one centered column (max 600px). The life screen pins the pixel stage and stats at the top while the life log grows below. */
 :root{
