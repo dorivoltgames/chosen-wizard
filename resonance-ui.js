@@ -79,7 +79,7 @@ function showStageMenu(){
   const d=document.createElement('dialog');d.id='combat-preview-dialog';
   d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p class="preview-lede"></p><div class="preview-loadouts stage-loadouts"></div>';
   d.querySelector('h2').textContent=EXPANSION.tr('마왕성까지, 새로운 세 구간','Three new stops before the castle','魔王城へ、新たな三つの道');
-  d.querySelector('p').textContent=EXPANSION.tr('모험은 이제 8구간. 여기서는 지역별 샘플 캐릭터로 몬스터전 → 카드 보상 → 보스전을 바로 해볼 수 있습니다.','The adventure now has 8 stages. Try each region with a sample character: monsters, a card reward, then the boss.','冒険は全8区間。地域ごとの体験用キャラクターで、モンスター戦→カード報酬→ボス戦を体験できます。');
+  d.querySelector('p').textContent=EXPANSION.tr('모험은 총 6구간. 여기서는 지역별 샘플 캐릭터로 몬스터전 → 카드 보상 → 보스전을 바로 해볼 수 있습니다.','The adventure has 6 stages. Try each region with a sample character: monsters, a card reward, then the boss.','冒険は全6区間。地域ごとの体験用キャラクターで、モンスター戦→カード報酬→ボス戦を体験できます。');
   for(const [rid,rg] of Object.entries(EXPANSION.regions)){
     const row=document.createElement('section');row.className='stage-preview-card';row.innerHTML=`<span class="stage-boss-icon">${ic(rg.boss.s,3)}</span><span><b></b><small></small><span class="stage-mini-mobs">${rg.mobs.map(m=>ic(m.s,1)).join('')}</span></span><div class="stage-actions"><button></button><button></button></div>`;
     row.querySelector('b').textContent=rg.name;row.querySelector('small').textContent=rg.boss.n;

@@ -72,7 +72,7 @@ function createFateUI({fate:F,context}) {
     const hero=document.querySelector('.hero');
     let badge=document.getElementById('fate-version');
     if(!badge){badge=document.createElement('p');badge.id='fate-version';badge.className='fate-version';hero.querySelector('h1').after(badge)}
-    badge.textContent=t('마법 공명 · 개선안','Spell resonance · playtest','魔法の共鳴 · 改善案');
+    badge.textContent=t('마법 공명 · 여섯 구간','Spell resonance · six stages','魔法の共鳴 · 全6区間');
     hero.querySelector('.lede').textContent=t('태어난 운명은 랜덤. 시험으로 성장하고, 뜻밖의 인연을 만나고, 나만의 마법으로 모험해.','A random birth. School trials, unexpected encounters, and an adventure with your own magic.','生まれ持った運命はランダム。試験で成長し、思いがけない縁に出会い、自分だけの魔法で冒険へ。');
     const how=document.querySelectorAll('.how li');
     how[1].querySelector('b').textContent=t('시험으로 자라는 마법사','A wizard shaped by trials','試験で育つ魔法使い');

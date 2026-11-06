@@ -1575,8 +1575,8 @@ const unlockSkills=(set,lv,iq,early)=>{const open=set.filter((s,i)=>lv>=LV_UNLOC
 // what the first locked slot still needs, e.g. 'Lv.7' or 'Lv.7 지능100'
 const lockHint=(i,lv,iq)=>[lv<LV_UNLOCK[i]?'Lv.'+LV_UNLOCK[i]:'',iq<INT_UNLOCK[i]?TT_("19kb6kw",`지능${INT_UNLOCK[i]}`,[INT_UNLOCK[i]]):''].filter(Boolean).join(' ');
 const WANTED_HP=2.4;
-const HIT_CAP=[1,1,0.40,0.40,0.40,0.40,0.40,0.40], HIT_INV=0.5, BOSS_ATK=[1.2,1.1,1.0,0.9,0.88,0.85,0.95,1.1];   // share of max health a single hit can take, by stage; seconds of invulnerability after a hit; a boss's attack by stage
-const CLASH_TIME=4.6, CLASH_PUSH=0.05, CLASH_PULL=[0.30,0.31,0.32,0.33,0.34,0.35,0.36,0.38], CLASH_WIN=0.06, CLASH_LOSE=1.0;   // clash: longest it lasts, line moved per tap, the boss's pull per second by stage, boss health lost on a win, share of a special hit taken on a loss   // a wanted monster has this much more health than a normal one
+const HIT_CAP=[1,1,0.40,0.40,0.40,0.40], HIT_INV=0.5, BOSS_ATK=[1.2,1.1,0.9,0.85,0.95,1.1];   // share of max health a single hit can take, by stage; seconds of invulnerability after a hit; a boss's attack by stage
+const CLASH_TIME=4.6, CLASH_PUSH=0.05, CLASH_PULL=[0.30,0.31,0.33,0.35,0.36,0.38], CLASH_WIN=0.06, CLASH_LOSE=1.0;   // clash: longest it lasts, line moved per tap, the boss's pull per second by stage, boss health lost on a win, share of a special hit taken on a loss   // a wanted monster has this much more health than a normal one
 // Path traits: a knight is sturdy but must close in; a ranger shoots fast and crits often but is fragile.
 const CLASS_MOD={wizard:{hp:1,taken:1,atk:1,range:9999,crit:0,spd:640},warrior:{hp:1.18,taken:0.85,atk:1,range:330,crit:0,spd:520},archer:{hp:0.9,taken:1,atk:0.87,range:9999,crit:0.08,spd:820}};
 const CLASS_NAME={wizard:TT_("1sfxyhq",'마법사'),warrior:TT_("yz5kmx",'기사'),archer:TT_("1qygi9o",'궁수')};
@@ -1641,20 +1641,21 @@ const REGIONS={
 Object.assign(REGIONS,EXPANSION.regions);
 for(const id in REGIONS)REGIONS[id].id=id;
 // The route: one region per tier; forks offer two of a tier's regions.
-const TIERS=[['grass','forest'],['desert','swamp','coast'],['crystal'],['ice','volcano'],['clockwork'],['dungeon','ruins'],['astral'],['castle']];
+const TIERS=[['grass','forest'],['desert','swamp','coast'],['ice','volcano','crystal'],['dungeon','ruins','clockwork'],['astral'],['castle']];
 const LAST_STAGE=TIERS.length-1;
-const HPMUL=[1,2.2,3.2,4.4,6.8,10,15.5,24], ATKMUL=[1.4,2.3,2.8,3.7,4.8,6.2,9,13.2];
+const HPMUL=[1,2.2,4.4,10,15.5,24], ATKMUL=[1.4,2.3,3.7,6.2,9,13.2];
 // Extra toughness so monsters walk well into the screen before they drop (early stages were one-shot at the edge).
-// Toughness also follows the wizard's damage per second against a typical wizard (DPS_REF), so strong wizards meet sturdier monsters.
-const MOB_HP=[11,9,8,7,6,5,4,3.3], BOSS_HP=[2.4,2.4,2.3,2.2,2.1,2,1.85,1.7], DPS_REF=[82,125,165,235,350,520,760,1100];
+// DPS_REF follows six stages of earned cards/levels; it is lower than the discarded eight-stage preview.
+// Toughness also follows the wizard's damage per second, so strong wizards meet sturdier monsters.
+const MOB_HP=[11,9,7,5,4,3.3], BOSS_HP=[2.4,2.4,2.2,2,1.85,1.7], DPS_REF=[82,125,207,344,460,650];
 // waves: smaller per-monster HP since there are more of them; boss specials: wind-up time, the last stretch where a tap blocks, damage as a share of max HP
-const SPECIAL_HIT=[0.10,0.11,0.12,0.13,0.15,0.17,0.18,0.20];
+const SPECIAL_HIT=[0.10,0.11,0.13,0.17,0.18,0.20];
 // one-on-one rhythm fights. three lanes (top, middle, bottom); a monster throws notes down them
 // by stage: tempo of the chart, seconds a note flies, fastest tap (the wizard's hop gets faster too), rest between patterns in beats, damage per note, monster/boss health
-const LANE_Y=[WY-66,WY-10,WY+46], BPM_N=[88,94,98,102,108,112,116,122], TRAVEL_N=[1.0,0.94,0.90,0.84,0.80,0.76,0.72,0.68], TAP_MIN=[0.20,0.19,0.18,0.17,0.16,0.15,0.14,0.13], HOP_K=[14,16,18,20,22,24,26,28];
+const LANE_Y=[WY-66,WY-10,WY+46], BPM_N=[88,94,102,112,116,122], TRAVEL_N=[1.0,0.94,0.84,0.76,0.72,0.68], TAP_MIN=[0.20,0.19,0.17,0.15,0.14,0.13], HOP_K=[14,16,20,24,26,28];
 const ATK_KIND={rat:'fang',boar:'rock',bee:'needle',wolf:'claw',shroom:'spore',fox:'flame',sprite:'star',treant:'leaf',scorpion:'needle',snake:'poison',beetle:'rock',golem:'boulder',frog:'poison',slime:'slime',mosquito:'needle',toadking:'bubble',crab:'bubble',gull:'feather',pirate:'cannon',kraken:'wave',snowman:'snow',penguin:'ice',seal:'ice',mammoth:'boulder',salamander:'flame',magma:'lava',firebird:'flame',firegiant:'lava',bat:'sonic',skeleton:'bone',spider:'web',ghost:'wisp',dragon:'flame',harpy:'wind',armor:'slash',griffin:'bolt',imp:'orb',ogre:'shock',zombie:'poison',demon:'orb'};
-const UNFAIR_N=[0,0.10,0,0.20,0,0.28,0,0.35];
-const REST_N=[2.2,2.1,2.0,1.9,1.8,1.7,1.6,1.5], HAZ_DMG=[1.8,2.0,2.2,2.4,2.6,2.8,2.6,2.2], MONOX=[5,5,5,5,5,5,5,5], BOSSX=[15,12,11,10,10,10,9,9];
+const UNFAIR_N=[0,0.10,0.20,0.28,0,0.35];
+const REST_N=[2.2,2.1,1.9,1.7,1.6,1.5], HAZ_DMG=[1.8,2.0,2.4,2.8,2.6,2.2], MONOX=[5,5,5,5,5,5], BOSSX=[15,12,10,10,9,9];
 // the demon king: extra health for three acts, switching at these shares of it
 const ACT_HP=3.0, ACT_AT=[0.66,0.33];
 const IMP=REGIONS.castle.mobs[0];
@@ -3848,7 +3849,7 @@ function showStageMenu(){
   const d=document.createElement('dialog');d.id='combat-preview-dialog';
   d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p class="preview-lede"></p><div class="preview-loadouts stage-loadouts"></div>';
   d.querySelector('h2').textContent=EXPANSION.tr('마왕성까지, 새로운 세 구간','Three new stops before the castle','魔王城へ、新たな三つの道');
-  d.querySelector('p').textContent=EXPANSION.tr('모험은 이제 8구간. 여기서는 지역별 샘플 캐릭터로 몬스터전 → 카드 보상 → 보스전을 바로 해볼 수 있습니다.','The adventure now has 8 stages. Try each region with a sample character: monsters, a card reward, then the boss.','冒険は全8区間。地域ごとの体験用キャラクターで、モンスター戦→カード報酬→ボス戦を体験できます。');
+  d.querySelector('p').textContent=EXPANSION.tr('모험은 총 6구간. 여기서는 지역별 샘플 캐릭터로 몬스터전 → 카드 보상 → 보스전을 바로 해볼 수 있습니다.','The adventure has 6 stages. Try each region with a sample character: monsters, a card reward, then the boss.','冒険は全6区間。地域ごとの体験用キャラクターで、モンスター戦→カード報酬→ボス戦を体験できます。');
   for(const [rid,rg] of Object.entries(EXPANSION.regions)){
     const row=document.createElement('section');row.className='stage-preview-card';row.innerHTML=`<span class="stage-boss-icon">${ic(rg.boss.s,3)}</span><span><b></b><small></small><span class="stage-mini-mobs">${rg.mobs.map(m=>ic(m.s,1)).join('')}</span></span><div class="stage-actions"><button></button><button></button></div>`;
     row.querySelector('b').textContent=rg.name;row.querySelector('small').textContent=rg.boss.n;
@@ -4330,7 +4331,7 @@ function renderTitle(){
   music('home');paintSnd();
   $('#end-count').textContent=TT_("57d2b0",`엔딩 ${ENDINGS.length}가지`,[ENDINGS.length]);
   GS.visit();GS.paintTitle();GS.refresh().then(ok=>{if(ok)GS.paintTitle()});
-  $('#best').textContent=dx.lives?TT_("hax713",`지금까지 ${dx.lives}번의 인생 · 도감 ${n.got}/${n.all} · 엔딩 ${n.ends}/${ENDINGS.length}`,[dx.lives,n.got,n.all,n.ends,ENDINGS.length]):EXPANSION.tr('모험은 8구간. 어떤 운명이 기다릴까?','Eight stages of adventure. What fate awaits?','冒険は全8区間。どんな運命が待っている？');
+  $('#best').textContent=dx.lives?TT_("hax713",`지금까지 ${dx.lives}번의 인생 · 도감 ${n.got}/${n.all} · 엔딩 ${n.ends}/${ENDINGS.length}`,[dx.lives,n.got,n.all,n.ends,ENDINGS.length]):EXPANSION.tr('모험은 6구간. 어떤 운명이 기다릴까?','Six stages of adventure. What fate awaits?','冒険は全6区間。どんな運命が待っている？');
   const key=dailyKey(),done=dx.daily&&dx.daily[key];
   $('#btn-daily').textContent=done?TT_("emj9c6",`오늘의 운명 · ${mdOf(key)} · 완료 「${(ENDINGS.find(e=>e.id===done)||{}).name||'?'}」`,[mdOf(key),(ENDINGS.find(e=>e.id===done)||{}).name||'?']):TT_("1uvdlms",`오늘의 운명 · ${mdOf(key)} · 모두가 같은 탄생`,[mdOf(key)]);
   FATE_UI.title(dx);

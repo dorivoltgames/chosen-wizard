@@ -5,12 +5,15 @@ if(!['localhost','127.0.0.1','[::1]'].includes(base.hostname))throw new Error('T
 const origin='https://dorivoltgames.github.io';
 const get=async path=>{const r=await fetch(new URL(path,base));assert.equal(r.status,200);return r.json()};
 const post=async(path,body,requestOrigin=origin)=>fetch(new URL(path,base),{method:'POST',headers:{Origin:requestOrigin,'Content-Type':'text/plain'},body:JSON.stringify(body)});
+const endingIds=['hero','truth','death_crystal','death_clockwork','death_astral'];
 const before=await get('/s');
 assert.deepEqual(Object.keys(before).sort(),['born','dx','en','lives','players','t','visits']);
-assert.equal((await post('/e',{visit:1,player:1,born:1,lives:1,dx:['end:hero','end:truth'],en:['hero','truth']})).status,204);
+assert.equal((await post('/e',{visit:1,player:1,born:1,lives:1,dx:endingIds.map(id=>'end:'+id),en:endingIds.slice(0,3)})).status,204);
+// Preserve the production endpoint's existing three-endings-per-request cap.
+assert.equal((await post('/e',{en:endingIds.slice(3)})).status,204);
 const legacy=await get('/s');
 for(const key of ['players','visits','born','lives'])assert.equal(legacy[key],before[key]+1);
-for(const id of ['hero','truth']){assert.equal(legacy.dx['end:'+id],(before.dx['end:'+id]||0)+1);assert.equal(legacy.en[id],(before.en[id]||0)+1)}
+for(const id of endingIds){assert.equal(legacy.dx['end:'+id],(before.dx['end:'+id]||0)+1);assert.equal(legacy.en[id],(before.en[id]||0)+1)}
 console.log('PASS: existing counters and new ending allowlist');
 assert.deepEqual(await get('/funnel/health'),{version:2,enabled:true});
 const now=Date.now(),day=new Date(now+9*3600e3).toISOString().slice(0,10);

@@ -19,12 +19,12 @@ function play(B){
   }
   return B;
 }
-test('the eight-stage route includes every previous region and three new regions before the castle',()=>{
-  assert.equal(a.TIERS.length,8);assert.equal(a.LAST_STAGE,7);
-  assert.deepEqual(JSON.parse(JSON.stringify(a.TIERS.slice(2))),[['crystal'],['ice','volcano'],['clockwork'],['dungeon','ruins'],['astral'],['castle']]);
+test('the six-stage route keeps every region and ends at the castle',()=>{
+  assert.equal(a.TIERS.length,6);assert.equal(a.LAST_STAGE,5);
+  assert.deepEqual(JSON.parse(JSON.stringify(a.TIERS.slice(2))),[['ice','volcano','crystal'],['dungeon','ruins','clockwork'],['astral'],['castle']]);
   assert.equal(new Set(a.TIERS.flat()).size,13);
   for(const name of ['HPMUL','ATKMUL','MOB_HP','BOSS_HP','DPS_REF','HIT_CAP','BOSS_ATK','CLASH_PULL','SPECIAL_HIT','BPM_N','TRAVEL_N','TAP_MIN','HOP_K','UNFAIR_N','REST_N','HAZ_DMG','MONOX','BOSSX']){
-    assert.equal(a[name].length,8,name);assert.ok(a[name].every(Number.isFinite),name);
+    assert.equal(a[name].length,6,name);assert.ok(a[name].every(Number.isFinite),name);
   }
 });
 test('nine new mobs and three bosses have distinct original palette sprites',()=>{
@@ -49,14 +49,16 @@ test('new ordinary encounters and bosses run with the same tap control and produ
     }
   }
 });
-test('the penultimate boss sustains a late-game build while the three-act final remains longer',()=>{
-  for(const seed of [30,55,91]){
-    const L=sample('astral'),nova=play(a.battleFor(L,{stage:6,region:'astral',boss:true},seed)),final=play(a.battleFor(L,{stage:7,region:'castle',boss:true},seed));
+test('the penultimate boss sustains real six-stage builds while the final remains longer',()=>{
+  const fixtures=JSON.parse(readFileSync(new URL('tests/fixtures/six-stage-boss-builds.json',root),'utf8'));
+  for(const c of fixtures.cases){
+    const L=c.life;L.W.hp=L.W.max;
+    const nova=play(a.battleFor(L,{stage:a.TIERS.findIndex(t=>t.includes('astral')),region:'astral',boss:true},c.seed)),final=play(a.battleFor(L,{stage:a.LAST_STAGE,region:'castle',boss:true},c.seed));
     assert.equal(nova.result,'win');assert.equal(final.result,'win');
-    // Same character and dodge policy: guard against late-game burst deleting
-    // Nova before its second phase has time to matter. This is not a player win rate.
-    assert.ok(nova.t>=final.t*.55,`${seed}: Nova ${nova.t}s / final ${final.t}s`);
-    assert.ok(final.t>nova.t,`${seed}: the final should retain its three-act endurance`);
+    // Identical lives earned through actual campaign battles and card choices.
+    // Guard against deleting Nova too quickly, without treating this as a player win rate.
+    assert.ok(nova.t>=final.t*.55,`${c.seed}: Nova ${nova.t}s / final ${final.t}s`);
+    assert.ok(final.t>nova.t,`${c.seed}: the final should retain its three-act endurance`);
   }
 });
 test('boss relics are guaranteed only after a boss victory and never enter the random card pool',()=>{

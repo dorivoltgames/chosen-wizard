@@ -32,6 +32,16 @@ test('both life choices keep all three original trials and the school years',()=
     if(home)assert.ok(steps.some(s=>s.e?.age>=24));
   }
 });
+test('a complete adventure traverses exactly six stages with no post-castle stage',()=>{
+  let complete=0;
+  for(let seed=1;seed<=80;seed++){
+    const {L,steps}=run(seed);
+    assert.ok(L.route.length<=6);
+    assert.ok(steps.filter(s=>s.t==='battle').every(s=>s.stage>=0&&s.stage<6));
+    if(L.route.includes('castle')){assert.equal(L.route.length,6);assert.equal(L.route[4],'astral');assert.equal(L.route.at(-1),'castle');complete++}
+  }
+  assert.ok(complete>30,'ordinary complete lives must still reach the sixth-stage castle');
+});
 test('legacy flavor changes no birth stats or random events',()=>{
   const a=run(88,true),b=run(88,true,{name:'나비',end:'hero'});
   assert.ok(b.steps.some(s=>s.e?.text?.includes('옛 마법사 나비')));
