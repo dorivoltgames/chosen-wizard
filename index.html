@@ -1,10 +1,11 @@
 <!doctype html><!-- 선택받은 마법사 (c) dorivoltgames. All rights reserved. Do not copy or re-upload. Original: https://dorivoltgames.github.io/chosen-wizard/ --><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>선택받은 마법사 · 도트 인생 시뮬레이터</title><meta name="description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta name="theme-color" content="#ece9ff">
+<title>선택받은 마법사 · 도트 인생 시뮬레이터</title><meta name="description" content="태어난 운명은 랜덤. 시험으로 성장하고, 마법을 조합해 모험하는 도트 인생 시뮬레이터. · A pixel wizard life simulator. 한국어 · English · 日本語"><meta name="theme-color" content="#ece9ff">
 <meta property="og:type" content="website"><meta property="og:site_name" content="dorivoltgames"><meta property="og:locale" content="ko_KR">
-<meta property="og:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta property="og:description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta property="og:url" content="https://dorivoltgames.github.io/chosen-wizard/"><meta property="og:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta name="twitter:description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta name="twitter:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png">
+<meta property="og:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta property="og:description" content="태어난 운명은 랜덤. 시험으로 성장하고, 마법을 조합해 모험하는 도트 인생 시뮬레이터. · A pixel wizard life simulator. 한국어 · English · 日本語"><meta property="og:url" content="https://dorivoltgames.github.io/chosen-wizard/"><meta property="og:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta name="twitter:description" content="태어난 운명은 랜덤. 시험으로 성장하고, 마법을 조합해 모험하는 도트 인생 시뮬레이터. · A pixel wizard life simulator. 한국어 · English · 日本語"><meta name="twitter:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png">
 <link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="fate-update.css">
+<link rel="stylesheet" href="resonance.css">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style><script>(function(){var h=location.hostname;if(!/^https?:$/.test(location.protocol)||h==='dorivoltgames.github.io'||h==='localhost'||h==='127.0.0.1'||/(^|\.)itch\.zone$/.test(h)||/\.hwcdn\.net$/.test(h))return;   // our own pages: GitHub Pages and the itch.io embed
 addEventListener('DOMContentLoaded',function(){var d=document.createElement('div');d.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#2b1a4a;color:#fff;font:600 13px system-ui;padding:8px 12px;text-align:center';
 var l=((function(){try{return localStorage.getItem('chosen-wizard-lang')}catch(e){}})()||navigator.language||'ko').slice(0,2),a='<a href="https://dorivoltgames.github.io/chosen-wizard/" style="color:#ffd35c">dorivoltgames.github.io/chosen-wizard</a>';d.innerHTML=(l==='ja'?'このゲームの本家は '+a+' にあります':l==='ko'?'이 게임의 원본은 '+a+' 에 있어요':'The original game lives at '+a)+' · made by dorivoltgames';document.body.appendChild(d)})})()</script></head><body>
@@ -546,6 +547,7 @@ html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3{letter-spacing:0}
 </div>
 <div id="cd" class="countdown" hidden></div>
 <div id="toast" class="toast" hidden></div>
+<script src="resonance.js"></script>
 <script src="fate-update.js"></script>
 <script src="fate-ui.js"></script>
 <script src="fate-telemetry.js"></script>
@@ -1437,9 +1439,10 @@ for(const k of Object.values(FORM_SPR))SPR[k+'2']=SPR[k].map((r,i,a)=>i===a.leng
 // ===== SPRITES END =====
 
 // Crossroads content is pure story logic; browser integrations are passed lazily.
+const RESONANCE=createResonance(LANG);
 const FATE=createFateUpdate({lang:LANG,context:()=>({say,chapter,finish,applyD,has,
-  ending:id=>ENDINGS.find(e=>e.id===id)?.name||id,track:(event,L)=>FUNNEL.track(event,L)})});
-const FATE_UI=createFateUI({fate:FATE,context:()=>({endings:ENDINGS,icon:ic,loadDex,saveDex,
+  ending:id=>[...ENDINGS,...FATE.endings].find(e=>e.id===id)?.name||id,track:(event,L)=>FUNNEL.track(event,L)})});
+const FATE_UI=createFateUI({fate:FATE,context:()=>({endings:[...ENDINGS,...FATE.endings],icon:ic,loadDex,saveDex,
   newLife,startBirth,shareURL:SHARE_URL,dailyKey,dailySeed,showDex:()=>showDex(dexBack)})});
 
 // ===== CORE (battle engine and scenery data; no DOM, also used by the simulators) =====
@@ -1755,6 +1758,7 @@ function createBattle(st,seed,o){
     if(B.shieldHP>0){const a=Math.min(B.shieldHP,dmg);B.shieldHP-=a;dmg-=a;if(dmg<=0){text(WX+10,wiz.y-70,TT_("175spco",'보호막'),'#8fe3ff',18);snd('block');return}}
     dmg=Math.round(dmg);
     if(MD.unyield&&!B.unyieldUsed&&wiz.hp-dmg<=0){B.unyieldUsed=true;B.inv=3;wiz.hp=1;text(WX,wiz.y-90,TT_("1nbuh6w",'불굴!'),'#ffd34d',28,1.4);snd('heal');return}
+    if(dmg>0&&B.resonance)B.resonance.hit();
     wiz.hp-=dmg;wiz.hit=0.18;wiz.ifr=HIT_INV;B.shake=Math.min(8,B.shake+3);snd('hurt');
     text(WX+rr(-14,14),wiz.y-60,'-'+dmg,'#ff5c8a',20);
     if(wiz.hp<=0&&B.revive){B.revive=false;B.revived=true;wiz.hp=Math.round(wiz.max*0.5);text(WX,wiz.y-90,TT_("7kb0xe",'다시 일어났다!'),'#ffb000',26,1.6);B.banner={text:TT_("7kb0xe",'다시 일어났다!'),sub:B.reviveBy==='undying'?TT_("1dco9z1",'불사신 체질'):TT_("bnt508",'불사조의 깃털'),t:1.8};snd('heal');return}
@@ -1813,6 +1817,30 @@ function createBattle(st,seed,o){
   const P=()=>C.power*wiz.pow*eDmg*(B.rally>0?1.3:1)*(B.mightT>0?1.4:1)*(1+Math.min(0.3,B.combo*0.015));
   const staff=()=>({x:WX+12,y:wiz.y-5});
 
+
+  // Cards combine with the birth element. Only genuinely dodged threats charge it.
+  // The original lane tap, automatic spells, bosses and life outcomes stay in charge.
+  if(o.resonance)B.resonance=RESONANCE.meter(o.resonance,r=>{
+    const targets=alive().filter(m=>!(m.lock>0));if(!targets.length)return false;
+    const t=nearest(targets),k=1+(r.rank-1)*0.25,R=B.resonance;
+    const hit=(m,n)=>hurtResonance(m,n,r.color);
+    const heal=n=>{const before=wiz.hp;wiz.hp=Math.min(wiz.max,wiz.hp+Math.round(wiz.max*n*k));R.healed+=wiz.hp-before};
+    B.fx.push({type:'resonance',id:r.id,x:t.x,y:t.y,t:0,life:0.85,col:r.color});
+    B.resonanceFlash={name:r.name,rank:r.rank,t:1.3,color:r.color};
+    wiz.callout={s:r.name+'!',icon:r.icon,t:1.2};B.shake=Math.max(B.shake,4);snd(r.effect==='ward'?'heal':'cast');
+    if(r.effect==='burst'){hit(t,P()*2.6*k);if(!t.dead)t.stun=Math.max(t.stun,0.65)}
+    if(r.effect==='storm')B.zones.push({look:'resonance-storm',col:r.color,x:t.x,y:t.y,r:105,t:3,tick:0,dmg:P()*0.4*k,resonance:true});
+    if(r.effect==='chain'){
+      for(let j=0;j<3;j++)if(!t.dead){B.shots.push({type:'fire',look:'bolt',col:r.color,rgb:'255,211,77',x:WX-22-j*22,y:wiz.y-12-j*20,tg:t,tx:t.x,ty:t.y,spd:620-j*100,dmg:P()*0.9*k,r:20,resonance:true})}
+    }
+    if(r.effect==='ward'){
+      heal(0.05);const before=B.shieldHP;B.shieldHP=Math.min(wiz.max*0.25,B.shieldHP+Math.round(wiz.max*0.08*k));R.shield+=Math.max(0,B.shieldHP-before);
+    }
+    if(r.effect==='drain'){hit(t,P()*2.2*k);heal(0.04)}
+    if(r.effect==='glacier'){hit(t,P()*2.2*k);B.slowT=Math.max(B.slowT,2.5)}
+  });
+  function hurtResonance(m,dmg,color){const before=m.hp;hurtMob(m,dmg,color);if(B.resonance)B.resonance.damage+=Math.max(0,before-m.hp)}
+
   // ---- notes ----
   function addNote(n){n.dur=n.t;n.born=B.t;n.threat=wiz.lane===n.lane;n.done=false;B.notes.push(n);B.noteN++;return n}
   function spawnNote(m,p){
@@ -1831,6 +1859,7 @@ function createBattle(st,seed,o){
       B.combo=0;hurtWiz(n.dmg,m,n.sure);
     }else if(n.threat){
       if(n.tut){B.tut.done++;text(WX+20,wiz.y-80,TT_("2mpusx",'좋아!'),'#ffd34d',24,1.0);snd('block');return}
+      if(B.resonance)B.resonance.dodge();
       B.dodges++;B.combo++;B.bestCombo=Math.max(B.bestCombo,B.combo);wiz.joy=0.5;snd('dodge');
       text(WX+rr(-6,6),wiz.y-72,TT_("rywkzg",'회피!'),'#5fb4ff',20,0.8);
     }
@@ -1953,12 +1982,14 @@ function createBattle(st,seed,o){
 
   B.update=function(dt){
     B.t+=dt;
+    if(B.resonance&&!B.tut&&!B.result)B.resonance.tick(dt);
     if(B.banner){B.banner.t-=dt;if(B.banner.t<=0)B.banner=null}
     if(B.fade>0)B.fade=Math.max(0,B.fade-dt*1.5);
     B.shake=Math.max(0,B.shake-dt*30);
     for(const x of B.texts){x.t-=dt;x.y-=36*dt}
     B.texts=B.texts.filter(x=>x.t>0);
     if(wiz.callout){wiz.callout.t-=dt;if(wiz.callout.t<=0)wiz.callout=null}
+    if(B.resonanceFlash){B.resonanceFlash.t-=dt;if(B.resonanceFlash.t<=0)B.resonanceFlash=null}
     wiz.hit=Math.max(0,wiz.hit-dt);wiz.ifr=Math.max(0,(wiz.ifr||0)-dt);wiz.cast=Math.max(0,wiz.cast-dt);wiz.hop=Math.max(0,wiz.hop-dt);wiz.joy=Math.max(0,(wiz.joy||0)-dt);
     wiz.y+=(LANE_Y[wiz.lane]-wiz.y)*Math.min(1,dt*HOP_K[s]);
     for(const f of B.fx)f.t+=dt;
@@ -2071,7 +2102,7 @@ function createBattle(st,seed,o){
 
     for(const z of B.zones){
       z.t-=dt;z.tick-=dt;
-      if(z.tick<=0){z.tick=0.5;for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-z.x,(m.y-z.y)*1.4)<z.r){m.slow=0.7;hurtMob(m,z.dmg,z.col||'#5fb4ff');if(z.heal)wiz.hp=Math.min(wiz.max,wiz.hp+wiz.max*0.012);if(z.ls)wiz.hp=Math.min(wiz.max,wiz.hp+z.dmg*0.3)}}
+      if(z.tick<=0){z.tick=0.5;for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-z.x,(m.y-z.y)*1.4)<z.r){m.slow=0.7;(z.resonance?hurtResonance:hurtMob)(m,z.dmg,z.col||'#5fb4ff');if(z.heal)wiz.hp=Math.min(wiz.max,wiz.hp+wiz.max*0.012);if(z.ls)wiz.hp=Math.min(wiz.max,wiz.hp+z.dmg*0.3)}}
     }
     B.zones=B.zones.filter(z=>z.t>0);
 
@@ -2084,7 +2115,8 @@ function createBattle(st,seed,o){
           if(sh.tg&&!sh.tg.dead){hurtMob(sh.tg,sh.dmg,'#ff5c8a');if(sh.bite)wiz.hp=Math.min(wiz.max,wiz.hp+sh.dmg*0.08);if(sh.arc)hurtMob(sh.tg,sh.dmg*0.35,'#ffd34d')}
           else{const l=alive();if(l.length){sh.done=false;sh.tg=nearest(l)}}
         }else if(sh.type==='fire'){
-          for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-sh.tx,(m.y-sh.ty)*1.3)<sh.r){hurtMob(m,sh.dmg,sh.col||'#ff8a3d');if(sh.ls)wiz.hp=Math.min(wiz.max,wiz.hp+sh.dmg*0.25)}
+          if(sh.resonance){if(sh.tg&&!sh.tg.dead)hurtResonance(sh.tg,sh.dmg,sh.col)}
+          else for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-sh.tx,(m.y-sh.ty)*1.3)<sh.r){hurtMob(m,sh.dmg,sh.col||'#ff8a3d');if(sh.ls)wiz.hp=Math.min(wiz.max,wiz.hp+sh.dmg*0.25)}
           B.fx.push({type:'boom',x:sh.tx,y:sh.ty,r:sh.r,t:0,life:0.35,c:sh.rgb||'255,150,60'});
         }
       }else{sh.x+=dx/d*step;sh.y+=dy/d*step}
@@ -2213,7 +2245,6 @@ const ENDINGS=[
   {id:'court',   name:TT_("v4ifvm",'궁정 마법사'),              icon:'scroll'},
   {id:'teacher', name:TT_("14goxfo",'마을의 인기 선생님'),       icon:'book'},
   {id:'quiet',   name:TT_("sxeup9",'평범하고 행복한 인생'),     icon:'heart'},
-  ...FATE.endings,
 ];
 const NAMES=[TT_("ehgrp",'포포'),TT_("1cbr01p",'루미'),TT_("1qjvri9",'모찌'),TT_("13jpzbk",'콩이'),TT_("mpuyot",'보리'),TT_("5ygict",'누리'),TT_("1wnwezh",'하루'),TT_("1s2mx",'소금'),TT_("6emjz9",'별이'),TT_("psb99l",'토리'),TT_("18w3dbx",'미루'),TT_("eq7biq",'호떡'),TT_("1jvqix5",'꼬미'),TT_("ccutt5",'단비'),TT_("fy2e2t",'라라'),TT_("1bmonv9",'솔이'),TT_("tykp0d",'우유'),TT_("zqpy70",'찹쌀'),TT_("mrgntp",'두부'),TT_("1wd50ct",'감자'),TT_("g3h37j",'도토리'),TT_("1kb81bd",'까미'),TT_("eagj9w",'몽이'),TT_("1v8re2p",'쿠키'),TT_("nmv36h",'버터'),TT_("xp8j9h",'라떼'),TT_("15gf0u0",'망고'),TT_("1ctq8ux",'초코'),TT_("17j46yl",'유자'),TT_("ybvdz5",'레몬'),TT_("fdjmqx",'깨비'),TT_("kyfvck",'뭉치'),TT_("edih9p",'다람'),TT_("sbnuid",'호두'),TT_("uq3281",'밤톨')];
 const CAT_NAMES=[TT_("juylnd",'나비'),TT_("1uyuhkt",'치즈'),TT_("jsgupu",'까망이'),TT_("1v8q4m2",'고등어'),TT_("wseee",'삼색이')];
@@ -2738,10 +2769,8 @@ function* lifeScript(L){
   L.age=ages[0];yield* doEvent(L,EVI.firstmagic);
   for(const a of ages.slice(1)){L.age=a;const ev=pickEvent(L,'child');if(ev)yield* doEvent(L,ev)}
   L.age=6;yield* FATE.memory(L);
-  L.age=7;L.cls='wizard';
-  const learned=yield* FATE.choosePath(L);
-  if(learned==='hero'){
   // 7: the entrance exam (arithmetic)
+  L.age=7;L.cls='wizard';
   const SC=SCHOOL[L.cls];
   yield* say(L,byCls(L,{wizard:TT_("172nc5z",'마법학교 입학시험 날이 밝았다. 연필을 꼭 쥐었다.'),warrior:TT_("rvakfe",'기사학교 입단 시험 날. 연습장에 통나무가 줄지어 서 있다.'),archer:TT_("16yd7v3",'궁술 학교 입단 시험 날. 멀리서 과녁이 흔들린다.')}),byCls(L,{wizard:'book',warrior:'sword',archer:'i_arrow'}));
   const q=yield {t:'mini',kind:byCls(L,{wizard:'quiz',warrior:'chop',archer:'aim'})};
@@ -2770,15 +2799,26 @@ function* lifeScript(L){
   const grad=L.tier==='royal'?(L.st.int>=150?TT_("1btvpq8",`${J(SC.royal,'을/를')} 수석으로 졸업했다.`,[SC.royal]):TT_("nppyyr",`${J(SC.royal,'을/를')} 무사히 졸업했다.`,[SC.royal])):L.tier==='local'?TT_("bdc6s5",`${J(SC.local,'을/를')} 졸업했다. 동기는 세 명이었다.`,[SC.local]):fl(L,'transfer')?TT_("1czwhcx",`늦깎이로 들어간 ${J(SC.local,'을/를')} 졸업했다.`,[SC.local]):TT_("ipwwok",`대장간 견습을 마쳤다. 망치질로 ${J(ART(L),'을/를')} 익혔다.`,[ART(L)]);
   yield* say(L,grad,'scroll',{fame:L.tier==='royal'&&L.st.int>=150?15:0});
   {const ev=pickEvent(L,'teen');if(ev)yield* doEvent(L,ev)}
-  }else{yield* FATE.upbringing(L)}
+  // 18: the fork
   L.age=18;FUNNEL.track('coming_of_age',L);
-  const path=yield* FATE.choosePath(L,true);
-  if(path==='home'){yield* homeLife(L);return}
-  if(path==='forbidden'){yield* FATE.forbiddenLife(L);return}
+  const fork={age:18,text:has(L,'chosen')?TT_("1ms9wq5",'성인식 날, 손등의 표식이 뜨겁게 빛났다. 마왕을 쓰러뜨리러 떠날까?'):has(L,'coward')?TT_("2zt0k5",'성인식 날. 다리가 후들거린다. 정말 모험을 떠날까?'):fl(L,'prophecy')?TT_("7pqp5u",'성인식 날. 꿈속의 목소리가 떠오른다. 모험을 떠날까?'):TT_("18r5c2f",'성인식 날. 마왕을 쓰러뜨리러 모험을 떠날까?'),icon:'sword',d:[],major:true,opts:[TT_("1mgar23",'모험을 떠난다'),TT_("f6u202",'고향에 남는다')]};
+  L.log.push(fork);
+  const k=yield {t:'choice',e:fork};fork.picked=fork.opts[k];
+  FATE.state(L).path=k===1?'home':'hero';
+  FUNNEL.track(k===1?'adult_home':'adult_hero',L);
+  if(k===1){yield* homeLife(L);return}
   yield* adventure(L);
 }
 
-function* homeLife(L){yield* FATE.villageLife(L)}
+function* homeLife(L){
+  const R=L.rng;
+  yield* chapter(L,L.origin.theme,'idle',TT_("ob31bm",'고향에서'),L.origin.name);
+  yield* say(L,TT_("hbrcia",`고향에 남기로 했다. ${has(L,'coward')?TT_("xlaxsc",'솔직히 조금 안심했다.'):TT_("1u1qw5u",'모험은 다른 사람에게 맡기기로.')}`,[has(L,'coward')?TT_("xlaxsc",'솔직히 조금 안심했다.'):TT_("1u1qw5u",'모험은 다른 사람에게 맡기기로.')]),'house_big',null,true);
+  for(const a of [24,31,42,55,68]){L.age=a+Math.floor(R()*4);const ev=pickEvent(L,'home');if(ev)yield* doEvent(L,ev)}
+  L.age=82+Math.floor(R()*16);
+  const end=fl(L,'end_merchant')?'merchant':fl(L,'end_guard')?'guard':fl(L,'end_hunter')?'hunter':fl(L,'end_court')?'court':fl(L,'end_bakery')?'bakery':fl(L,'end_potato')?'potato':fl(L,'end_teacher')?'teacher':'quiet';
+  yield* finish(L,end,TT_("1ra27k",`${L.age}세, 따뜻한 침대에서 천수를 누리고 잠들었다.`,[L.age]));
+}
 
 // Regional dishes for the 대식가: eat now for a big heal and more max HP, or pack it as a lunchbox (a potion).
 // Risky dishes upset the stomach unless it is made of iron.
@@ -2828,7 +2868,6 @@ function* adventure(L){
     L.stage=s;L.age+=s===0?1:1+Math.floor(R()*2);
     const rid=yield* chooseRoute(L,s),RG=REGIONS[rid];L.region=rid;L.route.push(rid);
     yield* chapter(L,RG.key,'walk',RG.name,TT_("mdgp4j",`${L.age}세`,[L.age]));
-    yield* FATE.heroBeat(L,s);
     if(has(L,'diligent'))applyD(L,{int:3});
     yield* forge(L);
     const ev1=pickEvent(L,[rid,'adv']);if(ev1)yield* doEvent(L,ev1);
@@ -2863,7 +2902,7 @@ function* adventure(L){
     yield* levelPerk(L,r);
     if(s<4)yield* levelPerk(L,{levels:1,min:'r',title:TT_("13dal6b",'보스 격파 보상! 카드를 한 장 고르자.')});
   }
-  const end=FATE.heroEnding(L)||(has(L,'chosen')?'chosen':L.form==='vampire'?'vampire':L.form==='werewolf'?'werewolf':L.form==='frank'?'frank':L.form==='ghost'?'ghost':L.allies.length>=3?'beastking':fl(L,'dragonfriend')?'dragonrider':L.sneaked>=3?'shadow':L.family.id==='royal'?'king':L.family.id==='archmage'&&L.cls==='wizard'?'archmage':'hero');
+  const end=(has(L,'chosen')?'chosen':L.form==='vampire'?'vampire':L.form==='werewolf'?'werewolf':L.form==='frank'?'frank':L.form==='ghost'?'ghost':L.allies.length>=3?'beastking':fl(L,'dragonfriend')?'dragonrider':L.sneaked>=3?'shadow':L.family.id==='royal'?'king':L.family.id==='archmage'&&L.cls==='wizard'?'archmage':'hero');
   const text={oathkeeper:FATE.tr('약속했던 아이들 곁으로 친구와 함께 돌아왔다. 마을은 영웅의 이름보다 지켜 낸 약속을 오래 기억했다.','You return with your friend to the waiting children. The village remembers your promise longer than your fame.','待っていた子どもたちの元へ友だちと帰った。村は名声より、守られた約束を長く覚えていた。'),
     unchosen:FATE.tr('표식이 없어도, 좋은 집안이 아니어도 괜찮았다. 운명은 태어날 때가 아니라 선택할 때 완성됐다.','No mark or noble birth was needed. Your fate was made by your choices.','印も立派な家柄も必要なかった。運命を完成させたのは、生まれではなく選択だった。'),
     chosen:TT_("163z5lz",'표식의 예언이 이루어졌다. 이제 온 세상이 그 이름을 안다.'),
@@ -2980,6 +3019,12 @@ function drawCards(L,n,min){
     let pool=CARDS.filter(c=>c.r===r&&ok(c)&&!hand.includes(c)&&(c.r==='n'||!L.mods[c.id]));
     if(!pool.length)pool=CARDS.filter(c=>c.r==='n'&&!hand.includes(c));
     hand.push(pool[Math.floor(L.rng()*pool.length)])}
+  // One useful bridge is offered with the first earned reward, alongside the
+  // original random cards. Nothing is awarded until the player wins and chooses.
+  if(!L.cards.length&&!RESONANCE.active(L)){
+    const bridges=RESONANCE.bridge(L,CARDS).filter(c=>!hand.includes(c));
+    if(bridges.length)hand[0]=bridges[Math.floor(L.rng()*bridges.length)];
+  }
   return hand;
 }
 function* levelPerk(L,r){
@@ -2987,9 +3032,11 @@ function* levelPerk(L,r){
   const big=r.levels>=2,hand=drawCards(L,big?4:3,r.min);
   const views=hand.map(c=>cardView(L,c));
   const e={age:L.age,text:r.title||TT_("fk4bsn",`레벨 ${L.W.lv} 달성! 카드를 한 장 고르자.${big?TT_("1iq6kdx",' 레벨이 많이 올라서 한 장 더!'):''}`,[L.W.lv,big?TT_("1iq6kdx",' 레벨이 많이 올라서 한 장 더!'):'']),icon:'star',d:[],theme:L.theme,
-    opts:views.map(v=>v.name),cards:views};
+    opts:views.map(v=>v.name),cards:views,buildCards:hand.map(c=>RESONANCE.project(L,c))};
   L.log.push(e);const k=yield {t:'choice',e};const c=hand[k]||hand[0],cv=views[k]||views[0];e.picked=cv.name;
+  const nextResonance=RESONANCE.project(L,c);
   if(c.r!=='n')L.mods[c.id]=1;if(c.apply)c.apply(L);L.cards.push(c.id);
+  if(nextResonance)L.resonance=nextResonance.id;
   const done={age:L.age,text:TT_("s8c6lg",`${CARD_RARITY[c.r]} 카드 「${cv.name}」! ${cv.desc}`,[CARD_RARITY[c.r],cv.name,cv.desc]),icon:cv.icon,d:[],snd:c.r==='l'?'fanfare':'levelup',major:c.r==='l',theme:L.theme};
   L.log.push(done);yield {t:'log',e:done};
 }
@@ -3042,10 +3089,14 @@ function* finish(L,end,epitaph){
 
 // Battle hookup shared by the page and the simulator
 function battleFor(L,step,seed){
-  return createBattle(L.st,seed,{cls:L.cls,form:L.form||null,wanted:step.wanted?wantedDef(step.wanted):null,traits:L.traits.map(t=>t.id),allies:L.allies,stage:step.stage,region:step.region,route:L.route.slice(),boss:step.boss,wiz:L.W,mods:L.mods,sm:L.sm[step.region],elem:L.element.id,revive:(has(L,'undying')||!!L.mods.phoenix)&&!L.flags.revived,reviveBy:has(L,'undying')?'undying':'phoenix'});
+  return createBattle(L.st,seed,{cls:L.cls,form:L.form||null,wanted:step.wanted?wantedDef(step.wanted):null,traits:L.traits.map(t=>t.id),allies:L.allies,stage:step.stage,region:step.region,route:L.route.slice(),boss:step.boss,wiz:L.W,resonance:step.noResonance?null:RESONANCE.active(L),mods:L.mods,sm:L.sm[step.region],elem:L.element.id,revive:(has(L,'undying')||!!L.mods.phoenix)&&!L.flags.revived,reviveBy:has(L,'undying')?'undying':'phoenix'});
 }
 function afterBattle(L,B){
   const lv0=L.W.lv,win=B.result==='win';
+  if(B.resonance){
+    L.resonanceTotals=L.resonanceTotals||{procs:0,damage:0,healed:0,shield:0};
+    for(const k of Object.keys(L.resonanceTotals))L.resonanceTotals[k]+=Math.round(B.resonance[k]||0);
+  }
   L.W=B.wizOut();L.kills+=B.kills;L.dodges=(L.dodges||0)+(B.dodges||0);
   if(B.revived){L.flags.revived=1;L.log.push({age:L.age,text:B.reviveBy==='phoenix'?TT_("pnx1",'쓰러졌지만 불사조의 깃털 덕분에 다시 일어났다!'):TT_("p8erel",'쓰러졌지만 불사신 체질 덕분에 다시 일어났다!'),icon:'heart',d:[],major:true})}
   if(B.potionUsed)L.mods.potion=Math.max(0,L.mods.potion-B.potionUsed);
@@ -3503,7 +3554,12 @@ function drawShots(B){
 function drawFx(B,time){
   for(const z of B.zones){
     const x=lp(z.x),y=lp(z.y),r=lp(z.r);
-    if(z.look==='quake'){oval(x,y,r,Math.round(r*0.42),'rgba(181,115,69,.32)');
+    if(z.look==='resonance-storm'){
+      oval(x,y,r,Math.round(r*0.42),'rgba(255,150,60,.16)');
+      for(let i=0;i<19;i++){const a=B.t*8+i*0.85,rr=4+(i%5)*r/6,yy=y-((B.t*25+i*5)%24)+Math.sin(a)*rr*0.35,xx=x+Math.cos(a)*rr;rect(xx,yy,2,3,i%2?'#ff8a3d':'#ffd34d');rect(xx,yy,1,1,'#fff4a8')}
+      ring(x,y,r*0.8,r*0.28,'#ffb369');
+    }
+    else if(z.look==='quake'){oval(x,y,r,Math.round(r*0.42),'rgba(181,115,69,.32)');
       for(let i=0;i<12;i++){const a=i*1.3,rr=(i%3+1)*r/3.4,j=(B.t*14+i*5)%10;rect(x+Math.cos(a)*rr,y-2+Math.sin(a)*rr*0.4-j*0.6,2,2,i%2?'#b57345':'#7f4d2f')}}
     else if(z.look==='arrows'){oval(x,y,r,Math.round(r*0.42),'rgba(255,211,77,.18)');
       for(let i=0;i<12;i++){const ax=x+Math.round(Math.cos(i*2.4)*r*0.8),fy=((B.t*90+i*13)%40);line(ax,y-40+fy,ax,y-34+fy,'#7f4d2f',1);rect(ax,y-34+fy,1,1,'#e4e6f5')}}
@@ -3514,6 +3570,7 @@ function drawFx(B,time){
   }
   for(const f of B.fx){
     const k=f.t/f.life;
+    if(f.type==='resonance'){drawResonanceFx(f,k,B);continue}
     if(f.type==='poof'){const r=lp(f.r);for(let i=0;i<6;i++){const a=i*1.05;disc(lp(f.x)+Math.cos(a)*r*k*1.4,lp(f.y)+Math.sin(a)*r*k*0.8,Math.round((1-k)*3)+1,`rgba(255,255,255,${(0.95*(1-k)).toFixed(2)})`)}}
     else if(f.type==='boom'){const r=lp(f.r)*(0.4+k*0.7);oval(lp(f.x),lp(f.y),r,r*0.5,`rgba(${f.c},${(0.6*(1-k)).toFixed(2)})`);oval(lp(f.x),lp(f.y),r*0.45*(1-k)+2,r*0.22*(1-k)+1,`rgba(255,240,180,${(0.9*(1-k)).toFixed(2)})`)}
     else if(f.type==='bolt'){for(let i=1;i<f.pts.length;i++){const a=f.pts[i-1],b=f.pts[i],mx=lp((a.x+b.x)/2)+Math.round(Math.random()*8-4),my=lp((a.y+b.y)/2)+Math.round(Math.random()*8-4);
@@ -3545,6 +3602,7 @@ function drawHud(B,time){
     rect(bx,by,bw,6,'#ff9ab8');rect(bx,by,Math.round(bw*c.pos),6,'#5fb4ff');rect(bx+Math.round(bw*c.pos)-1,by-2,3,10,'#38325e')}
   if(B.fade>0)rect(0,0,LW,LH,`rgba(255,255,255,${B.fade.toFixed(2)})`);
   if(!B.C)return;
+  drawResonanceHud(B,time);
   const w=B.wiz,C=B.C;
   panel(2,2,76,21,'#ffffff');
   blit('heart',9.5,9);pbar(17,4,58,9,w.hp/w.max,w.hp/w.max<0.3?'#ff6f9f':'#3fcf9f');
@@ -3589,6 +3647,127 @@ function render(B,time){
   ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(lo,0,0,cv.width,cv.height);
   for(const f of HI)f();
 }
+// Inlined into index.html by the preview build; uses the game's own sprites and UI.
+function appendResonancePreview(button,r){
+  if(!r)return;
+  const p=document.createElement('span');p.className='resonance-card-hint';
+  p.innerHTML=`${ic(RESONANCE.tags[r.parts[0]].icon,2)} + ${ic(RESONANCE.tags[r.parts[1]].icon,2)}<b></b><small></small>`;
+  p.querySelector('b').textContent=RESONANCE.tr('조합 완성 · ','Combo · ','組み合わせ · ')+r.name;
+  p.querySelector('small').textContent=r.desc;button.appendChild(p);
+}
+function updateSpellbook(L){
+  let box=document.getElementById('resonance-book');
+  if(!box){box=document.createElement('details');box.id='resonance-book';document.getElementById('l-stats').after(box)}
+  box.hidden=!L.adventure;
+  if(box.hidden)return;
+  const active=RESONANCE.active(L),counts=RESONANCE.parts(L),open=box.open;
+  box.innerHTML='<summary></summary><div class="resonance-book-body"></div>';
+  box.querySelector('summary').innerHTML=`${ic(active?.icon||'book',2)}<span></span><small></small>`;
+  box.querySelector('summary span').textContent=active?active.name+' · '+RESONANCE.tr('공명','Resonance','共鳴')+' '+active.rank:RESONANCE.tr('나의 마법 조합','My spell combinations','自分の魔法の組み合わせ');
+  box.querySelector('summary small').textContent=RESONANCE.tr('마법서 ▾','Spellbook ▾','魔法書 ▾');
+  const body=box.querySelector('.resonance-book-body'),p=document.createElement('p');
+  p.textContent=RESONANCE.tr('위험한 공격을 3번 피하면 준비한 조합 발동. 피해를 받으면 충전 1칸 감소.','Dodge 3 threatening attacks to trigger your prepared combo. Taking damage costs 1 charge.','危険な攻撃を3回避けると準備した組み合わせが発動。ダメージで1チャージ減少。');body.appendChild(p);
+  for(const r of RESONANCE.inspect(L)){
+    const b=document.createElement('button');b.type='button';b.className='resonance-recipe';b.disabled=r.have<2||FIGHT;
+    b.setAttribute('aria-pressed',String(active?.id===r.id));
+    b.innerHTML=`<span class="resonance-parts">${r.parts.map(id=>`<i class="${counts[id]?'owned':''}">${ic(RESONANCE.tags[id].icon,2)}</i>`).join('<em>+</em>')}</span><span><b></b><small></small></span><span class="resonance-state"></span>`;
+    b.querySelector('b').textContent=r.name;
+    b.querySelector('small').textContent=r.desc;
+    b.querySelector('.resonance-state').textContent=r.have<2?r.have+'/2':(active?.id===r.id?'✓ ':RESONANCE.tr('준비','Equip','準備'))+' '+r.rank;
+    b.onclick=()=>{if(FIGHT)return;L.resonance=r.id;SFX_HOOK('pop');updateSpellbook(L);box.open=true};
+    body.appendChild(b);
+  }
+  const cards=document.createElement('p');cards.className='resonance-owned';
+  cards.textContent=RESONANCE.tr('획득 카드: ','Earned cards: ','獲得カード：')+(L.cards.length?L.cards.map(id=>CARDS.find(c=>c.id===id)?.name||id).join(' · '):RESONANCE.tr('아직 없음','None yet','まだなし'));body.appendChild(cards);box.open=open;
+}
+function drawResonanceHud(B,time){
+  const R=B.resonance;if(!R||B.tut)return;
+  const r=R.recipe,x=91,y=2;
+  panel(x,y,77,22,'#ffffff');blit(r.icon,x+8,y+8);
+  hiText(r.name,x+44,y+7,LANG==='ko'?5:4.2,'#38325e',false);
+  for(let i=0;i<R.need;i++){
+    const lit=i<R.charge,xx=x+22+i*14;
+    rect(xx,y+14,9,5,lit?r.color:'#e3def1');rect(xx+1,y+13,7,1,lit?r.color:'#e3def1');
+    if(lit)rect(xx+2,y+14,3,1,'#ffffff');
+  }
+  if(B.resonanceFlash)hiText(B.resonanceFlash.name+'!',LW/2,57,7.2,r.color);
+}
+function drawResonanceFx(f,k,B){
+  const ward=f.id==='bloom',x=lp(ward?WX:f.x),y=lp(ward?B.wiz.y:f.y),a=1-k,r=8+k*30;
+  G.globalAlpha=a;
+  if(f.id==='thermal'){
+    ring(x,y,r,r*0.5,'#ff8a3d');ring(x,y,r*0.7,r*0.35,'#8fe3ff');
+    for(let i=0;i<10;i++){const t=i*Math.PI/5,xx=x+Math.cos(t)*r,yy=y+Math.sin(t)*r*0.6;line(xx,yy,xx-Math.cos(t)*6,yy-Math.sin(t)*5,i%2?'#8fe3ff':'#ff8a3d',2)}
+  }else if(f.id==='thunder'){
+    for(let i=0;i<2;i++){const xx=lp(WX)-12-i*10,yy=lp(B.wiz.y)-12-i*6;blit(heroSprite(B.cls,B.age||19),xx,yy,{alpha:a*0.45});line(xx,yy,x-4,y-8-i*8,'#ffd34d',2);line(xx,yy,x-4,y-8-i*8,'#ffffff',1)}
+  }else if(f.id==='bloom'){
+    ring(x,y-5,12+k*9,18+k*5,'#79dfaa');ring(x,y-5,10+k*9,16+k*5,'#ffffff');
+    for(let i=0;i<6;i++){const t=i*1.047+k*4;blit('leaf',x+Math.cos(t)*20,y+Math.sin(t)*14-9,{alpha:a})}
+  }else if(f.id==='glacier'){
+    for(let i=0;i<7;i++){const xx=x-24+i*8,hh=(i%3+1)*6*(1-k*0.7);line(xx,y+4,xx+3,y-hh,'#8fe3ff',3);line(xx+1,y+2,xx+3,y-hh,'#ffffff',1)}
+    ring(x,y+4,r,r*0.3,'#a6e8ff');
+  }else if(f.id==='eclipse'){
+    disc(x,y-18,12+k*8,'#b47bff');disc(x+5,y-21,11+k*8,'#38325e');
+    for(let i=0;i<8;i++){const t=i*Math.PI/4+k*2;disc(x+Math.cos(t)*r,y-12+Math.sin(t)*r*0.6,2,'#e6d6ff')}
+  }else{
+    for(let i=0;i<16;i++){const t=i*0.8+k*12,rr=6+(i%4)*6;disc(x+Math.cos(t)*rr,y-10+Math.sin(t)*rr*0.5,1+i%2,i%2?'#ff8a3d':'#fff4a8')}
+  }
+  G.globalAlpha=1;
+}
+function installResonanceUI(){
+  if(!PLAYTEST)return;
+  document.body.classList.add('playtest');
+  const b=document.createElement('button');b.className='btn sun';b.id='btn-combat-preview';b.textContent=RESONANCE.tr('새 마법 조합 · 전투 체험','Try the spell combos','新しい魔法の組み合わせを体験');
+  document.getElementById('btn-daily').before(b);b.onclick=showCombatMenu;
+  const note=document.createElement('p');note.className='playtest-note';note.textContent=RESONANCE.tr('개선안 체험판 · 실제 서비스에는 아직 반영되지 않았습니다.','Playtest · not published to the live game.','改善案の体験版 · 本番には未反映です。');b.before(note);
+}
+function showCombatMenu(){
+  document.getElementById('combat-preview-dialog')?.remove();
+  const d=document.createElement('dialog');d.id='combat-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p class="preview-lede"></p><div class="preview-loadouts"></div><label class="preview-compare"><input type="checkbox"> <span></span></label>';
+  d.querySelector('h2').textContent=RESONANCE.tr('조작은 그대로, 마법은 다르게','Same controls, different spells','操作はそのまま、魔法は違う');
+  d.querySelector('.preview-lede').textContent=RESONANCE.tr('기존 전투 2판을 바로 체험합니다. 승리하면 카드를 고르고 보스에게 도전합니다. 아래 조합은 체험용 샘플입니다.','Try two existing encounters. Win, choose a card, then challenge the boss. These are sample loadouts.','既存の戦闘を2回体験。勝ったらカードを選んでボスへ。以下は体験用の組み合わせです。');
+  d.querySelector('.preview-compare span').textContent=RESONANCE.tr('같은 조건에서 공명만 끄고 비교하기','Compare with resonance disabled','同じ条件で共鳴だけを無効にして比較');
+  for(const r of RESONANCE.recipes){
+    const b=document.createElement('button');b.type='button';b.innerHTML=`${r.parts.map(id=>ic(RESONANCE.tags[id].icon,3)).join('<em>+</em>')}<b></b><small></small>`;
+    b.querySelector('b').textContent=r.name;b.querySelector('small').textContent=r.desc;
+    b.onclick=()=>{const baseline=d.querySelector('input').checked;d.close();startCombatPreview(r.id,baseline)};
+    d.querySelector('.preview-loadouts').appendChild(b);
+  }
+  document.body.appendChild(d);d.showModal();
+}
+async function startCombatPreview(id,baseline=false){
+  const token=++runToken,r=RESONANCE.recipes.find(r=>r.id===id)||RESONANCE.recipes[0];
+  endFight();
+  const L=newLife(481516);LIFE=L;L.name=RESONANCE.tr('체험 마법사','Playtest wizard','体験魔法使い');L.age=19;L.adventure=true;
+  const birth={fire:'fire',ice:'ice',bolt:'bolt',echo:'none',wind:'wind',earth:'earth',life:'light',dark:'dark'};
+  const support={fire:'burn',ice:'chill',bolt:'chainplus',echo:'twin',wind:'swift',earth:'guardian',life:'regen',dark:'vampire'};
+  L.element=ELEMENTS.find(e=>e.id===birth[r.parts[0]]);L.traits=[];L.pets=[];L.allies=[];L.flags={};L.stage=0;L.region='grass';L.route=['grass'];L.cards=[];L.mods={dmg:1};L.st={int:110,spd:55,hp:850};L.gold=0;
+  L.W={hp:850,max:850,lv:4,exp:0,pow:1.1};L.resonance=id;FATE.state(L).path='hero';
+  const card=CARDS.find(c=>c.id===support[r.parts[1]]);L.cards.push(card.id);if(card.r!=='n')L.mods[card.id]=1;if(card.apply)card.apply(L);
+  $('#l-log').innerHTML='';$('#hist-n').textContent='';where=RESONANCE.tr('전투 체험','Combat playtest','戦闘体験');VIEW=lifeView('grass','walk');resumeStage();updateHud();
+  const exit=document.createElement('button');exit.id='preview-exit';exit.className='btn soft';exit.textContent=RESONANCE.tr('체험 종료','Exit playtest','体験を終了');
+  document.getElementById('l-stats').before(exit);
+  const finish=()=>{++runToken;endFight();exit.remove();cancelAnimationFrame(raf);VIEW=null;show('s-title');renderTitle()};exit.onclick=finish;
+  logItem({age:L.age,text:RESONANCE.tr('화면을 탭하면 한 칸 회피. 내 줄로 날아오는 공격을 피하세요. '+(baseline?'공명을 끈 비교 전투입니다.':'세 번 피하면 '+r.name+' 발동!'),'Tap to hop one lane. Dodge attacks aimed at your lane. '+(baseline?'Resonance is disabled for comparison.':'Three dodges trigger '+r.name+'!'),'タップで1列移動。自分の列に飛んでくる攻撃を避けよう。'+(baseline?'共鳴を無効にした比較戦闘です。':'3回避けると'+r.name+'発動！')),icon:r.icon,d:[]});
+  let won=true;
+  for(let n=0;n<2;n++){
+    const result=await fight({stage:0,region:'grass',boss:n===1,noResonance:baseline,seed:7381+n});
+    if(token!==runToken)return;
+    if(!result.win){won=false;break}
+    if(n===0){
+      const gen=levelPerk(L,{levels:Math.max(1,result.levels),min:'r',title:RESONANCE.tr('승리! 보스전 전에 카드를 한 장 고르자.','Victory! Choose a card before the boss.','勝利！ボス戦の前にカードを選ぼう。')});let answer;
+      for(;;){const step=gen.next(answer);answer=undefined;if(step.done)break;if(step.value.t==='choice')answer=await askChoice(step.value.e);else if(step.value.t==='log'){logItem(step.value.e);dlgFinish()}if(token!==runToken)return}
+      updateHud();
+    }
+  }
+  if(token!==runToken)return;
+  const totals=L.resonanceTotals||{procs:0,damage:0};
+  const e={age:L.age,icon:won?'star':'skull',d:[],major:true,text:RESONANCE.tr((won?'체험 완료! ':'쓰러졌습니다. ')+`공명 ${totals.procs}회 · 회피 ${L.dodges||0}회. 실제 인생에서는 태어난 속성과 획득한 카드로 조합이 만들어집니다.`,(won?'Playtest complete! ':'Defeated. ')+`${totals.procs} resonances · ${L.dodges||0} dodges. In a real life, your birth element and earned cards create the combinations.`,(won?'体験完了！':'倒れてしまった。')+`共鳴${totals.procs}回・回避${L.dodges||0}回。本編では生まれた属性と獲得カードから組み合わせが生まれます。`),opts:[RESONANCE.tr('같은 조합 다시','Retry this combo','同じ組み合わせでもう一度'),RESONANCE.tr('다른 조합 체험','Try another combo','別の組み合わせ'),RESONANCE.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
+  const choice=await askChoice(e);if(token!==runToken)return;exit.remove();
+  if(choice===0)startCombatPreview(id,baseline);else{finish();if(choice===1)showCombatMenu()}
+}
+
 // ---------- life recap comic: eight pixel panels with captions in one shareable image ----------
 const BOSS_SPRITES=new Set(Object.values(REGIONS).map(r=>r.boss.s));
 function comicPanel(m,seed){
@@ -3741,12 +3920,13 @@ const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a), ri=(a,b)=>Math.floor(rand(a,b+1)), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const SHARE_URL='https://dorivoltgames.github.io/chosen-wizard/';
-const STORE='chosen-wizard-life-v1';
+const PLAYTEST=new URLSearchParams(location.search).has('playtest');
+const STORE=PLAYTEST?'chosen-wizard-resonance-playtest':'chosen-wizard-life-v1';
 function loadDex(){try{const d=JSON.parse(localStorage.getItem(STORE));return d&&typeof d==='object'&&!Array.isArray(d)?d:{}}catch(e){return{}}}
 function saveDex(d){try{localStorage.setItem(STORE,JSON.stringify(d))}catch(e){}}
 // ---- global stats: anonymous counters from the stats Worker (stats-worker/). Every call is optional: with no URL or no network the game plays as before.
 // Local previews and downloaded builds must never inflate the production counters.
-const STATS_URL=/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)||location.protocol==='file:'?'':'https://chosen-wizard-stats.dorivoltgames.workers.dev';
+const STATS_URL=PLAYTEST?'':/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)||location.protocol==='file:'?'':'https://chosen-wizard-stats.dorivoltgames.workers.dev';
 const FUNNEL=createFateTelemetry({baseURL:STATS_URL,storage:{getItem:k=>{try{return localStorage.getItem(k)}catch{return null}},setItem:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}},fetcher:(...args)=>fetch(...args)});
 const GS=(()=>{
   const PID='chosen-wizard-pid',CACHE='chosen-wizard-gs',QUEUE='chosen-wizard-gq',MIN_PLAYERS=5;
@@ -3955,7 +4135,7 @@ async function runLife(){
   }
 }
 function updateHud(){
-  const L=LIFE;FATE_UI.hud(L);if(VIEW&&!VIEW.C)VIEW.form=L.form||null;$('#l-name').textContent=L.name+(L.form?` · ${FORMS[L.form].name}`:'');$('#l-age').textContent=TT_("mdgp4j",`${L.age}세`,[L.age]);$('#l-where').textContent=where;
+  const L=LIFE;FATE_UI.hud(L);updateSpellbook(L);if(VIEW&&!VIEW.C)VIEW.form=L.form||null;$('#l-name').textContent=L.name+(L.form?` · ${FORMS[L.form].name}`:'');$('#l-age').textContent=TT_("mdgp4j",`${L.age}세`,[L.age]);$('#l-where').textContent=where;
   const hp=L.W?`<b>${L.W.hp}</b>/${L.W.max}`:`<b>${L.st.hp}</b>`;
   const grow=L.W?[['star','Lv',`<b>${L.W.lv}</b>`],[WPI(L),WP(L),`<b>+${L.staff}</b>`]]:[];
   const pal=L.allies.length?[[L.allies[L.allies.length-1],TT_("1b78r2g",'동료'),`<b>${L.allies.length}</b>`]]:[];
@@ -3994,7 +4174,7 @@ function logItem(e,cls=''){
 function askChoice(e){
   const li=logItem(e),box=document.createElement('div');box.className=e.cards?'cards':e.paths?'cards paths':'choice';
   e.opts.forEach((o,i)=>{const b=document.createElement('button');
-    if(e.cards){const c=e.cards[i];b.className='card-'+c.r;b.innerHTML=`<span class="rar">${CARD_RARITY[c.r]}</span>${ic(c.icon,3)}<b></b><small></small>`;b.querySelector('b').textContent=c.name;b.querySelector('small').textContent=c.desc;b.style.animationDelay=i*0.08+'s'}
+    if(e.cards){const c=e.cards[i];b.className='card-'+c.r;b.innerHTML=`<span class="rar">${CARD_RARITY[c.r]}</span>${ic(c.icon,3)}<b></b><small></small>`;b.querySelector('b').textContent=c.name;b.querySelector('small').textContent=c.desc;b.style.animationDelay=i*0.08+'s';if(e.buildCards)appendResonancePreview(b,e.buildCards[i])}
     else if(e.paths){const p=e.paths[i];b.className='card-path';b.innerHTML=`${ic(p.icon,4)}<b></b><small></small>`;b.querySelector('b').textContent=p.name;b.querySelector('small').textContent=p.desc;b.style.animationDelay=i*0.08+'s'}
     else b.textContent=o;
     b.onclick=()=>{box.remove();dlgFinish();SFX_HOOK('pop');
@@ -4017,17 +4197,22 @@ function askMini(kind){
   return new Promise(res=>{b.onclick=async()=>{box.remove();const r=await MINI[kind].run();resumeStage();res(r)}});
 }
 async function fight(step){
-  const s=step.stage,B=battleFor(LIFE,step,(Math.random()*1e9)|0);
+  const currentRun=runToken;
+  const s=step.stage,B=battleFor(LIFE,step,step.seed??((Math.random()*1e9)|0));
   B.age=LIFE.age;B.pets=LIFE.pets;VIEW=B;music(step.boss||step.wanted?'boss':'battle');
   const RG=REGIONS[step.region];
   const li=logItem({age:LIFE.age,text:step.boss?TT_("lux60z",`${RG.boss.n}와 1:1 대결! 날아오는 공격을 피해. 화면을 탭하면 한 칸씩 아래로 내려가!`,[RG.boss.n]):TT_("1kw9o8l",`${step.wanted?TT_("1jm2vs8",`현상범 「${step.wanted.n}」과 1:1 대결!`,[step.wanted.n]):TT_("ca3mr8",`${RG.name}의 몬스터와 1:1 대결!`,[RG.name])} 날아오는 공격을 피해서 화면을 탭해!`,[step.wanted?TT_("1jm2vs8",`현상범 「${step.wanted.n}」과 1:1 대결!`,[step.wanted.n]):TT_("ca3mr8",`${RG.name}의 몬스터와 1:1 대결!`,[RG.name])]),icon:step.boss?RG.boss.s:step.wanted?step.wanted.s:'sword',d:[]},'fight');
   startFight(B);
-  while(!B.result)await sleep(120);
+  while(!B.result){if(currentRun!==runToken){endFight();return {cancelled:true}}await sleep(120)}
   await sleep(1000);
+  if(currentRun!==runToken)return {cancelled:true};
   const hp0=LIFE.W.hp,r=afterBattle(LIFE,B);
   if(B.revived)logItem(LIFE.log[LIFE.log.length-1]);
   const p=document.createElement('div');p.className='deltas';
   p.innerHTML=r.win?TT_("1ws6jor",`<span>승리 · ${B.kills}마리 처치</span><span class="${LIFE.W.hp<LIFE.W.max*0.3?'neg':''}">HP ${LIFE.W.hp}/${LIFE.W.max}</span><span>Lv.${LIFE.W.lv}${r.levels?` (+${r.levels})`:''}</span><span>골드 +${r.gold}</span>`,[B.kills,LIFE.W.hp<LIFE.W.max*0.3?'neg':'',LIFE.W.hp,LIFE.W.max,LIFE.W.lv,r.levels?` (+${r.levels})`:'',r.gold]):TT_("1o6uzsf",`<span class="neg">패배</span>`,[]);
+  if(B.resonance&&B.resonance.procs){
+    const z=document.createElement('span');z.textContent=RESONANCE.tr(`${B.resonance.recipe.name} ${B.resonance.procs}회 발동`,`${B.resonance.recipe.name} ×${B.resonance.procs}`,`${B.resonance.recipe.name} ${B.resonance.procs}回`);p.appendChild(z);
+  }
   endFight();
   li.lastElementChild.appendChild(p);$('#dlg-extra').appendChild(p.cloneNode(true));dlgFinish();
   SFX_HOOK(r.win?(step.boss?'fanfare':'coin'):'lose');
@@ -4493,6 +4678,7 @@ window.addEventListener('hashchange',()=>{readHash();if(screen==='s-title')rende
 let blipN=0;
 function blip(){if(++blipN%2===0)SFX_HOOK('talk')}
 
+installResonanceUI();
 paintIcons();
 readHash();
 FUNNEL.track(CHAL?'challenge_opened':'visit');
