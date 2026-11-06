@@ -63,6 +63,6 @@ test('next-life targets point to active endings',()=>{
 });
 test('scripts parse and inlined UI matches its editable source',()=>{
   for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(m[1]);
-  for(const f of ['stage-expansion.js','stage-visuals.js','resonance.js','resonance-ui.js','fate-update.js','fate-ui.js','fate-telemetry.js'])new vm.Script(readFileSync(new URL(f,root),'utf8'));
+  for(const f of ['story-scenes.js','story-visuals.js','stage-expansion.js','stage-visuals.js','resonance.js','resonance-ui.js','fate-update.js','fate-ui.js','fate-telemetry.js'])new vm.Script(readFileSync(new URL(f,root),'utf8'));
   assert.ok(html.includes(readFileSync(new URL('resonance-ui.js',root),'utf8')));
 });

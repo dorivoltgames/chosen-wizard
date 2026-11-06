@@ -32,17 +32,17 @@ function createStageExpansion(lang='ko') {
       {s:'gemite',n:tr('수정 진드기','Gem mite','水晶ダニ'),hp:38,atk:7,size:52,k:'ice',patterns:['single','pair']},
       {s:'prismbat',n:tr('프리즘 박쥐','Prism bat','プリズムコウモリ'),hp:22,atk:6,size:48,fly:1,k:'star',patterns:['single','stairD']},
       {s:'quartzsnail',n:tr('석영 달팽이','Quartz snail','石英カタツムリ'),hp:65,atk:7,size:56,k:'boulder',patterns:['single','double']}],
-      boss:{s:'prismstag',n:tr('프리즘 사슴왕 루미','Lumi, the Prism Stag','プリズム鹿王ルミ'),hp:440,atk:20,size:195,k:'ice',patterns:['prism','pair','stairD'],phase2:['prism','refraction'],fair:true},relic:'prismcore'},
+      boss:{s:'prismstag',n:tr('프리즘 사슴왕 루미','Lumi, the Prism Stag','プリズム鹿王ルミ'),hp:440,atk:20,size:195,k:'ice',patterns:['prism','pair','stairD'],phase2:['prism','refraction'],fair:true,combat:{hp:1.15,tempo:1,phaseTempo:1.08,rest:1,phaseRest:.9}},relic:'prismcore'},
     clockwork:{key:'clockwork',name:tr('태엽 시계탑','Clockwork Tower','ぜんまい時計塔'),icon:'gear_deco',hint:tr('진자가 숨을 고르는 탑','A tower with a swinging pulse','振り子が息づく塔'),mobs:[
       {s:'cogling',n:tr('태엽 병정','Clockwork soldier','ぜんまい兵士'),hp:44,atk:8,size:52,k:'slash',patterns:['double','stairD']},
       {s:'pendulum',n:tr('진자 유령','Pendulum spirit','振り子の幽霊'),hp:28,atk:7,size:48,fly:1,k:'sonic',patterns:['pendulum','single'],fair:true},
       {s:'brassbeetle',n:tr('황동 풍뎅이','Brass beetle','真鍮コガネムシ'),hp:64,atk:9,size:56,k:'rock',patterns:['pair','double']}],
-      boss:{s:'hourkeeper',n:tr('시간지기 똑딱','Ticktock, the Hourkeeper','時の番人チクタク'),hp:480,atk:22,size:205,k:'shock',patterns:['pendulum','double','stairU'],phase2:['pendulum','clockrush'],fair:true},relic:'clockspring'},
+      boss:{s:'hourkeeper',n:tr('시간지기 똑딱','Ticktock, the Hourkeeper','時の番人チクタク'),hp:480,atk:22,size:205,k:'shock',patterns:['pendulum','double','stairU'],phase2:['pendulum','clockrush'],fair:true,combat:{hp:1.4,tempo:1.03,phaseTempo:1.15,rest:.95,phaseRest:.82}},relic:'clockspring'},
     astral:{key:'astral',name:tr('별빛 항로','Starlit Passage','星明かりの航路'),icon:'star',hint:tr('별들이 건너는 마지막 하늘길','The last skyway before the castle','星が渡る最後の空路'),mobs:[
       {s:'starjelly',n:tr('별 해파리','Star jelly','星クラゲ'),hp:32,atk:8,size:50,fly:1,k:'star',patterns:['pair','stairD']},
       {s:'cometfox',n:tr('혜성 여우','Comet fox','彗星キツネ'),hp:30,atk:9,size:52,k:'flame',patterns:['comettail','double'],fair:true},
       {s:'moonray',n:tr('초승달 가오리','Crescent ray','三日月エイ'),hp:42,atk:8,size:56,fly:1,k:'wind',patterns:['stairU','pair']}],
-      boss:{s:'astrowhale',n:tr('별을 삼킨 고래 노바','Nova, the Star Whale','星を飲んだクジラ・ノヴァ'),hp:510,atk:23,size:220,fly:1,k:'star',patterns:['starfall','pair','comettail'],phase2:['starfall','orbitfall'],fair:true},relic:'starlamp'},
+      boss:{s:'astrowhale',n:tr('별을 삼킨 고래 노바','Nova, the Star Whale','星を飲んだクジラ・ノヴァ'),hp:510,atk:23,size:220,fly:1,k:'star',patterns:['starfall','pair','comettail'],phase2:['starfall','orbitfall'],fair:true,combat:{hp:2,tempo:1.04,phaseTempo:1.14,rest:.95,phaseRest:.84}},relic:'starlamp'},
   };
   const relics=[
     {id:'prismcore',r:'l',bossOnly:true,name:tr('프리즘 심장','Prism Heart','プリズムの心臓'),icon:'gem',desc:tr('공명 발동 시 추적 파편탄 2발 추가','Resonance launches two extra homing shards','共鳴時に追尾する破片弾を2発追加')},

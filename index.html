@@ -6,6 +6,7 @@
 <link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="fate-update.css">
 <link rel="stylesheet" href="resonance.css">
+<link rel="stylesheet" href="story-scenes.css">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style><script>(function(){var h=location.hostname;if(!/^https?:$/.test(location.protocol)||h==='dorivoltgames.github.io'||h==='localhost'||h==='127.0.0.1'||/(^|\.)itch\.zone$/.test(h)||/\.hwcdn\.net$/.test(h))return;   // our own pages: GitHub Pages and the itch.io embed
 addEventListener('DOMContentLoaded',function(){var d=document.createElement('div');d.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#2b1a4a;color:#fff;font:600 13px system-ui;padding:8px 12px;text-align:center';
 var l=((function(){try{return localStorage.getItem('chosen-wizard-lang')}catch(e){}})()||navigator.language||'ko').slice(0,2),a='<a href="https://dorivoltgames.github.io/chosen-wizard/" style="color:#ffd35c">dorivoltgames.github.io/chosen-wizard</a>';d.innerHTML=(l==='ja'?'このゲームの本家は '+a+' にあります':l==='ko'?'이 게임의 원본은 '+a+' 에 있어요':'The original game lives at '+a)+' · made by dorivoltgames';document.body.appendChild(d)})})()</script></head><body>
@@ -547,6 +548,7 @@ html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3{letter-spacing:0}
 </div>
 <div id="cd" class="countdown" hidden></div>
 <div id="toast" class="toast" hidden></div>
+<script src="story-scenes.js"></script>
 <script src="stage-expansion.js"></script>
 <script src="resonance.js"></script>
 <script src="fate-update.js"></script>
@@ -1441,6 +1443,7 @@ Object.assign(SPR,createStageExpansion(LANG).sprites);
 // ===== SPRITES END =====
 
 // Crossroads content is pure story logic; browser integrations are passed lazily.
+const STORY=createStoryScenes(LANG);
 const EXPANSION=createStageExpansion(LANG);
 const RESONANCE=createResonance(LANG);
 const FATE=createFateUpdate({lang:LANG,context:()=>({say,chapter,finish,applyD,has,
@@ -1736,7 +1739,7 @@ function createBattle(st,seed,o){
   const text=(x,y,s,color,size=22,life=0.9)=>B.texts.push({x,y,s,color,size,t:life,life});
   function mkMob(d,boss,wanted){
     const size=(d.size||40)*(boss?1:1.9);
-    const hb=(boss?(sm.bossHp||1)*BOSS_HP[s]*(d.acts?ACT_HP:1)*BOSSX[s]:MOB_HP[s]*MONOX[s]*(wanted?WANTED_HP:1))*tough;
+    const hb=(boss?(sm.bossHp||1)*BOSS_HP[s]*(d.acts?ACT_HP:1)*BOSSX[s]*(d.combat?.hp||1):MOB_HP[s]*MONOX[s]*(wanted?WANTED_HP:1))*tough;
     // health is compressed so a rat and an ogre last about as long
     const hp=30*Math.pow(d.hp/30,0.45)*HPMUL[s]*hb,y=LANE_Y[1]+(d.fly?-26:boss?-6:0);
     return {d,name:(wanted?TT_("1n70oxe",'현상범 '):'')+d.n,boss:!!boss,elite:!!wanted,wanted:!!wanted,x:W+70,y,ty:y,lane:1,jy:0,stopX:boss?W-250:W-190,hp,max:hp,
@@ -1939,7 +1942,8 @@ function createBattle(st,seed,o){
     return true;
   }
   function planPattern(m){
-    const beat=beat0*(m.act===2?0.92:m.act===3?0.85:1);let notes=null;
+    const pace=m.d.combat?(m.enraged?m.d.combat.phaseTempo:m.d.combat.tempo)||1:1;
+    const beat=beat0*(m.act===2?0.92:m.act===3?0.85:1)/pace;let notes=null;
     // a fraction of the unfair patterns is let through (more of them later in the game)
     const g=Math.max(tapMin+0.105,0.22)/beat;
     for(let i=0;i<10&&!notes;i++){const pool=patPool(m),nm=m.phaseOpening?pool[pool.length-1]:m.d.patterns&&!(m.patternN%3)?pool[0]:pick(pool),c=PATS[nm](g);if(feasible(c,beat)||(!m.d.fair&&!EXPANSION.regions[RG.id]&&rng()<UNFAIR_N[s])){notes=c;m.patName=nm}}
@@ -2125,7 +2129,7 @@ function createBattle(st,seed,o){
       if(m.sched.length){
         m.patT+=dt;
         while(m.sched.length&&m.sched[0].at<=m.patT)spawnNote(m,m.sched.shift());
-        if(!m.sched.length)m.rest=Math.max(0.6,REST_N[s]*m.beat*rr(0.9,1.15)*(MD.chill?1.12:1));
+        if(!m.sched.length)m.rest=Math.max(0.6,REST_N[s]*m.beat*rr(0.9,1.15)*(MD.chill?1.12:1)*(m.d.combat?(m.enraged?m.d.combat.phaseRest:m.d.combat.rest)||1:1));
       }else{m.rest-=dt;if(m.rest<=0)planPattern(m)}
     }
 
@@ -2773,20 +2777,22 @@ function pickEvent(L,phs){
 // ---------- the life script ----------
 // A generator: it yields steps for the UI (or the simulator) and receives choices, minigame results and battle outcomes back.
 const val=(x,L)=>typeof x==='function'?x(L):x;
-function* say(L,text,icon,d,major){
-  const e={age:L.age,text,icon,d:applyD(L,d),major:!!major,theme:L.theme};
+function* say(L,text,icon,d,major,scene){
+  const before=STORY.snapshot(L),deltas=applyD(L,d),visuals=STORY.changes(before,L);
+  if(scene?.kind&&['relic','spell','forge'].includes(scene.kind))visuals.unshift(scene);
+  const e={age:L.age,text,icon,d:deltas,major:!!major,theme:L.theme,visuals,scene};
   L.log.push(e);yield {t:'log',e};
 }
 function* doEvent(L,ev){
   L.used[ev.id]=1;
   const text=val(ev.t,L),icon=typeof ev.icon==='function'?ev.icon(L):ev.icon;
   if(ev.choice){
-    const e={age:L.age,text,icon,d:[],major:!!ev.major,opts:ev.choice.map(o=>val(o.l,L)),theme:L.theme};
+    const e={age:L.age,text,icon,d:[],major:!!ev.major,opts:ev.choice.map(o=>val(o.l,L)),theme:L.theme,eventId:ev.id};
     L.log.push(e);
     const k=yield {t:'choice',e};
     const o=ev.choice[k]||ev.choice[0];e.picked=val(o.l,L);
-    yield* say(L,val(o.t,L),icon,val(o.d,L),false);
-  }else yield* say(L,text,icon,val(ev.d,L),ev.major);
+    yield* say(L,val(o.t,L),icon,val(o.d,L),false,STORY.choice(e,k,L));
+  }else yield* say(L,text,icon,val(ev.d,L),ev.major,STORY.plan({eventId:ev.id,icon},L));
 }
 function* chapter(L,theme,mode,title,sub){L.theme=theme;yield {t:'scene',theme,mode,banner:{text:title,sub}}}
 
@@ -2832,7 +2838,7 @@ function* lifeScript(L){
   {const ev=pickEvent(L,'teen');if(ev)yield* doEvent(L,ev)}
   // 18: the fork
   L.age=18;FUNNEL.track('coming_of_age',L);
-  const fork={age:18,text:has(L,'chosen')?TT_("1ms9wq5",'성인식 날, 손등의 표식이 뜨겁게 빛났다. 마왕을 쓰러뜨리러 떠날까?'):has(L,'coward')?TT_("2zt0k5",'성인식 날. 다리가 후들거린다. 정말 모험을 떠날까?'):fl(L,'prophecy')?TT_("7pqp5u",'성인식 날. 꿈속의 목소리가 떠오른다. 모험을 떠날까?'):TT_("18r5c2f",'성인식 날. 마왕을 쓰러뜨리러 모험을 떠날까?'),icon:'sword',d:[],major:true,opts:[TT_("1mgar23",'모험을 떠난다'),TT_("f6u202",'고향에 남는다')]};
+  const fork={age:18,text:has(L,'chosen')?TT_("1ms9wq5",'성인식 날, 손등의 표식이 뜨겁게 빛났다. 마왕을 쓰러뜨리러 떠날까?'):has(L,'coward')?TT_("2zt0k5",'성인식 날. 다리가 후들거린다. 정말 모험을 떠날까?'):fl(L,'prophecy')?TT_("7pqp5u",'성인식 날. 꿈속의 목소리가 떠오른다. 모험을 떠날까?'):TT_("18r5c2f",'성인식 날. 마왕을 쓰러뜨리러 모험을 떠날까?'),icon:'sword',d:[],major:true,sceneKind:'adult-fork',opts:[TT_("1mgar23",'모험을 떠난다'),TT_("f6u202",'고향에 남는다')]};
   L.log.push(fork);
   const k=yield {t:'choice',e:fork};fork.picked=fork.opts[k];
   FATE.state(L).path=k===1?'home':'hero';
@@ -3071,14 +3077,14 @@ function* levelPerk(L,r){
   const nextResonance=RESONANCE.project(L,c);
   if(c.r!=='n')L.mods[c.id]=1;if(c.apply)c.apply(L);L.cards.push(c.id);
   if(nextResonance)L.resonance=nextResonance.id;
-  const done={age:L.age,text:TT_("s8c6lg",`${CARD_RARITY[c.r]} 카드 「${cv.name}」! ${cv.desc}`,[CARD_RARITY[c.r],cv.name,cv.desc]),icon:cv.icon,d:[],snd:c.r==='l'?'fanfare':'levelup',major:c.r==='l',theme:L.theme};
+  const done={age:L.age,text:TT_("s8c6lg",`${CARD_RARITY[c.r]} 카드 「${cv.name}」! ${cv.desc}`,[CARD_RARITY[c.r],cv.name,cv.desc]),icon:cv.icon,d:[],snd:c.r==='l'?'fanfare':'levelup',major:c.r==='l',theme:L.theme,visuals:[{kind:'spell',id:c.id,icon:cv.icon,recipe:nextResonance}]};
   L.log.push(done);yield {t:'log',e:done};
 }
 function* awardStageRelic(L,rid){
   const id=EXPANSION.regions[rid]?.relic,c=CARDS.find(c=>c.id===id);
   if(!c||L.cards.includes(id))return;
   const next=RESONANCE.project(L,c);L.cards.push(id);L.mods[id]=1;if(next)L.resonance=next.id;
-  yield* say(L,EXPANSION.tr(`보스 유물 「${c.name}」 획득! ${c.desc}`,`Boss relic acquired: ${c.name}! ${c.desc}`,`ボスの遺物「${c.name}」を獲得！ ${c.desc}`),c.icon,{cur:0.10},true);
+  yield* say(L,EXPANSION.tr(`보스 유물 「${c.name}」 획득! ${c.desc}`,`Boss relic acquired: ${c.name}! ${c.desc}`,`ボスの遺物「${c.name}」を獲得！ ${c.desc}`),c.icon,{cur:0.10},true,{kind:'relic',id:c.id});
 }
 
 // Staff 강화 with gold: a wandering smith at the start of each area; odds fall as the staff climbs, up to 3 tries per visit.
@@ -3093,7 +3099,7 @@ function* forge(L){
     if(k!==0)return;
     L.gold-=cost;
     const ok=L.rng()*100<rate;if(ok){L.staff++;L.mods.dmg*=1.08}
-    const res={age:L.age,text:ok?TT_("h1m502",`깡! ${w} +${L.staff} 강화 성공! 공격력 +8%`,[w,L.staff]):TT_("io0bv9",`퍽… 강화 실패. ${cost}골드가 연기처럼 사라졌다.`,[cost]),icon:'anvil',d:[[TT_("1awoeoh",'골드'),-cost]],major:ok&&L.staff>=6,snd:ok?'fanfare':'lose'};
+    const res={age:L.age,text:ok?TT_("h1m502",`깡! ${w} +${L.staff} 강화 성공! 공격력 +8%`,[w,L.staff]):TT_("io0bv9",`퍽… 강화 실패. ${cost}골드가 연기처럼 사라졌다.`,[cost]),icon:'anvil',d:[[TT_("1awoeoh",'골드'),-cost]],visuals:[ok?{kind:'forge',level:L.staff}:{kind:'trade',amount:-cost}],major:ok&&L.staff>=6,snd:ok?'fanfare':'lose'};
     L.log.push(res);yield {t:'log',e:res};
   }
 }
@@ -3107,7 +3113,7 @@ function* chooseRoute(L,t){
   const opts=pool.slice();
   while(opts.length>2){const drop=opts.filter(id=>!keep(id));const id=drop.length?drop[Math.floor(L.rng()*drop.length)]:opts[opts.length-1];opts.splice(opts.indexOf(id),1)}
   if(L.rng()<0.5)opts.reverse();
-  const e={age:L.age,text:t===0?TT_("10gk985",'마을 어귀의 갈림길. 어느 쪽으로 떠날까?'):TT_("cw1l2w",'갈림길이 나왔다. 어느 길로 갈까?'),icon:'scroll',d:[],theme:L.theme,
+  const e={age:L.age,text:t===0?TT_("10gk985",'마을 어귀의 갈림길. 어느 쪽으로 떠날까?'):TT_("cw1l2w",'갈림길이 나왔다. 어느 길로 갈까?'),icon:'scroll',d:[],theme:L.theme,regionChoices:opts.slice(),
     opts:opts.map(id=>`${REGIONS[id].name} · ${id===home?TT_("1r39ib2",'그리운 고향 가는 길'):REGIONS[id].hint}${has(L,'prophet')?(goodSign(L,id)?TT_("1f9veln",' · 꿈: 좋은 예감'):TT_("137ccpt",' · 꿈: 먹구름')):''}`)};
   L.log.push(e);const k=yield {t:'choice',e};let pick=opts[k]||opts[0];e.picked=REGIONS[pick].name;
   if(has(L,'lost')&&L.rng()<0.3){const other=opts.find(id=>id!==pick);if(other){pick=other;yield* say(L,TT_("7519x9",`길치 본능 발동! 정신 차려 보니 ${REGIONS[pick].name}였다.`,[REGIONS[pick].name]),'leaf')}}
@@ -3328,7 +3334,7 @@ function drawFormWeapon(B,x,cy,time){
   }
 }
 function drawWizard(B,time){
-  const w=B.wiz,x=lp(WX),wy=w.y===undefined?WY:w.y,y=lp(wy),walking=B.phase==='walk'&&!B.result,step=walking?Math.floor(time*8)%2:0;
+  const w=B.wiz,x=lp(WX+(!B.C?(B.story?.heroX||0):0)),wy=w.y===undefined?WY:w.y,y=lp(wy),walking=B.phase==='walk'&&!B.result,step=walking?Math.floor(time*8)%2:0;
   const fr=wizSprite(B,step),half=Math.floor(SP[fr].h/2);
   const feet=y+10,cy=feet-half;
   // hopping between lanes: a small arc, and the lane it left keeps a faint echo of the wizard
@@ -3340,11 +3346,12 @@ function drawWizard(B,time){
   if(B.stats)ring(x,feet+1,11,3,GRADE_RING[grades(B.stats).int]);
   if(hopK&&w.py!==undefined)blit(fr,x,lp(w.py)+10-half,{alpha:0.3*hopK});
   // the followers (befriended monsters and companions) fan out behind the wizard in two rows so all of them stay on screen; the owl hovers overhead
-  const fol=[...(B.allies||[]).map(a=>({s:a.s||a,ally:1})),...(B.pets||[]).filter(q=>q!=='owl').map(q=>({s:q}))].filter(q=>SP[q.s]).slice(0,5);
+  const joining=!B.C&&B.story?.plan?.kind==='companion'?B.story.plan.id:null;
+  const fol=[...(B.allies||[]).map(a=>({s:a.s||a,ally:1})),...(B.pets||[]).filter(q=>q!=='owl').map(q=>({s:q}))].filter(q=>SP[q.s]&&q.s!==joining).slice(0,5);
   fol.map((q,k)=>({q,k})).sort((a,b)=>(b.k>2)-(a.k>2)).forEach(({q,k})=>{
     const row=k>2?1:0,col=row?k-3:k,px=x-15-col*15-row*8,fy=feet-row*6-(q.ally?3:0),sp=SP[q.s],bob=walking?(Math.floor(time*7+k*2)%2?-1:0):(Math.sin(time*3+k)>0.6?-1:0)+(joy&&k%2?joy:0);
     oval(px,fy+1,Math.ceil(Math.min(sp.w,16)/2),2,'rgba(59,42,85,.2)');blit(q.s,px,fy-Math.floor(sp.h/2)+bob+(q.s==='drake'?-4:0),q.ally?{flip:true}:{})});
-  if((B.pets||[]).includes('owl'))blit('owl',x-12,y-22+Math.round(Math.sin(time*4)*2));
+  if((B.pets||[]).includes('owl')&&joining!=='owl')blit('owl',x-12,y-22+Math.round(Math.sin(time*4)*2));
   if(B.shieldHP>0&&!B.result){G.globalAlpha=0.5+0.2*Math.sin(time*5);ring(x,cy,11,Math.ceil(SP[fr].h/2)+3,'#8fe3ff');G.globalAlpha=1}
   if(B.result==='lose'){blit(fr,x,cy+1,{tint:'#b7b4cf'});blit('ghost',x,cy-16-Math.round((time*6)%8),{alpha:.85});return}
   const bob=walking?-step:(Math.sin(time*2.5)>0.7?-1:0);
@@ -3605,6 +3612,13 @@ function drawExpansionIntent(B){
   const m=B.mobs.find(m=>!m.dead&&m.boss);if(!m)return;
   hiText(B.intent.name,152,46,5.2,'#fff4dc');
 }
+function drawBossPhaseAura(m,B,time,x,f){
+  if(!m.enraged||!m.d.phase2)return;
+  const icon=m.d.s==='prismstag'?'gem':m.d.s==='hourkeeper'?'gear_deco':'star';
+  const radius=m.d.s==='astrowhale'?24:18;
+  for(let i=0;i<3;i++){const a=time*1.8+i*Math.PI*2/3;blit(icon,x+Math.cos(a)*radius,f-53+Math.sin(a)*8,{scale:icon==='gear_deco'?.35:.65,alpha:.85})}
+  ring(x,f-53,radius+2,9,m.d.s==='hourkeeper'?'#ffd34d':'#b4e4ff');
+}
 
 function drawBossArt(id,x,f,t,o={}){
   BOSS_ART[id](x,f,t);
@@ -3621,6 +3635,7 @@ function drawMob(m,B,time){
     oval(lp(m.x),f+1,Math.round(hw*0.8),3,'rgba(59,42,85,.22)');
     const winding=m.windT>0;
     drawBossArt(m.d.s,x+(winding?Math.round(Math.sin(time*40)):0),f,frozen?0:time,{hit:m.hitT>0,frozen,rage:(m.act===3&&Math.floor(time*8)%2)||(winding&&Math.floor(time*10)%2),act:m.act,lock:m.lock>0});
+    drawBossPhaseAura(m,B,time,x,f);
     if(m.stun>0)for(let i=0;i<3;i++){const a=time*6+i*2.1;rect(x+Math.round(Math.cos(a)*10)-1,f-58+Math.round(Math.sin(a)*3),2,2,'#ffd34d')}
     return;
   }
@@ -3744,10 +3759,10 @@ function drawHud(B,time){
 function render(B,time){
   HI.length=0;G=L2;L2.imageSmoothingEnabled=false;L2.save();
   if(B.shake>0)L2.translate(Math.round((Math.random()-0.5)*B.shake*SC),Math.round((Math.random()-0.5)*B.shake*SC));
-  drawScene(B,time);drawLanes(B,time);
+  drawScene(B,time);drawStoryBackdrop(B,time);drawLanes(B,time);
   const ents=[...B.mobs.map(m=>({y:m.y,f:()=>drawMob(m,B,time)})),{y:(B.wiz&&B.wiz.y)||WY,f:()=>drawWizard(B,time)}].sort((a,b)=>a.y-b.y);
   for(const e of ents)e.f();
-  drawShots(B);drawFx(B,time);drawWeather(B,time);drawTexts(B);
+  drawShots(B);drawFx(B,time);drawWeather(B,time);drawStoryForeground(B,time);drawTexts(B);
   L2.restore();drawHud(B,time);
   ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(lo,0,0,cv.width,cv.height);
   for(const f of HI)f();
@@ -3766,6 +3781,7 @@ function updateSpellbook(L){
   box.hidden=!L.adventure;
   if(box.hidden)return;
   const active=RESONANCE.active(L),counts=RESONANCE.parts(L),open=box.open;
+  if(VIEW?.story&&!VIEW.C)VIEW.story.combo=active;
   box.innerHTML='<summary></summary><div class="resonance-book-body"></div>';
   box.querySelector('summary').innerHTML=`${ic(active?.icon||'book',2)}<span></span><small></small>`;
   box.querySelector('summary span').textContent=active?active.name+' · '+RESONANCE.tr('공명','Resonance','共鳴')+' '+active.rank:RESONANCE.tr('나의 마법 조합','My spell combinations','自分の魔法の組み合わせ');
@@ -3885,12 +3901,172 @@ async function startCombatPreview(id,baseline=false,rid='grass',bossOnly=false){
   }
   if(token!==runToken)return;
   const totals=L.resonanceTotals||{procs:0,damage:0};
-  const e={age:L.age,icon:won?'star':'skull',d:[],major:true,text:RESONANCE.tr((won?'체험 완료! ':'쓰러졌습니다. ')+`공명 ${totals.procs}회 · 회피 ${L.dodges||0}회. 실제 인생에서는 태어난 속성과 획득한 카드로 조합이 만들어집니다.`,(won?'Playtest complete! ':'Defeated. ')+`${totals.procs} resonances · ${L.dodges||0} dodges. In a real life, your birth element and earned cards create the combinations.`,(won?'体験完了！':'倒れてしまった。')+`共鳴${totals.procs}回・回避${L.dodges||0}回。本編では生まれた属性と獲得カードから組み合わせが生まれます。`),opts:[RESONANCE.tr('같은 조합 다시','Retry this combo','同じ組み合わせでもう一度'),RESONANCE.tr('다른 조합 체험','Try another combo','別の組み合わせ'),RESONANCE.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
+  const e={age:L.age,icon:won?'star':'skull',d:[],major:true,noScene:true,text:RESONANCE.tr((won?'체험 완료! ':'쓰러졌습니다. ')+`공명 ${totals.procs}회 · 회피 ${L.dodges||0}회. 실제 인생에서는 태어난 속성과 획득한 카드로 조합이 만들어집니다.`,(won?'Playtest complete! ':'Defeated. ')+`${totals.procs} resonances · ${L.dodges||0} dodges. In a real life, your birth element and earned cards create the combinations.`,(won?'体験完了！':'倒れてしまった。')+`共鳴${totals.procs}回・回避${L.dodges||0}回。本編では生まれた属性と獲得カードから組み合わせが生まれます。`),opts:[RESONANCE.tr('같은 조합 다시','Retry this combo','同じ組み合わせでもう一度'),RESONANCE.tr('다른 조합 체험','Try another combo','別の組み合わせ'),RESONANCE.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
   const trophy=won?CARDS.find(c=>c.id===EXPANSION.regions[rid]?.relic):null;
   if(trophy){e.icon=trophy.icon;e.text=EXPANSION.tr(`${rg.boss.n} 격파! 유물 「${trophy.name}」 획득. ${trophy.desc}`,`${rg.boss.n} defeated! Relic acquired: ${trophy.name}. ${trophy.desc}`,`${rg.boss.n}撃破！ 遺物「${trophy.name}」を獲得。${trophy.desc}`)}
   if(EXPANSION.regions[rid]){e.opts[0]=EXPANSION.tr('이 지역 다시 도전','Retry this region','この地域に再挑戦');e.opts[1]=EXPANSION.tr('다른 지역 가 보기','Try another region','別の地域へ')}
   const choice=await askChoice(e);if(token!==runToken)return;exit.remove();
   if(choice===0)startCombatPreview(id,baseline,rid,bossOnly);else{finish();if(choice===1)(EXPANSION.regions[rid]?showStageMenu:showCombatMenu)()}
+}
+
+// Pixel events share the original scene, palette, sprites and animation loop.
+function makeStoryView(L,theme){return {t:0,basePhase:null,plan:EXPANSION.regions[theme]?{kind:'arrival',region:theme}:null,mode:EXPANSION.regions[theme]?'effect':null,heroX:0,job:STORY.snapshot(L).job,school:L.tier||null,schoolLabel:schoolName(L),schoolIcon:L.tier==='none'?'anvil':L.tier==='royal'?'crown':CLASS_SPRITE[L.cls]||'book',combo:RESONANCE.active(L),relics:STORY.relics.filter(id=>L.mods?.[id])}}
+function setStoryPlan(B,p,mode='preview'){
+  if(!B||B.C)return;
+  B.story=B.story||makeStoryView(LIFE);B.story.t=0;B.story.plan=p;B.story.mode=mode;
+  if(['xwerewolf','xvampire'].includes(p?.eventId))B.story.atmosphere='moon';
+  else if(p?.kind!=='transform')B.story.atmosphere=null;
+  if(B.story.basePhase===null)B.story.basePhase=B.phase;
+  B.phase=mode==='action'?'walk':'idle';
+}
+function updateStoryScene(B,dt){
+  if(!B.story||B.C)return;const s=B.story;s.t+=dt;
+  const p=s.plan,k=Math.min(1,s.t/.75),moving=s.mode==='action';
+  let destination=0;
+  if(moving&&p?.kind==='route')destination=(130+p.pick*65)/SC-WX;
+  else if(moving&&p?.kind==='fork')destination=(129+p.pick*65)/SC-WX;
+  else if(moving&&p?.kind==='animal')destination=p.action==='approach'?75:0;
+  else if(moving&&['encounter','trade','mystery','workshop','forge','archive'].includes(p?.kind))destination=p.action==='engage'||p.action==='open'?200:15;
+  s.heroX+=(destination*k-s.heroX)*Math.min(1,dt*10);
+  if(s.mode==='effect'&&s.t>1.9){s.plan=null;s.mode=null;B.phase=s.basePhase||'idle';s.basePhase=null}
+}
+function storyLog(L,e,B){
+  if(!B||B.C||e.noScene)return;B.story=B.story||makeStoryView(L);
+  B.story.job=STORY.snapshot(L).job;B.story.school=L.tier||null;B.story.schoolLabel=schoolName(L);B.story.combo=RESONANCE.active(L);B.story.relics=STORY.relics.filter(id=>L.mods?.[id]);
+  const effects=e.visuals||[],p=effects.find(v=>['relic','transform','career','companion','spell','forge'].includes(v.kind))||effects[0];
+  if(p)setStoryPlan(B,{...p,icon:e.icon,label:e.visualLabel},'effect');
+  else if(e.scene?.kind)setStoryPlan(B,{...e.scene,icon:e.icon},'effect');
+}
+function storyChoicePreview(L,e,B){if(B&&!B.C)setStoryPlan(B,STORY.plan(e,L),'preview')}
+async function storyChoiceAction(L,e,pick,B){
+  if(!B||B.C)return;
+  setStoryPlan(B,STORY.choice(e,pick,L),'action');
+  await sleep(matchMedia('(prefers-reduced-motion: reduce)').matches?180:750);
+  if(B.story){B.story.plan=null;B.story.mode=null;B.story.heroX=0;B.phase=B.story.basePhase||'idle';B.story.basePhase=null}
+}
+function storySprite(id,x,y,o={}){if(SP[id])blit(id,x,y,o)}
+function storyEmote(icon,x,y,t){panel(x-7,y-7,14,14,'#ffffff');storySprite(icon,x,y);rect(x-2,y+7,3,2,'#ffffff')}
+function storyBread(x,y){oval(x,y,6,3,'#d9a85c');oval(x-1,y-1,5,2,'#f7d896');for(let i=-2;i<3;i+=2)line(x+i,y-2,x+i-1,y+1,'#b57345',1)}
+function storyShop(job,time){
+  const x=151,f=122,teacher=job==='teacher',farm=job==='farmer',watch=['guard','hunter'].includes(job);
+  if(farm){for(let i=0;i<9;i++){const xx=128+i%3*16,yy=105+Math.floor(i/3)*8;oval(xx,yy,6,2,'#9c7750');line(xx,yy,xx,yy-4,'#3fa65a',2);line(xx,yy-2,xx-3,yy-4,'#6ed46a',1)}storySprite('house2',194,88,{scale:2});return}
+  if(watch){storySprite('house_big',174,94,{scale:2});for(let i=0;i<3;i++)storySprite(job==='hunter'?'tree':'fence',130+i*30,105);storySprite('knight',120,110);storyEmote('gem',119,84,time);return}
+  rect(x-36,f-42,72,42,'#b57345');rect(x-33,f-39,66,37,'#fff4dc');
+  for(let i=0;i<5;i++)rect(x-40+i*16,f-48+i%2,16,10,i%2?'#ff9ab8':'#ff6f9f');
+  line(x-39,f-49,x,f-62,'#7f4d2f',3);line(x,f-62,x+39,f-49,'#7f4d2f',3);
+  rect(x-25,f-28,25,21,'#7f4d2f');rect(x+10,f-25,16,25,'#8a6cff');rect(x+22,f-14,2,2,'#ffd34d');
+  panel(x-14,f-56,28,14,'#ffffff');storySprite(teacher?'book':job==='bakery'?'heart':job==='court'?'crown':'coin',x,f-49);
+  if(teacher){rect(x-27,f-28,30,15,'#3f7558');for(let i=0;i<3;i++){storySprite('kid',x-25+i*23,f-8);storySprite('book',x-25+i*23,f-1)}storySprite('star',x-12+Math.sin(time*2)*4,f-21)}
+  else if(job==='bakery'){for(let i=0;i<3;i++)storyBread(x-21+i*13,f-12);rect(x-29,f-7,40,5,'#d9a85c');const bob=Math.sin(time*2);for(let i=0;i<3;i++)rect(x+19+i*3,f-35-i*4-bob*2,2,2,'rgba(255,255,255,.5)')}
+  else {storySprite('chest',x-16,f-10);storySprite('potion',x+2,f-11);storySprite('coin',x-1,f-2);storySprite('elder',x-31,f-8)}
+}
+function storyPortal(rid,x,selected,time){
+  const r=REGIONS[rid];if(!r)return;const c=THEME[r.key]?.sky?.[0]||'#8a6cff';
+  oval(x,92,23,31,OUTLINE);oval(x,92,20,28,c);ring(x,92,18,26,selected?'#ffd34d':'#d4c4ff');
+  for(let i=0;i<8;i++){const a=time*(selected?2:1)+i*Math.PI/4;rect(x+Math.cos(a)*18,92+Math.sin(a)*26,1,2,'#ffffff')}
+  storySprite(r.icon,x,84,{scale:Math.min(1,12/Math.max(SP[r.icon].w,SP[r.icon].h))});
+  storySprite(r.boss.s,x,103,{scale:.7});hiText(r.name,x,130,4.6,'#ffffff');
+}
+function drawStoryBackdrop(B,time){
+  if(B.C||!B.story)return;const s=B.story,p=s.plan,t=s.t,acting=s.mode==='action',k=Math.min(1,t/.75);
+  if(s.atmosphere==='moon'){
+    rect(0,0,LW,LH,'rgba(25,22,69,.53)');disc(190,30,16,'rgba(255,244,220,.12)');disc(190,30,10,'#fff4dc');
+    for(let i=0;i<13;i++)rect(12+i*17,15+i%4*11,1,1,i%2?'#ffffff':'#c4ade8');
+  }
+  if(s.job&&B.age>=18){storyShop(s.job,time);if(!p)hiText(STORY.labels[s.job]||'',151,52,5.1,'#fff4dc')}
+  else if(s.school&&B.age>=7&&B.age<18){
+    const royal=s.school==='royal';panel(120,37,82,25,royal?'#fff4dc':'#e4e6f5');storySprite(s.schoolIcon,135,49);
+    hiText(s.schoolLabel||'',169,49,4.2,'#38325e',false);
+    for(let i=0;i<(royal?3:2);i++)storySprite('kid',132+i*23,111);
+  }
+  if(!p)return;
+  if(p.kind==='arrival'){storyPortal(p.region,173,true,time);storySprite(REGIONS[p.region]?.mobs[0]?.s,132,112,{scale:1.1});return}
+  if(p.kind==='spell'&&s.mode==='preview'){
+    (p.cards||[]).forEach((c,i)=>{const xx=126+i*42,yy=94+Math.sin(time*2+i)*3;ring(xx,yy,13,17,'#c4ade8');storySprite(c.icon,xx,yy,{scale:1.4});hiText(c.name,xx,120,4.2,'#fff4dc')});return;
+  }
+  if(p.kind==='route'){p.regions.forEach((rid,i)=>storyPortal(rid,130+i*65,acting&&p.pick===i,time));return}
+  if(p.kind==='fork'){
+    for(let i=0;i<2;i++){const x=129+i*65;line(x,121,x,85,'#b57345',3);panel(x-23,70,46,23,acting&&p.pick===i?'#fff4a8':'#ffffff');storySprite(i?'house_big':'sword',x,81);storySprite('kid',x-8,111);storySprite('elder',x+8,112)}
+    hiText(STORY.labels[acting?p.destination:'adventure'],162,55,5.4,'#fff4dc');return;
+  }
+  if(p.kind==='archive'){storySprite('shelf',170,98,{scale:3});storySprite('book',144,109,{scale:2});storySprite('candle',124,112);if(acting&&p.action==='open'){disc(144,105,10+k*8,'rgba(180,123,255,.22)');for(let i=0;i<8;i++)rect(139+(i%3)*5,104-i*3-k*7,2,2,i%2?'#b47bff':'#ffd34d')}return}
+  if(p.kind==='forge'){storySprite('anvil',145,113,{scale:2});storySprite('elder',170,107);const a=acting?Math.sin(t*22)*5:0;line(164,96+a,151,101+a,'#7f4d2f',2);rect(146,97+a,9,4,'#a9accb');if(acting||s.mode==='effect')for(let i=0;i<9;i++){const an=i*.8;rect(145+Math.cos(an)*t*20,107+Math.sin(an)*t*13,2,1,'#ffd34d')}return}
+  if(p.kind==='spring'||p.kind==='heal'){oval(148,115,30,8,'#4f9dff');ring(148,115,23+Math.sin(time*2)*3,5,'#8fe3ff');storySprite('potion',148,109);return}
+  if(p.kind==='treasure'){storySprite('chest',153,111,{scale:2});if(acting)for(let i=0;i<5;i++)storySprite('coin',143+i*5,98-i%2*5-k*7);return}
+  if(p.kind==='workshop'){storyShop('bakery',time);if(acting)storyBread(112+k*20,95-Math.sin(k*Math.PI)*12);return}
+  if(['animal','encounter','mystery','trade'].includes(p.kind)){
+    const actor=SP[p.actor]?p.actor:'kid',xx=147-(acting&&p.action==='approach'?k*40:0),yy=113-(p.kind==='animal'&&acting?Math.abs(Math.sin(t*10))*3:0);
+    storySprite(actor,xx,yy,{scale:actor==='egg'?1.5:1.3});
+    if(p.kind==='animal'){storySprite('house2',188,90);if(acting)storyEmote(p.action==='approach'?'heart':'star',xx,87,time)}
+    else if(acting)storyEmote(p.kind==='mystery'?'ghost':p.kind==='trade'?'coin':'heart',xx,86,time);
+  }
+}
+function drawStoryForeground(B,time){
+  if(B.C||!B.story)return;const s=B.story,p=s.plan,x=lp(WX+s.heroX),y=lp(B.wiz.y??WY),t=s.t;
+  if(s.combo){
+    const r=s.combo;ring(x,y+10,12+Math.sin(time*2),3,r.color);
+    r.parts.forEach((part,i)=>{const a=time*1.4+i*Math.PI;storySprite(RESONANCE.tags[part].icon,x+Math.cos(a)*16,y-13+Math.sin(a)*8,{scale:.55})});
+  }
+  s.relics.forEach((id,i)=>{const icons={prismcore:'gem',clockspring:'gear_deco',starlamp:'star'},a=time*1.3+i*2.1;storySprite(icons[id],x+Math.cos(a)*17,y-19+Math.sin(a)*7,{scale:id==='clockspring'?.35:.7})});
+  if(!p||s.mode==='preview')return;
+  if(['spell','transform','relic','career','school','companion','hurt','trade'].includes(p.kind)){
+    const good=!(p.kind==='hurt'||p.kind==='trade'&&p.amount<0),color=good?'#ffd34d':'#ff6f9f';
+    for(let i=0;i<12;i++){const a=i*Math.PI/6+t*2,r=7+(t%1.8)*16;rect(x+Math.cos(a)*r,y-10+Math.sin(a)*r*.65,1+i%2,1+i%2,i%3?color:'#ffffff')}
+    if(p.kind==='spell'&&p.recipe){drawResonanceFx({id:p.recipe.id,x:600,y:WY,t:t%1,life:1,col:p.recipe.color},t%1,{...B,wiz:{...B.wiz,y:B.wiz.y??WY}});storySprite(p.recipe.icon,176,90,{scale:2});hiText(p.recipe.name,175,65,6,'#fff4a8')}
+    else if(p.kind==='relic'){const icons={prismcore:'gem',clockspring:'gear_deco',starlamp:'star'},icon=icons[p.id]||p.icon;ring(159,83,22,22,'#ffd34d');storySprite(icon,159,83,{scale:p.id==='clockspring'?1.2:3});const card=CARDS.find(c=>c.id===p.id);if(card)hiText(card.name,159,53,6,'#fff4a8')}
+    else if(p.kind==='companion'){const xx=x-24+Math.max(0,1-t/1.2)*45;storySprite(p.id,xx,y+6-Math.abs(Math.sin(t*9))*3);storyEmote('heart',xx,y-17,time)}
+    else if(p.kind==='transform'){ring(x,y-9,14+Math.sin(t*8)*3,21,'#b47bff');storyEmote('ghost',x+24,y-29,time)}
+    else if(p.icon)storySprite(p.icon,x+21,y-25,{scale:1.4});
+  }
+  if(s.mode==='action'&&p.kind==='spell'&&!p.recipe){storySprite(p.icon,x+Math.sin(t*4)*18,y-24,{scale:1.5});for(let i=0;i<3;i++)storySprite('i_missile',x+20+t*65+i*9,y-7+i*5)}
+}
+
+function installStoryPreview(){
+  if(!PLAYTEST)return;const b=document.createElement('button');b.id='btn-story-preview';b.className='btn soft';b.textContent=STORY.tr('선택 이벤트 · 장면 체험','Try the life-event scenes','選択イベント・場面を体験');document.getElementById('btn-combat-preview').after(b);b.onclick=showStoryMenu;
+}
+function showStoryMenu(){
+  document.getElementById('story-preview-dialog')?.remove();const d=document.createElement('dialog');d.id='story-preview-dialog';d.className='story-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p></p><div class="story-demo-grid"></div>';
+  d.querySelector('h2').textContent=STORY.tr('선택이 장면이 되는 순간','See your choices come to life','選択が場面になる瞬間');d.querySelector('p').textContent=STORY.tr('샘플 인생으로 연출만 바로 체험합니다. 본편의 확률·시험·분기 조건은 그대로입니다.','Preview scenes with a sample life. The main game keeps its odds, trials and conditions.','体験用の人生で演出を確認。本編の確率・試験・分岐条件はそのままです。');
+  const demos=[['fork','sword',STORY.tr('모험 / 고향','Adventure / home','冒険 / 故郷')],['pet','dog',STORY.tr('새 친구와의 만남','A new companion','新しい仲間')],['archive','book',STORY.tr('금지된 서고','The forbidden archive','禁じられた書庫')],['route','scroll',STORY.tr('여행의 갈림길','A fork in the road','旅の分かれ道')],['spell','i_fireball',STORY.tr('새 마법 조합','A new spell combo','新しい魔法の組み合わせ')],['relic','gem',STORY.tr('새 보스의 유물','A new boss relic','新ボスの遺物')],['transform','wolf',STORY.tr('보름달의 변신','A full-moon transformation','満月の変身')],['forge','anvil',STORY.tr('떠돌이 대장장이','The wandering smith','旅の鍛冶屋')]];
+  for(const [id,icon,name] of demos){const b=document.createElement('button');b.innerHTML=ic(icon,3)+'<b></b>';b.querySelector('b').textContent=name;b.onclick=()=>{d.close();if(id==='relic')showStoryRelics();else startStoryPreview(id)};d.querySelector('.story-demo-grid').appendChild(b)}document.body.appendChild(d);d.showModal();
+}
+function showStoryRelics(){
+  document.getElementById('story-preview-dialog')?.remove();const d=document.createElement('dialog');d.id='story-preview-dialog';d.className='story-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p></p><div class="story-demo-grid"></div>';
+  d.querySelector('h2').textContent=STORY.tr('세 보스의 유물','Relics of the three bosses','三体のボスの遺物');d.querySelector('p').textContent=STORY.tr('획득 연출 체험입니다. 본편에서는 해당 보스를 직접 격파해야 얻습니다.','Preview the acquisition scene. In the adventure, defeat each boss to earn its relic.','獲得演出の体験です。本編では各ボスを倒すと入手できます。');
+  for(const [rid,rg] of Object.entries(EXPANSION.regions)){const c=CARDS.find(c=>c.id===rg.relic),b=document.createElement('button');b.innerHTML=ic(c.icon,3)+'<b></b>';b.querySelector('b').textContent=c.name;b.onclick=()=>{d.close();startStoryPreview('relic',rid)};d.querySelector('.story-demo-grid').appendChild(b)}document.body.appendChild(d);d.showModal();
+}
+async function startStoryPreview(kind,rid='crystal'){
+  const token=++runToken;endFight();const L=newLife(6718);LIFE=L;L.age=kind==='pet'?5:kind==='archive'?10:kind==='fork'?18:19;L.tier='local';L.element=ELEMENTS.find(e=>e.id==='fire');L.cards=[];L.mods={dmg:1};L.flags={};L.pets=[];L.allies=[];
+  if(['spell','relic','route','transform','forge'].includes(kind)){L.adventure=true;L.W={hp:900,max:900,lv:7,exp:0,pow:1.5};L.stage=TIERS.findIndex(t=>t.includes(rid));L.region=rid;L.route=TIERS.slice(0,L.stage).map(t=>t[0]).concat(rid)}
+  $('#l-log').innerHTML='';$('#hist-n').textContent='';where=STORY.tr('선택 장면 체험','Life-scene preview','選択場面の体験');VIEW=lifeView(kind==='archive'?'school':kind==='relic'?rid:kind==='transform'?'forest':L.origin.theme,'idle');resumeStage();updateHud();
+  const exit=document.createElement('button');exit.id='preview-exit';exit.className='btn soft';exit.textContent=STORY.tr('체험 종료','Exit preview','体験を終了');document.getElementById('l-stats').before(exit);
+  const finish=()=>{++runToken;endFight();exit.remove();cancelAnimationFrame(raf);VIEW=null;show('s-title');renderTitle()};exit.onclick=finish;
+  function* demo(){
+    if(kind==='pet')yield* doEvent(L,EVI.find_dog_child);
+    if(kind==='archive')yield* doEvent(L,EVI.forbidden);
+    if(kind==='transform')yield* doEvent(L,EVI.xwerewolf);
+    if(kind==='forge')yield* forge(L);
+    if(kind==='route'){const rid=yield* chooseRoute(L,1);yield* chapter(L,REGIONS[rid].key,'walk',REGIONS[rid].name,'')}
+    if(kind==='spell')yield* levelPerk(L,{levels:1,min:'r',title:STORY.tr('새 카드를 골라 마법을 바꿔 봐.','Choose a card to shape your magic.','カードを選んで魔法を変えよう。')});
+    if(kind==='relic')yield* awardStageRelic(L,rid);
+    if(kind==='fork'){
+      const e={age:18,icon:'sword',d:[],text:STORY.tr('성인식. 모험을 떠날까, 고향에 남을까?','Coming of age. Adventure, or a life at home?','成人の日。冒険に出る？ 故郷に残る？'),sceneKind:'adult-fork',opts:[STORY.tr('모험을 떠난다','Go adventuring','冒険に出る'),STORY.tr('고향에 남는다','Stay at home','故郷に残る')]};
+      const k=yield {t:'choice',e};FATE.state(L).path=k?'home':'hero';L.age=19;
+      if(k){yield* chapter(L,'town','idle',STORY.labels.home,'');yield* say(L,STORY.tr('마을에 작은 빵집을 열었다.','You open a little bakery in the village.','村に小さなパン屋を開いた。'),'heart',{f:'end_bakery'},true)}
+      else yield* chapter(L,'grass','walk',STORY.labels.adventure,'');
+    }
+  }
+  const gen=demo();let send;
+  for(;;){const z=gen.next(send);send=undefined;if(z.done)break;const s=z.value;
+    if(s.t==='choice')send=await askChoice(s.e);
+    if(s.t==='log'){logItem(s.e);updateHud();await dlgWait(1600)}
+    if(s.t==='scene'){VIEW=lifeView(s.theme,s.mode,s.banner);resumeStage();updateHud();await sleep(900)}
+    if(token!==runToken)return;
+  }
+  const e={age:L.age,icon:'star',d:[],noScene:true,text:STORY.tr('선택의 결과는 다음 장면에도 이어집니다.','Your choice stays visible in the scenes ahead.','選択の結果が、この先の場面にも残ります。'),opts:[STORY.tr('다른 장면 체험','Try another scene','別の場面を体験'),STORY.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
+  const k=await askChoice(e);if(token!==runToken)return;finish();if(k===0)showStoryMenu();
 }
 
 // ---------- life recap comic: eight pixel panels with captions in one shareable image ----------
@@ -4217,9 +4393,9 @@ let GEN=null,VIEW=null,raf=0,last=0,speed=1,runToken=0,where='';
 const DELAY={1:2300,2:1250,4:600};
 function lifeView(theme,mode,banner){
   return {scene:makeScene(theme,Math.random),scroll:0,phase:mode==='walk'?'walk':'idle',mobs:[],shots:[],fx:[],texts:[],zones:[],stopT:0,result:null,shake:0,
-    fade:banner?0.8:0,banner:banner?{text:banner.text,sub:banner.sub,t:2.3}:null,wiz:{hit:0,cast:0,callout:null},stats:LIFE.st,age:LIFE.age,pets:LIFE.pets,traits:LIFE.traits.map(t=>t.id),cls:LIFE.cls,allies:LIFE.allies,C:null,t:0,bubble:null,
-    update(dt){this.t+=dt;if(this.phase==='walk')this.scroll+=dt*55;if(this.banner){this.banner.t-=dt;if(this.banner.t<=0)this.banner=null}
-      if(this.fade>0)this.fade=Math.max(0,this.fade-dt*1.5);if(this.bubble)this.bubble.t-=dt;this.age=LIFE.age;this.cls=LIFE.cls}};
+    fade:banner?0.8:0,banner:banner?{text:banner.text,sub:banner.sub,t:2.3}:null,wiz:{hit:0,cast:0,callout:null},stats:LIFE.st,age:LIFE.age,form:LIFE.form||null,pets:LIFE.pets,traits:LIFE.traits.map(t=>t.id),cls:LIFE.cls,allies:LIFE.allies,C:null,t:0,bubble:null,story:makeStoryView(LIFE,theme),
+    update(dt){this.t+=dt;updateStoryScene(this,dt);if(this.phase==='walk')this.scroll+=dt*55;if(this.banner){this.banner.t-=dt;if(this.banner.t<=0)this.banner=null}
+      if(this.fade>0)this.fade=Math.max(0,this.fade-dt*1.5);if(this.bubble)this.bubble.t-=dt;this.age=LIFE.age;this.cls=LIFE.cls;this.form=LIFE.form||null}};
 }
 let beatT=0;
 function frame(now){
@@ -4294,16 +4470,16 @@ function logItem(e,cls=''){
   li.innerHTML=TT_("166lsl1",`<span class="age">${e.age}세</span><span class="ev-ic">${ic(e.icon||'star',2)}</span><div><p></p>${deltaHTML(e.d)}</div>`,[e.age,ic(e.icon||'star',2),deltaHTML(e.d)]);
   li.querySelector('p').textContent=e.text;
   $('#l-log').appendChild(li);$('#hist-n').textContent=$('#l-log').children.length;
-  dlgShow(e);SFX_HOOK(e.snd||(e.major?'cast':'tap'));return li;
+  dlgShow(e);storyLog(LIFE,e,VIEW);SFX_HOOK(e.snd||(e.major?'cast':'tap'));return li;
 }
 function askChoice(e){
-  const li=logItem(e),box=document.createElement('div');box.className=e.cards?'cards':e.paths?'cards paths':'choice';
+  const li=logItem(e),box=document.createElement('div');if(!e.noScene)storyChoicePreview(LIFE,e,VIEW);box.className=e.cards?'cards':e.paths?'cards paths':'choice';
   e.opts.forEach((o,i)=>{const b=document.createElement('button');
     if(e.cards){const c=e.cards[i];b.className='card-'+c.r;b.innerHTML=`<span class="rar">${CARD_RARITY[c.r]}</span>${ic(c.icon,3)}<b></b><small></small>`;b.querySelector('b').textContent=c.name;b.querySelector('small').textContent=c.desc;b.style.animationDelay=i*0.08+'s';if(e.buildCards)appendResonancePreview(b,e.buildCards[i])}
     else if(e.paths){const p=e.paths[i];b.className='card-path';b.innerHTML=`${ic(p.icon,4)}<b></b><small></small>`;b.querySelector('b').textContent=p.name;b.querySelector('small').textContent=p.desc;b.style.animationDelay=i*0.08+'s'}
     else b.textContent=o;
-    b.onclick=()=>{box.remove();dlgFinish();SFX_HOOK('pop');
-    for(const host of [li.lastElementChild,$('#dlg-extra')]){const p=document.createElement('div');p.className='picked';p.textContent='→ '+o;host.appendChild(p)}done(i)};box.appendChild(b)});
+    b.onclick=async()=>{box.remove();dlgFinish();SFX_HOOK('pop');
+    for(const host of [li.lastElementChild,$('#dlg-extra')]){const p=document.createElement('div');p.className='picked';p.textContent='→ '+o;host.appendChild(p)}if(!e.noScene)await storyChoiceAction(LIFE,e,i,VIEW);done(i)};box.appendChild(b)});
   $('#dlg-extra').appendChild(box);
   updateHud();
   let done;return new Promise(r=>done=r);
@@ -4803,7 +4979,7 @@ window.addEventListener('hashchange',()=>{readHash();if(screen==='s-title')rende
 let blipN=0;
 function blip(){if(++blipN%2===0)SFX_HOOK('talk')}
 
-installResonanceUI();
+installResonanceUI();installStoryPreview();
 paintIcons();
 readHash();
 FUNNEL.track(CHAL?'challenge_opened':'visit');

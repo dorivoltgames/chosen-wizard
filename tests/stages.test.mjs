@@ -49,6 +49,16 @@ test('new ordinary encounters and bosses run with the same tap control and produ
     }
   }
 });
+test('the penultimate boss sustains a late-game build while the three-act final remains longer',()=>{
+  for(const seed of [30,55,91]){
+    const L=sample('astral'),nova=play(a.battleFor(L,{stage:6,region:'astral',boss:true},seed)),final=play(a.battleFor(L,{stage:7,region:'castle',boss:true},seed));
+    assert.equal(nova.result,'win');assert.equal(final.result,'win');
+    // Same character and dodge policy: guard against late-game burst deleting
+    // Nova before its second phase has time to matter. This is not a player win rate.
+    assert.ok(nova.t>=final.t*.55,`${seed}: Nova ${nova.t}s / final ${final.t}s`);
+    assert.ok(final.t>nova.t,`${seed}: the final should retain its three-act endurance`);
+  }
+});
 test('boss relics are guaranteed only after a boss victory and never enter the random card pool',()=>{
   for(const rid of Object.keys(E.regions)){
     const L=sample(rid),id=E.regions[rid].relic;

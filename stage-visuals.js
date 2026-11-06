@@ -59,3 +59,10 @@ function drawExpansionIntent(B){
   const m=B.mobs.find(m=>!m.dead&&m.boss);if(!m)return;
   hiText(B.intent.name,152,46,5.2,'#fff4dc');
 }
+function drawBossPhaseAura(m,B,time,x,f){
+  if(!m.enraged||!m.d.phase2)return;
+  const icon=m.d.s==='prismstag'?'gem':m.d.s==='hourkeeper'?'gear_deco':'star';
+  const radius=m.d.s==='astrowhale'?24:18;
+  for(let i=0;i<3;i++){const a=time*1.8+i*Math.PI*2/3;blit(icon,x+Math.cos(a)*radius,f-53+Math.sin(a)*8,{scale:icon==='gear_deco'?.35:.65,alpha:.85})}
+  ring(x,f-53,radius+2,9,m.d.s==='hourkeeper'?'#ffd34d':'#b4e4ff');
+}

@@ -12,6 +12,7 @@ function updateSpellbook(L){
   box.hidden=!L.adventure;
   if(box.hidden)return;
   const active=RESONANCE.active(L),counts=RESONANCE.parts(L),open=box.open;
+  if(VIEW?.story&&!VIEW.C)VIEW.story.combo=active;
   box.innerHTML='<summary></summary><div class="resonance-book-body"></div>';
   box.querySelector('summary').innerHTML=`${ic(active?.icon||'book',2)}<span></span><small></small>`;
   box.querySelector('summary span').textContent=active?active.name+' · '+RESONANCE.tr('공명','Resonance','共鳴')+' '+active.rank:RESONANCE.tr('나의 마법 조합','My spell combinations','自分の魔法の組み合わせ');
@@ -131,7 +132,7 @@ async function startCombatPreview(id,baseline=false,rid='grass',bossOnly=false){
   }
   if(token!==runToken)return;
   const totals=L.resonanceTotals||{procs:0,damage:0};
-  const e={age:L.age,icon:won?'star':'skull',d:[],major:true,text:RESONANCE.tr((won?'체험 완료! ':'쓰러졌습니다. ')+`공명 ${totals.procs}회 · 회피 ${L.dodges||0}회. 실제 인생에서는 태어난 속성과 획득한 카드로 조합이 만들어집니다.`,(won?'Playtest complete! ':'Defeated. ')+`${totals.procs} resonances · ${L.dodges||0} dodges. In a real life, your birth element and earned cards create the combinations.`,(won?'体験完了！':'倒れてしまった。')+`共鳴${totals.procs}回・回避${L.dodges||0}回。本編では生まれた属性と獲得カードから組み合わせが生まれます。`),opts:[RESONANCE.tr('같은 조합 다시','Retry this combo','同じ組み合わせでもう一度'),RESONANCE.tr('다른 조합 체험','Try another combo','別の組み合わせ'),RESONANCE.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
+  const e={age:L.age,icon:won?'star':'skull',d:[],major:true,noScene:true,text:RESONANCE.tr((won?'체험 완료! ':'쓰러졌습니다. ')+`공명 ${totals.procs}회 · 회피 ${L.dodges||0}회. 실제 인생에서는 태어난 속성과 획득한 카드로 조합이 만들어집니다.`,(won?'Playtest complete! ':'Defeated. ')+`${totals.procs} resonances · ${L.dodges||0} dodges. In a real life, your birth element and earned cards create the combinations.`,(won?'体験完了！':'倒れてしまった。')+`共鳴${totals.procs}回・回避${L.dodges||0}回。本編では生まれた属性と獲得カードから組み合わせが生まれます。`),opts:[RESONANCE.tr('같은 조합 다시','Retry this combo','同じ組み合わせでもう一度'),RESONANCE.tr('다른 조합 체험','Try another combo','別の組み合わせ'),RESONANCE.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
   const trophy=won?CARDS.find(c=>c.id===EXPANSION.regions[rid]?.relic):null;
   if(trophy){e.icon=trophy.icon;e.text=EXPANSION.tr(`${rg.boss.n} 격파! 유물 「${trophy.name}」 획득. ${trophy.desc}`,`${rg.boss.n} defeated! Relic acquired: ${trophy.name}. ${trophy.desc}`,`${rg.boss.n}撃破！ 遺物「${trophy.name}」を獲得。${trophy.desc}`)}
   if(EXPANSION.regions[rid]){e.opts[0]=EXPANSION.tr('이 지역 다시 도전','Retry this region','この地域に再挑戦');e.opts[1]=EXPANSION.tr('다른 지역 가 보기','Try another region','別の地域へ')}
