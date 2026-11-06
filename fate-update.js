@@ -33,10 +33,11 @@ function createFateUpdate({lang = 'ko', context}) {
   }
   function* choosePath(L, adult=false) {
     const s=state(L);
+    const adultDescriptions={hero:tr('약속과 동료 · 마왕성으로 떠나는 모험','Promises and companions · a journey to the castle','約束と仲間 · 魔王城への冒険'),forbidden:tr('신뢰와 연구 · 마지막 봉인을 풀 해답','Trust and research · answers to the final seal','信頼と研究 · 最後の封印への答え'),home:tr('생업과 이웃 · 다음 세대에 남길 것','Work and neighbors · what you leave behind','仕事と隣人 · 次の世代に残すもの')};
     const k=yield* choose(L,adult?'adult_path':'school_path',adult?
       tr('성인식. 배운 것을 어떤 삶에 쓸까? 처음의 꿈과 다른 길을 골라도 괜찮아.','Coming of age. What life will you build? You may choose a different road from your childhood dream.','成人の日。学んだことをどんな人生に使おう？ 子どもの頃と違う道でも大丈夫。'):
       tr('일곱 살, 세 통의 초대장이 왔다. 어디에서 마법을 배울까?','At seven, three invitations arrive. Where will you learn magic?','七歳、三通の招待状が届いた。どこで魔法を学ぼう？'),
-      pathOrder.map(id=>({label:paths[id].name,desc:paths[id].desc,icon:paths[id].icon})), 'scroll');
+      pathOrder.map(id=>({label:paths[id].name,desc:adult?adultDescriptions[id]:paths[id].desc,icon:paths[id].icon})), 'scroll');
     s.path=pathOrder[k]; if(!adult)s.learned=s.path;
     ctx().track((adult?'adult_':'school_')+s.path,L);
     return s.path;

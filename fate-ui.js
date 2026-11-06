@@ -123,7 +123,7 @@ function createFateUI({fate:F,context}) {
     for(const id of ids) {
       const found=!!dx.end?.[id],row=document.createElement('details');row.className='fate-clue';
       row.innerHTML=`<summary>${esc(found?'✓ '+name(id):t('미발견 이야기','An undiscovered story','まだ見ぬ物語')+' · '+String(c().endings.findIndex(e=>e.id===id)+1).padStart(2,'0'))}</summary><p>${esc(F.hint(id))}</p>`;
-      if(!found){const b=document.createElement('button');b.className='btn soft fate-small';b.textContent=dx.crossroads?.target===id?t('현재 목표 ✓','Current goal ✓','現在の目標 ✓'):t('다음 인생의 목표로','Make this my next goal','次の人生の目標にする');b.setAttribute('aria-pressed',String(dx.crossroads?.target===id));b.onclick=()=>{const d=c().loadDex();d.crossroads=d.crossroads||{};d.crossroads.target=id;c().saveDex(d);c().showDex();};row.appendChild(b)}
+      if(!found){const b=document.createElement('button');b.className='btn soft fate-small';b.textContent=dx.crossroads?.target===id?t('현재 목표 ✓','Current goal ✓','現在の目標 ✓'):t('다음 인생의 목표로','Make this my next goal','次の人生の目標にする');b.setAttribute('aria-pressed',String(dx.crossroads?.target===id));b.onclick=()=>{const d=c().loadDex();d.crossroads=d.crossroads||{};d.crossroads.target=id;c().saveDex(d);for(const other of section.querySelectorAll('button')){other.setAttribute('aria-pressed','false');other.textContent=t('다음 인생의 목표로','Make this my next goal','次の人生の目標にする')}b.setAttribute('aria-pressed','true');b.textContent=t('현재 목표 ✓','Current goal ✓','現在の目標 ✓');};row.appendChild(b)}
       section.appendChild(row);
     }
     host.insertBefore(section,existing);
