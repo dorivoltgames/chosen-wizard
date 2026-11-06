@@ -1,6 +1,6 @@
 /* Additive extension for the existing Stats Durable Object.
    All new storage keys start with "funnel:". The legacy "c" record is never touched. */
-export const EXTRA_ENDINGS=['oathkeeper','unchosen','sealed','truth','nameless','village_union','dream_school','bread_peace'];
+export const EXTRA_ENDINGS=['oathkeeper','unchosen','sealed','truth','nameless','village_union','dream_school','bread_peace','death_crystal','death_clockwork','death_astral'];
 export const EVENTS=new Set(['visit','challenge_opened','birth','life_started','coming_of_age',
   'exam_started','exam_completed','school_hero','school_forbidden','school_home',
   'adult_hero','adult_forbidden','adult_home','life_completed','share_started','share_completed']);

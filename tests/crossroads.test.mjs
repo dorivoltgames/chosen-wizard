@@ -18,8 +18,8 @@ function run(seed,home=false,legacy=null) {
   }
   throw new Error('Story failed to terminate');
 }
-test('39 original endings stay active; 8 previous discoveries remain readable',()=>{
-  assert.equal(api.ENDINGS.length,39);assert.equal(new Set(api.ENDINGS.map(e=>e.id)).size,39);
+test('39 original endings and 3 new region outcomes stay active; archived discoveries remain readable',()=>{
+  assert.equal(api.ENDINGS.length,42);assert.equal(new Set(api.ENDINGS.map(e=>e.id)).size,42);
   assert.equal(api.ENDINGS[38].id,'quiet');assert.equal(api.FATE.endings.length,8);
 });
 test('both life choices keep all three original trials and the school years',()=>{
@@ -63,6 +63,6 @@ test('next-life targets point to active endings',()=>{
 });
 test('scripts parse and inlined UI matches its editable source',()=>{
   for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(m[1]);
-  for(const f of ['resonance.js','resonance-ui.js','fate-update.js','fate-ui.js','fate-telemetry.js'])new vm.Script(readFileSync(new URL(f,root),'utf8'));
+  for(const f of ['stage-expansion.js','stage-visuals.js','resonance.js','resonance-ui.js','fate-update.js','fate-ui.js','fate-telemetry.js'])new vm.Script(readFileSync(new URL(f,root),'utf8'));
   assert.ok(html.includes(readFileSync(new URL('resonance-ui.js',root),'utf8')));
 });

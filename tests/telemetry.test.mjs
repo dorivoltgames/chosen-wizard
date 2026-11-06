@@ -69,10 +69,10 @@ test('the production itch.io and local-test origins remain supported',()=>{
   for(const o of [origin,'http://localhost:8765','https://v6p9d9t4.itch.zone','https://v6p9d9t4.ssl.hwcdn.net'])assert.ok(okFunnelOrigin(o),o);
   for(const o of ['https://dorivoltgames.github.io.evil.example','https://itch.zone.evil.example',null])assert.ok(!okFunnelOrigin(o));
 });
-test('server ending additions exactly match the eight new game endings',()=>{
+test('all eight archived ending IDs remain accepted for older clients',()=>{
   const sandbox=vm.createContext({});vm.runInContext(readFileSync(new URL('../fate-update.js',import.meta.url),'utf8'),sandbox);
   const fate=sandbox.createFateUpdate({lang:'ko',context:()=>({})});
-  assert.deepEqual([...fate.endings.map(e=>e.id)],[...EXTRA_ENDINGS]);
+  assert.deepEqual([...fate.endings.map(e=>e.id)],[...EXTRA_ENDINGS.slice(0,8)]);
   const e=event();assert.equal(validEvents({version:2,events:[{...e,name:'must not be stored'}]})[0].name,undefined);
 });
 function telemetry(fetcher,baseURL='https://stats.example'){

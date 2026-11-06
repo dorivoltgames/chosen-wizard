@@ -70,7 +70,22 @@ function installResonanceUI(){
   document.body.classList.add('playtest');
   const b=document.createElement('button');b.className='btn sun';b.id='btn-combat-preview';b.textContent=RESONANCE.tr('새 마법 조합 · 전투 체험','Try the spell combos','新しい魔法の組み合わせを体験');
   document.getElementById('btn-daily').before(b);b.onclick=showCombatMenu;
+  const stages=document.createElement('button');stages.className='btn sun';stages.id='btn-stage-preview';stages.textContent=RESONANCE.tr('새 지역 3곳 · 몬스터와 보스 체험','3 new regions · meet their bosses','新地域3か所・ボスに挑戦');b.before(stages);stages.onclick=showStageMenu;
   const note=document.createElement('p');note.className='playtest-note';note.textContent=RESONANCE.tr('개선안 체험판 · 실제 서비스에는 아직 반영되지 않았습니다.','Playtest · not published to the live game.','改善案の体験版 · 本番には未反映です。');b.before(note);
+}
+function showStageMenu(){
+  document.getElementById('combat-preview-dialog')?.remove();
+  const d=document.createElement('dialog');d.id='combat-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p class="preview-lede"></p><div class="preview-loadouts stage-loadouts"></div>';
+  d.querySelector('h2').textContent=EXPANSION.tr('마왕성까지, 새로운 세 구간','Three new stops before the castle','魔王城へ、新たな三つの道');
+  d.querySelector('p').textContent=EXPANSION.tr('모험은 이제 8구간. 여기서는 지역별 샘플 캐릭터로 몬스터전 → 카드 보상 → 보스전을 바로 해볼 수 있습니다.','The adventure now has 8 stages. Try each region with a sample character: monsters, a card reward, then the boss.','冒険は全8区間。地域ごとの体験用キャラクターで、モンスター戦→カード報酬→ボス戦を体験できます。');
+  for(const [rid,rg] of Object.entries(EXPANSION.regions)){
+    const row=document.createElement('section');row.className='stage-preview-card';row.innerHTML=`<span class="stage-boss-icon">${ic(rg.boss.s,3)}</span><span><b></b><small></small><span class="stage-mini-mobs">${rg.mobs.map(m=>ic(m.s,1)).join('')}</span></span><div class="stage-actions"><button></button><button></button></div>`;
+    row.querySelector('b').textContent=rg.name;row.querySelector('small').textContent=rg.boss.n;
+    const [journey,boss]=row.querySelectorAll('button');journey.textContent=EXPANSION.tr('몬스터부터 체험','Play the region','地域を体験');boss.textContent=EXPANSION.tr('보스 바로 도전','Fight the boss','ボスに挑戦');
+    journey.onclick=()=>{d.close();startCombatPreview('thermal',false,rid)};boss.onclick=()=>{d.close();startCombatPreview('thermal',false,rid,true)};d.querySelector('.preview-loadouts').appendChild(row);
+  }
+  document.body.appendChild(d);d.showModal();
 }
 function showCombatMenu(){
   document.getElementById('combat-preview-dialog')?.remove();
@@ -87,27 +102,29 @@ function showCombatMenu(){
   }
   document.body.appendChild(d);d.showModal();
 }
-async function startCombatPreview(id,baseline=false){
+async function startCombatPreview(id,baseline=false,rid='grass',bossOnly=false){
   const token=++runToken,r=RESONANCE.recipes.find(r=>r.id===id)||RESONANCE.recipes[0];
+  const rg=REGIONS[rid]||REGIONS.grass,stage=TIERS.findIndex(t=>t.includes(rg.id));rid=rg.id;
   endFight();
   const L=newLife(481516);LIFE=L;L.name=RESONANCE.tr('체험 마법사','Playtest wizard','体験魔法使い');L.age=19;L.adventure=true;
   const birth={fire:'fire',ice:'ice',bolt:'bolt',echo:'none',wind:'wind',earth:'earth',life:'light',dark:'dark'};
   const support={fire:'burn',ice:'chill',bolt:'chainplus',echo:'twin',wind:'swift',earth:'guardian',life:'regen',dark:'vampire'};
-  L.element=ELEMENTS.find(e=>e.id===birth[r.parts[0]]);L.traits=[];L.pets=[];L.allies=[];L.flags={};L.stage=0;L.region='grass';L.route=['grass'];L.cards=[];L.mods={dmg:1};L.st={int:110,spd:55,hp:850};L.gold=0;
-  L.W={hp:850,max:850,lv:4,exp:0,pow:1.1};L.resonance=id;FATE.state(L).path='hero';
+  L.element=ELEMENTS.find(e=>e.id===birth[r.parts[0]]);L.traits=[];L.pets=[];L.allies=[];L.flags={};L.stage=stage;L.region=rid;L.route=TIERS.slice(0,stage).map(t=>t[0]).concat(rid);L.cards=[];L.mods={dmg:1+stage*0.1};L.st={int:110+stage*6,spd:55+stage*2,hp:850+stage*70};L.gold=0;
+  const lv=4+stage*2;L.W={hp:L.st.hp,max:L.st.hp,lv,exp:0,pow:stage?Math.pow(1.07,lv-1):1.1};L.resonance=id;FATE.state(L).path='hero';
   const card=CARDS.find(c=>c.id===support[r.parts[1]]);L.cards.push(card.id);if(card.r!=='n')L.mods[card.id]=1;if(card.apply)card.apply(L);
-  $('#l-log').innerHTML='';$('#hist-n').textContent='';where=RESONANCE.tr('전투 체험','Combat playtest','戦闘体験');VIEW=lifeView('grass','walk');resumeStage();updateHud();
+  if(stage)for(const id of (stage>=4?['twin','armor','flask','guardian']:['armor','flask'])){const c=CARDS.find(c=>c.id===id);L.cards.push(c.id);if(c.r!=='n')L.mods[c.id]=1;if(c.apply)c.apply(L)}
+  $('#l-log').innerHTML='';$('#hist-n').textContent='';where=rg.name+' · '+RESONANCE.tr('전투 체험','Combat playtest','戦闘体験');VIEW=lifeView(rg.key,'walk');resumeStage();updateHud();
   const exit=document.createElement('button');exit.id='preview-exit';exit.className='btn soft';exit.textContent=RESONANCE.tr('체험 종료','Exit playtest','体験を終了');
   document.getElementById('l-stats').before(exit);
   const finish=()=>{++runToken;endFight();exit.remove();cancelAnimationFrame(raf);VIEW=null;show('s-title');renderTitle()};exit.onclick=finish;
   logItem({age:L.age,text:RESONANCE.tr('화면을 탭하면 한 칸 회피. 내 줄로 날아오는 공격을 피하세요. '+(baseline?'공명을 끈 비교 전투입니다.':'세 번 피하면 '+r.name+' 발동!'),'Tap to hop one lane. Dodge attacks aimed at your lane. '+(baseline?'Resonance is disabled for comparison.':'Three dodges trigger '+r.name+'!'),'タップで1列移動。自分の列に飛んでくる攻撃を避けよう。'+(baseline?'共鳴を無効にした比較戦闘です。':'3回避けると'+r.name+'発動！')),icon:r.icon,d:[]});
   let won=true;
-  for(let n=0;n<2;n++){
-    const result=await fight({stage:0,region:'grass',boss:n===1,noResonance:baseline,seed:7381+n});
+  for(let n=bossOnly?1:0;n<2;n++){
+    const result=await fight({stage,region:rid,boss:n===1,noResonance:baseline,seed:7381+stage*100+n});
     if(token!==runToken)return;
     if(!result.win){won=false;break}
-    if(n===0){
-      const gen=levelPerk(L,{levels:Math.max(1,result.levels),min:'r',title:RESONANCE.tr('승리! 보스전 전에 카드를 한 장 고르자.','Victory! Choose a card before the boss.','勝利！ボス戦の前にカードを選ぼう。')});let answer;
+    {
+      const gen=n===0?levelPerk(L,{levels:Math.max(1,result.levels),min:'r',title:RESONANCE.tr('승리! 보스전 전에 카드를 한 장 고르자.','Victory! Choose a card before the boss.','勝利！ボス戦の前にカードを選ぼう。')}):awardStageRelic(L,rid);let answer;
       for(;;){const step=gen.next(answer);answer=undefined;if(step.done)break;if(step.value.t==='choice')answer=await askChoice(step.value.e);else if(step.value.t==='log'){logItem(step.value.e);dlgFinish()}if(token!==runToken)return}
       updateHud();
     }
@@ -115,6 +132,9 @@ async function startCombatPreview(id,baseline=false){
   if(token!==runToken)return;
   const totals=L.resonanceTotals||{procs:0,damage:0};
   const e={age:L.age,icon:won?'star':'skull',d:[],major:true,text:RESONANCE.tr((won?'체험 완료! ':'쓰러졌습니다. ')+`공명 ${totals.procs}회 · 회피 ${L.dodges||0}회. 실제 인생에서는 태어난 속성과 획득한 카드로 조합이 만들어집니다.`,(won?'Playtest complete! ':'Defeated. ')+`${totals.procs} resonances · ${L.dodges||0} dodges. In a real life, your birth element and earned cards create the combinations.`,(won?'体験完了！':'倒れてしまった。')+`共鳴${totals.procs}回・回避${L.dodges||0}回。本編では生まれた属性と獲得カードから組み合わせが生まれます。`),opts:[RESONANCE.tr('같은 조합 다시','Retry this combo','同じ組み合わせでもう一度'),RESONANCE.tr('다른 조합 체험','Try another combo','別の組み合わせ'),RESONANCE.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
+  const trophy=won?CARDS.find(c=>c.id===EXPANSION.regions[rid]?.relic):null;
+  if(trophy){e.icon=trophy.icon;e.text=EXPANSION.tr(`${rg.boss.n} 격파! 유물 「${trophy.name}」 획득. ${trophy.desc}`,`${rg.boss.n} defeated! Relic acquired: ${trophy.name}. ${trophy.desc}`,`${rg.boss.n}撃破！ 遺物「${trophy.name}」を獲得。${trophy.desc}`)}
+  if(EXPANSION.regions[rid]){e.opts[0]=EXPANSION.tr('이 지역 다시 도전','Retry this region','この地域に再挑戦');e.opts[1]=EXPANSION.tr('다른 지역 가 보기','Try another region','別の地域へ')}
   const choice=await askChoice(e);if(token!==runToken)return;exit.remove();
-  if(choice===0)startCombatPreview(id,baseline);else{finish();if(choice===1)showCombatMenu()}
+  if(choice===0)startCombatPreview(id,baseline,rid,bossOnly);else{finish();if(choice===1)(EXPANSION.regions[rid]?showStageMenu:showCombatMenu)()}
 }

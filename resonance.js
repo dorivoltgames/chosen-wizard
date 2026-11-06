@@ -12,7 +12,7 @@ function createResonance(lang='ko') {
     dark:{name:tr('어둠','Shadow','闇'),icon:'ghost',color:'#b47bff'},
   };
   const innate={fire:'fire',ice:'ice',bolt:'bolt',wind:'wind',earth:'earth',light:'life',dark:'dark',none:'echo'};
-  const cardTags={burn:'fire',chill:'ice',frostarmor:'ice',chainplus:'bolt',twin:'echo',echo:'echo',mirror:'echo',swift:'wind',haste:'wind',guardian:'earth',manashield:'earth',armor:'earth',regen:'life',lifewell:'life',vampire:'dark'};
+  const cardTags={burn:'fire',chill:'ice',frostarmor:'ice',chainplus:'bolt',twin:'echo',echo:'echo',mirror:'echo',swift:'wind',haste:'wind',guardian:'earth',manashield:'earth',armor:'earth',regen:'life',lifewell:'life',vampire:'dark',prismcore:'echo',clockspring:'wind',starlamp:'earth'};
   const recipes=[
     {id:'thermal',parts:['fire','ice'],name:tr('열충격','Thermal shock','熱衝撃'),icon:'i_fireball',color:'#ff9c9c',effect:'burst',desc:tr('폭발 피해 + 짧은 기절','Blast damage + a short stun','爆発ダメージ＋短い気絶')},
     {id:'firestorm',parts:['fire','wind'],name:tr('화염 회오리','Firestorm','炎の竜巻'),icon:'i_whirl',color:'#ffb369',effect:'storm',desc:tr('적 아래에 3초 동안 불꽃 소용돌이','A fiery vortex under the enemy for 3 seconds','敵の足元に3秒間の炎の渦')},
@@ -48,7 +48,7 @@ function createResonance(lang='ko') {
     return after.find((r,i)=>r.have===2&&before[i].have<2)||after.find((r,i)=>r.have===2&&r.rank>before[i].rank)||null;
   }
   function bridge(L,deck) {
-    return deck.filter(c=>!(L.mods||{})[c.id]&&!(L.cards||[]).includes(c.id)&&project(L,c));
+    return deck.filter(c=>!c.bossOnly&&!(L.mods||{})[c.id]&&!(L.cards||[]).includes(c.id)&&project(L,c));
   }
   function meter(recipe,fire) {
     return {recipe,charge:0,need:3,cooldown:0,procs:0,damage:0,healed:0,shield:0,
