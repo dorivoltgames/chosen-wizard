@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "preview": "python3 -m http.server 8765 --bind 127.0.0.1"
+    "preview": "python3 -m http.server 8765 --bind 127.0.0.1",
+    "test:worker": "node tests/worker-live.mjs"
   },
-  "engines": {"node": ">=22.13"}
+  "engines": {
+    "node": ">=22.13"
+  }
 }
