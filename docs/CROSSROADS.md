@@ -42,7 +42,7 @@ node stats-extension/prepare-worker.mjs /path/to/original/src /path/to/new/worke
 - `wrangler.local.json`: 로컬 테스트 전용 Worker 이름과 SQLite namespace 초기화 설정. **운영에 사용하지 않는다.**
 - `SOURCE.json`: 검토한 원본과 준비된 Worker의 해시 및 배포 전 상태.
 
-검토 후 운영 반영 시에도 Worker 이름 `chosen-wizard-stats`, 클래스 `Stats`, 바인딩 `STATS`, 객체 이름 `main`과 기존 namespace를 유지해야 한다. 새 namespace 생성이나 클래스 rename·delete migration을 적용하지 않는다. 아직 운영 Worker나 게임의 공개 배포는 수행하지 않았다.
+검토 후 운영 반영 시에도 Worker 이름 `chosen-wizard-stats`, 클래스 `Stats`, 바인딩 `STATS`, 객체 이름 `main`과 기존 namespace를 유지해야 한다. 새 namespace 생성이나 클래스 rename·delete migration을 적용하지 않는다. 운영 반영 시에는 검증된 묶음과 동일한 파일을 사용하고, 기존 집계와 namespace가 유지되는지 확인한다.
 
 추가 통계 조회는 `/funnel/stats?days=7` (1~31일)이며, 일별 `counts`의 키는 `event|path|mode`다. 기존 공개 통계처럼 집계 숫자만 반환한다. 실제 iframe Origin을 포함하여 기존 GitHub Pages·localhost·itch.zone·ssl.hwcdn.net 정책을 유지했다.
 
