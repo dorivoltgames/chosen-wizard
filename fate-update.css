@@ -1,0 +1,39 @@
+.fate-version{margin:0;background:var(--ink);color:#fff;padding:5px 15px;border-radius:99px;font:15px var(--f-display)}
+.fate-path-preview{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:2px}
+.fate-path-preview span{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:5px 9px;font:13px var(--f-display)}
+.fate-path-preview i{color:#21805e;font-style:normal}
+.fate-daily-goal{margin:-6px 0 0;text-align:center;font-size:13px;color:#635a86}
+.fate-hud{font:13px var(--f-display);background:#e4dcff;color:#504077;border-radius:12px;padding:6px 10px}
+.fate-ending-path{font:14px var(--f-display);margin:0;color:#625389}
+.fate-legacy{display:flex;align-items:center;gap:10px;background:#fff;border:2px dashed var(--line);border-radius:17px;padding:12px;font-size:12px;color:#716b91}
+.fate-legacy b{display:block;color:var(--ink);font:15px var(--f-display)}
+.fate-target{background:#f2eeff;border:2px solid #d7cafb;border-radius:18px;padding:15px;display:flex;flex-direction:column;gap:10px}
+.fate-target .eyebrow{color:#7760aa;letter-spacing:.04em}
+.fate-target p{margin:0;line-height:1.6}
+.fate-small{font-size:15px;padding:9px 14px;align-self:flex-start}
+.fate-clues{margin-top:8px}
+.fate-clues>p{font-size:13px;color:#716b91}
+.fate-clue{border:2px solid var(--line);background:#fff;border-radius:15px;margin:8px 0;padding:11px 13px}
+.fate-clue summary{cursor:pointer;font:16px var(--f-display);line-height:1.5}
+.fate-clue p{font-size:14px;margin:10px 0 13px}
+.fate-clue[open]{background:#fbf9ff;border-color:#bfa8ef}
+.fate-clue button[aria-pressed="true"]{background:#e0f6ed;border-color:#8ccdb4}
+.fate-friend-result{background:#fff;border:2px solid #e3c67c;border-radius:15px;padding:12px;display:grid;gap:4px}
+.fate-friend-result strong{font:24px var(--f-display)}
+.fate-friend-result small,.fate-friend-result span{font-size:13px;color:#776537}
+.fate-caption{font-size:13px;margin:0;line-height:1.6}
+.fate-comparison{background:#f0eaff;border:2px solid #d7cafb;border-radius:18px;padding:14px}
+.fate-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fate-compare-grid>div{display:flex;flex-direction:column;gap:7px;background:#fff;border-radius:13px;padding:12px;min-width:0}
+.fate-compare-grid strong{font:20px var(--f-display);overflow-wrap:anywhere}
+.fate-compare-grid small,.fate-compare-grid span{color:#75698d;font-size:12px}
+.fate-comparison>p{margin:12px 0 0;font-size:13px}
+.fate-daily-result,.fate-birth-goal{border-left:4px solid var(--mint);background:#edf9f3;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.6}
+.dlg .cards.paths{grid-template-columns:1fr;gap:8px}
+.cards.paths .card-path{display:grid;grid-template-columns:42px 1fr;gap:3px 12px;align-items:center;text-align:left;padding:12px 14px;min-height:78px;white-space:normal}
+.cards.paths .card-path img{grid-row:1/3;max-width:40px;height:auto;justify-self:center}
+.cards.paths .card-path b{font-size:19px;line-height:1.3}
+.cards.paths .card-path small{font-size:13px;line-height:1.45}
+.fate-next:empty{display:none}
+@media(max-width:380px){.fate-path-preview span{font-size:12px;padding:5px 7px}.fate-compare-grid{grid-template-columns:1fr}.cards.paths .card-path{padding:10px}.cards.paths .card-path b{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.hero .mage,.trio .side,.endhero .endic,.endhero.win::before,.endhero.win::after,.cards button{animation:none!important}}

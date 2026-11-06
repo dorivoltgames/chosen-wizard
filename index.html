@@ -1,9 +1,10 @@
 <!doctype html><!-- 선택받은 마법사 (c) dorivoltgames. All rights reserved. Do not copy or re-upload. Original: https://dorivoltgames.github.io/chosen-wizard/ --><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>선택받은 마법사 · 도트 인생 시뮬레이터</title><meta name="description" content="어디서 어떤 집에 태어날지 운명이 정한다. 태어나서 마왕까지, 한 번의 인생은 3~5분. 너는 몇 분의 1 확률로 태어났을까? · A pixel-art life simulator in Korean, English and Japanese. 選ばれし魔法使い。"><meta name="theme-color" content="#ece9ff">
+<title>선택받은 마법사 · 도트 인생 시뮬레이터</title><meta name="description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta name="theme-color" content="#ece9ff">
 <meta property="og:type" content="website"><meta property="og:site_name" content="dorivoltgames"><meta property="og:locale" content="ko_KR">
-<meta property="og:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta property="og:description" content="어디서 어떤 집에 태어날지 운명이 정한다. 태어나서 마왕까지, 한 번의 인생은 3~5분. 너는 몇 분의 1 확률로 태어났을까? · A pixel-art life simulator in Korean, English and Japanese. 選ばれし魔法使い。"><meta property="og:url" content="https://dorivoltgames.github.io/chosen-wizard/"><meta property="og:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta name="twitter:description" content="어디서 어떤 집에 태어날지 운명이 정한다. 태어나서 마왕까지, 한 번의 인생은 3~5분. 너는 몇 분의 1 확률로 태어났을까? · A pixel-art life simulator in Korean, English and Japanese. 選ばれし魔法使い。"><meta name="twitter:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png">
+<meta property="og:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta property="og:description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta property="og:url" content="https://dorivoltgames.github.io/chosen-wizard/"><meta property="og:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta name="twitter:description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta name="twitter:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png">
 <link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="fate-update.css">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style><script>(function(){var h=location.hostname;if(!/^https?:$/.test(location.protocol)||h==='dorivoltgames.github.io'||h==='localhost'||h==='127.0.0.1'||/(^|\.)itch\.zone$/.test(h)||/\.hwcdn\.net$/.test(h))return;   // our own pages: GitHub Pages and the itch.io embed
 addEventListener('DOMContentLoaded',function(){var d=document.createElement('div');d.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#2b1a4a;color:#fff;font:600 13px system-ui;padding:8px 12px;text-align:center';
 var l=((function(){try{return localStorage.getItem('chosen-wizard-lang')}catch(e){}})()||navigator.language||'ko').slice(0,2),a='<a href="https://dorivoltgames.github.io/chosen-wizard/" style="color:#ffd35c">dorivoltgames.github.io/chosen-wizard</a>';d.innerHTML=(l==='ja'?'このゲームの本家は '+a+' にあります':l==='ko'?'이 게임의 원본은 '+a+' 에 있어요':'The original game lives at '+a)+' · made by dorivoltgames';document.body.appendChild(d)})})()</script></head><body>
@@ -545,6 +546,9 @@ html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3{letter-spacing:0}
 </div>
 <div id="cd" class="countdown" hidden></div>
 <div id="toast" class="toast" hidden></div>
+<script src="fate-update.js"></script>
+<script src="fate-ui.js"></script>
+<script src="fate-telemetry.js"></script>
 <script>// ===== language: ko (original), en, ja. Chosen once per page load; the title screen button saves it and reloads. =====
 const LANG=(()=>{
   try{if(typeof __FORCE_LANG!=='undefined')return __FORCE_LANG}catch(e){}
@@ -1432,6 +1436,12 @@ const FORM_SPR={vampire:'vampire',werewolf:'werewolf',frank:'frank',ghost:'ghost
 for(const k of Object.values(FORM_SPR))SPR[k+'2']=SPR[k].map((r,i,a)=>i===a.length-1?r.split('').reverse().join(''):r);
 // ===== SPRITES END =====
 
+// Crossroads content is pure story logic; browser integrations are passed lazily.
+const FATE=createFateUpdate({lang:LANG,context:()=>({say,chapter,finish,applyD,has,
+  ending:id=>ENDINGS.find(e=>e.id===id)?.name||id,track:(event,L)=>FUNNEL.track(event,L)})});
+const FATE_UI=createFateUI({fate:FATE,context:()=>({endings:ENDINGS,icon:ic,loadDex,saveDex,
+  newLife,startBirth,shareURL:SHARE_URL,dailyKey,dailySeed,showDex:()=>showDex(dexBack)})});
+
 // ===== CORE (battle engine and scenery data; no DOM, also used by the simulators) =====
 const W=800,H=480,GROUND=262,WX=200,WY=372;
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -2203,6 +2213,7 @@ const ENDINGS=[
   {id:'court',   name:TT_("v4ifvm",'궁정 마법사'),              icon:'scroll'},
   {id:'teacher', name:TT_("14goxfo",'마을의 인기 선생님'),       icon:'book'},
   {id:'quiet',   name:TT_("sxeup9",'평범하고 행복한 인생'),     icon:'heart'},
+  ...FATE.endings,
 ];
 const NAMES=[TT_("ehgrp",'포포'),TT_("1cbr01p",'루미'),TT_("1qjvri9",'모찌'),TT_("13jpzbk",'콩이'),TT_("mpuyot",'보리'),TT_("5ygict",'누리'),TT_("1wnwezh",'하루'),TT_("1s2mx",'소금'),TT_("6emjz9",'별이'),TT_("psb99l",'토리'),TT_("18w3dbx",'미루'),TT_("eq7biq",'호떡'),TT_("1jvqix5",'꼬미'),TT_("ccutt5",'단비'),TT_("fy2e2t",'라라'),TT_("1bmonv9",'솔이'),TT_("tykp0d",'우유'),TT_("zqpy70",'찹쌀'),TT_("mrgntp",'두부'),TT_("1wd50ct",'감자'),TT_("g3h37j",'도토리'),TT_("1kb81bd",'까미'),TT_("eagj9w",'몽이'),TT_("1v8re2p",'쿠키'),TT_("nmv36h",'버터'),TT_("xp8j9h",'라떼'),TT_("15gf0u0",'망고'),TT_("1ctq8ux",'초코'),TT_("17j46yl",'유자'),TT_("ybvdz5",'레몬'),TT_("fdjmqx",'깨비'),TT_("kyfvck",'뭉치'),TT_("edih9p",'다람'),TT_("sbnuid",'호두'),TT_("uq3281",'밤톨')];
 const CAT_NAMES=[TT_("juylnd",'나비'),TT_("1uyuhkt",'치즈'),TT_("jsgupu",'까망이'),TT_("1v8q4m2",'고등어'),TT_("wseee",'삼색이')];
@@ -2251,7 +2262,7 @@ const WP=L=>L.form&&FORM_WEAPON[L.form]?FORM_WEAPON[L.form].n:WEAPON[L.cls]||WEA
 const WPI=L=>L.form&&FORM_WEAPON[L.form]?FORM_WEAPON[L.form].icon:'anvil';
 const ART=L=>({wizard:TT_("1yl7s92",'마법'),warrior:TT_("a1d50t",'검술'),archer:TT_("dz02i3",'활쏘기')})[L.cls]||TT_("1yl7s92",'마법');
 const SCHOOL={wizard:{royal:TT_("18olagn",'왕립 마법학교'),local:TT_("19obovy",'동네 마법학교')},warrior:{royal:TT_("wqdu3k",'왕립 기사학교'),local:TT_("1xo8zba",'마을 검술 도장')},archer:{royal:TT_("q65r8v",'엘프 궁술 학교'),local:TT_("svus0i",'사냥꾼 길드')}};
-const schoolName=L=>L.tier==='none'?TT_("h8l43c",'대장간 견습생'):(SCHOOL[L.cls]||SCHOOL.wizard)[L.tier];
+const schoolName=L=>FATE.state(L).learned==='forbidden'?FATE.tr('별 없는 서고','The hidden archive','星のない書庫'):FATE.state(L).learned==='home'?FATE.tr('마을의 배움터','Village apprenticeship','村の学び舎'):L.tier==='none'?TT_("h8l43c",'대장간 견습생'):(SCHOOL[L.cls]||SCHOOL.wizard)[L.tier];
 const byCls=(L,o)=>o[L.cls]!==undefined?o[L.cls]:o.wizard;
 
 function pickW(rng,arr){const tot=arr.reduce((a,x)=>a+x.p,0);let r=rng()*tot;for(const x of arr){r-=x.p;if(r<=0)return x}return arr[arr.length-1]}
@@ -2726,8 +2737,11 @@ function* lifeScript(L){
   const ages=[1];while(ages.length<3){const a=ri(2,6);if(!ages.includes(a))ages.push(a)}ages.sort((a,b)=>a-b);
   L.age=ages[0];yield* doEvent(L,EVI.firstmagic);
   for(const a of ages.slice(1)){L.age=a;const ev=pickEvent(L,'child');if(ev)yield* doEvent(L,ev)}
-  // 7: the entrance exam (arithmetic)
+  L.age=6;yield* FATE.memory(L);
   L.age=7;L.cls='wizard';
+  const learned=yield* FATE.choosePath(L);
+  if(learned==='hero'){
+  // 7: the entrance exam (arithmetic)
   const SC=SCHOOL[L.cls];
   yield* say(L,byCls(L,{wizard:TT_("172nc5z",'마법학교 입학시험 날이 밝았다. 연필을 꼭 쥐었다.'),warrior:TT_("rvakfe",'기사학교 입단 시험 날. 연습장에 통나무가 줄지어 서 있다.'),archer:TT_("16yd7v3",'궁술 학교 입단 시험 날. 멀리서 과녁이 흔들린다.')}),byCls(L,{wizard:'book',warrior:'sword',archer:'i_arrow'}));
   const q=yield {t:'mini',kind:byCls(L,{wizard:'quiz',warrior:'chop',archer:'aim'})};
@@ -2756,24 +2770,15 @@ function* lifeScript(L){
   const grad=L.tier==='royal'?(L.st.int>=150?TT_("1btvpq8",`${J(SC.royal,'을/를')} 수석으로 졸업했다.`,[SC.royal]):TT_("nppyyr",`${J(SC.royal,'을/를')} 무사히 졸업했다.`,[SC.royal])):L.tier==='local'?TT_("bdc6s5",`${J(SC.local,'을/를')} 졸업했다. 동기는 세 명이었다.`,[SC.local]):fl(L,'transfer')?TT_("1czwhcx",`늦깎이로 들어간 ${J(SC.local,'을/를')} 졸업했다.`,[SC.local]):TT_("ipwwok",`대장간 견습을 마쳤다. 망치질로 ${J(ART(L),'을/를')} 익혔다.`,[ART(L)]);
   yield* say(L,grad,'scroll',{fame:L.tier==='royal'&&L.st.int>=150?15:0});
   {const ev=pickEvent(L,'teen');if(ev)yield* doEvent(L,ev)}
-  // 18: the fork
-  L.age=18;
-  const fork={age:18,text:has(L,'chosen')?TT_("1ms9wq5",'성인식 날, 손등의 표식이 뜨겁게 빛났다. 마왕을 쓰러뜨리러 떠날까?'):has(L,'coward')?TT_("2zt0k5",'성인식 날. 다리가 후들거린다. 정말 모험을 떠날까?'):fl(L,'prophecy')?TT_("7pqp5u",'성인식 날. 꿈속의 목소리가 떠오른다. 모험을 떠날까?'):TT_("18r5c2f",'성인식 날. 마왕을 쓰러뜨리러 모험을 떠날까?'),icon:'sword',d:[],major:true,opts:[TT_("1mgar23",'모험을 떠난다'),TT_("f6u202",'고향에 남는다')]};
-  L.log.push(fork);
-  const k=yield {t:'choice',e:fork};fork.picked=fork.opts[k];
-  if(k===1){yield* homeLife(L);return}
+  }else{yield* FATE.upbringing(L)}
+  L.age=18;FUNNEL.track('coming_of_age',L);
+  const path=yield* FATE.choosePath(L,true);
+  if(path==='home'){yield* homeLife(L);return}
+  if(path==='forbidden'){yield* FATE.forbiddenLife(L);return}
   yield* adventure(L);
 }
 
-function* homeLife(L){
-  const R=L.rng;
-  yield* chapter(L,L.origin.theme,'idle',TT_("ob31bm",'고향에서'),L.origin.name);
-  yield* say(L,TT_("hbrcia",`고향에 남기로 했다. ${has(L,'coward')?TT_("xlaxsc",'솔직히 조금 안심했다.'):TT_("1u1qw5u",'모험은 다른 사람에게 맡기기로.')}`,[has(L,'coward')?TT_("xlaxsc",'솔직히 조금 안심했다.'):TT_("1u1qw5u",'모험은 다른 사람에게 맡기기로.')]),'house_big',null,true);
-  for(const a of [24,31,42,55,68]){L.age=a+Math.floor(R()*4);const ev=pickEvent(L,'home');if(ev)yield* doEvent(L,ev)}
-  L.age=82+Math.floor(R()*16);
-  const end=fl(L,'end_merchant')?'merchant':fl(L,'end_guard')?'guard':fl(L,'end_hunter')?'hunter':fl(L,'end_court')?'court':fl(L,'end_bakery')?'bakery':fl(L,'end_potato')?'potato':fl(L,'end_teacher')?'teacher':'quiet';
-  yield* finish(L,end,TT_("1ra27k",`${L.age}세, 따뜻한 침대에서 천수를 누리고 잠들었다.`,[L.age]));
-}
+function* homeLife(L){yield* FATE.villageLife(L)}
 
 // Regional dishes for the 대식가: eat now for a big heal and more max HP, or pack it as a lunchbox (a potion).
 // Risky dishes upset the stomach unless it is made of iron.
@@ -2823,6 +2828,7 @@ function* adventure(L){
     L.stage=s;L.age+=s===0?1:1+Math.floor(R()*2);
     const rid=yield* chooseRoute(L,s),RG=REGIONS[rid];L.region=rid;L.route.push(rid);
     yield* chapter(L,RG.key,'walk',RG.name,TT_("mdgp4j",`${L.age}세`,[L.age]));
+    yield* FATE.heroBeat(L,s);
     if(has(L,'diligent'))applyD(L,{int:3});
     yield* forge(L);
     const ev1=pickEvent(L,[rid,'adv']);if(ev1)yield* doEvent(L,ev1);
@@ -2857,8 +2863,10 @@ function* adventure(L){
     yield* levelPerk(L,r);
     if(s<4)yield* levelPerk(L,{levels:1,min:'r',title:TT_("13dal6b",'보스 격파 보상! 카드를 한 장 고르자.')});
   }
-  const end=has(L,'chosen')?'chosen':L.form==='vampire'?'vampire':L.form==='werewolf'?'werewolf':L.form==='frank'?'frank':L.form==='ghost'?'ghost':L.allies.length>=3?'beastking':fl(L,'dragonfriend')?'dragonrider':L.sneaked>=3?'shadow':L.family.id==='royal'?'king':L.family.id==='archmage'&&L.cls==='wizard'?'archmage':'hero';
-  const text={chosen:TT_("163z5lz",'표식의 예언이 이루어졌다. 이제 온 세상이 그 이름을 안다.'),
+  const end=FATE.heroEnding(L)||(has(L,'chosen')?'chosen':L.form==='vampire'?'vampire':L.form==='werewolf'?'werewolf':L.form==='frank'?'frank':L.form==='ghost'?'ghost':L.allies.length>=3?'beastking':fl(L,'dragonfriend')?'dragonrider':L.sneaked>=3?'shadow':L.family.id==='royal'?'king':L.family.id==='archmage'&&L.cls==='wizard'?'archmage':'hero');
+  const text={oathkeeper:FATE.tr('약속했던 아이들 곁으로 친구와 함께 돌아왔다. 마을은 영웅의 이름보다 지켜 낸 약속을 오래 기억했다.','You return with your friend to the waiting children. The village remembers your promise longer than your fame.','待っていた子どもたちの元へ友だちと帰った。村は名声より、守られた約束を長く覚えていた。'),
+    unchosen:FATE.tr('표식이 없어도, 좋은 집안이 아니어도 괜찮았다. 운명은 태어날 때가 아니라 선택할 때 완성됐다.','No mark or noble birth was needed. Your fate was made by your choices.','印も立派な家柄も必要なかった。運命を完成させたのは、生まれではなく選択だった。'),
+    chosen:TT_("163z5lz",'표식의 예언이 이루어졌다. 이제 온 세상이 그 이름을 안다.'),
     beastking:TT_("4rngyq",`마왕을 쓰러뜨린 건 ${N(L,'와')} 몬스터 친구들이었다. 그날부터 몬스터와 사람이 같은 식탁에 앉았다.`,[L.name]),
     dragonrider:TT_("qi6cg7",`${J(L.drakeName,'과/와')} 함께 하늘을 나는 용기사가 됐다.`,[L.drakeName]),
     shadow:TT_("1sj53n7",'보스들을 몰래 지나쳐 마왕까지 쓰러뜨렸다. 아무도 어떻게 했는지 모른다. 본인도 모른다.'),
@@ -3734,10 +3742,12 @@ const rand=(a,b)=>a+Math.random()*(b-a), ri=(a,b)=>Math.floor(rand(a,b+1)), clam
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const SHARE_URL='https://dorivoltgames.github.io/chosen-wizard/';
 const STORE='chosen-wizard-life-v1';
-function loadDex(){try{return JSON.parse(localStorage.getItem(STORE))||{}}catch(e){return{}}}
+function loadDex(){try{const d=JSON.parse(localStorage.getItem(STORE));return d&&typeof d==='object'&&!Array.isArray(d)?d:{}}catch(e){return{}}}
 function saveDex(d){try{localStorage.setItem(STORE,JSON.stringify(d))}catch(e){}}
 // ---- global stats: anonymous counters from the stats Worker (stats-worker/). Every call is optional: with no URL or no network the game plays as before.
-const STATS_URL='https://chosen-wizard-stats.dorivoltgames.workers.dev';
+// Local previews and downloaded builds must never inflate the production counters.
+const STATS_URL=/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)||location.protocol==='file:'?'':'https://chosen-wizard-stats.dorivoltgames.workers.dev';
+const FUNNEL=createFateTelemetry({baseURL:STATS_URL,storage:{getItem:k=>{try{return localStorage.getItem(k)}catch{return null}},setItem:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}},fetcher:(...args)=>fetch(...args)});
 const GS=(()=>{
   const PID='chosen-wizard-pid',CACHE='chosen-wizard-gs',QUEUE='chosen-wizard-gq',MIN_PLAYERS=5;
   const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
@@ -3842,14 +3852,10 @@ function renderTitle(){
   $('#best').textContent=dx.lives?TT_("hax713",`지금까지 ${dx.lives}번의 인생 · 도감 ${n.got}/${n.all} · 엔딩 ${n.ends}/${ENDINGS.length}`,[dx.lives,n.got,n.all,n.ends,ENDINGS.length]):TT_("1vbubt8",'한 번의 인생은 3~5분. 어떤 운명이 나올까?');
   const key=dailyKey(),done=dx.daily&&dx.daily[key];
   $('#btn-daily').textContent=done?TT_("emj9c6",`오늘의 운명 · ${mdOf(key)} · 완료 「${(ENDINGS.find(e=>e.id===done)||{}).name||'?'}」`,[mdOf(key),(ENDINGS.find(e=>e.id===done)||{}).name||'?']):TT_("1uvdlms",`오늘의 운명 · ${mdOf(key)} · 모두가 같은 탄생`,[mdOf(key)]);
+  FATE_UI.title(dx);
+  if(FATE_UI.challengePanel(CHAL))return;
   const ch=$('#chal');
-  if(CHAL&&CHAL.seed){
-    const Lc=newLife(CHAL.seed),od=birthOdds(Lc);
-    ch.hidden=false;ch.innerHTML=TT_("17gdxu3",'<p class="eyebrow">친구가 도전장을 보냈어</p><p class="chalfate"></p><b class="num"></b><button id="btn-chal" class="btn sun">이 운명으로 태어나기</button>');
-    ch.querySelector('.chalfate').textContent=TT_("1yccpbg",`${Lc.origin.name} · ${famName(Lc.family,dx)} · ${Lc.element.name} 속성 · ${Lc.traits.map(t=>t.name).join(' · ')}`,[Lc.origin.name,famName(Lc.family,dx),Lc.element.name,Lc.traits.map(t=>t.name).join(' · ')]);
-    ch.querySelector('b').textContent=oddsText(od);
-    $('#btn-chal').onclick=()=>startBirth({seed:CHAL.seed,mode:'challenge'});
-  }else if(CHAL&&CHAL.daily){
+  if(CHAL&&CHAL.daily){
     ch.hidden=false;ch.innerHTML=TT_("11jegri",'<p class="eyebrow">친구가 오늘의 운명을 보냈어</p><button id="btn-chal" class="btn sun">오늘의 운명 뽑기</button>');
     $('#btn-chal').onclick=()=>startDaily();
   }else ch.hidden=true;
@@ -3866,8 +3872,9 @@ function startBirth(opt){
   opt=opt&&typeof opt==='object'&&opt.seed!==undefined?opt:{};
   clearTimeout(birthTimer);
   const seed=opt.seed!==undefined?opt.seed>>>0:(Date.now()^Math.floor(Math.random()*1e9))>>>0;
-  LIFE=newLife(seed);LIFE.mode=opt.mode||'';LIFE.dkey=opt.dkey||'';GS.born();
+  LIFE=newLife(seed);LIFE.mode=opt.mode||'';LIFE.dkey=opt.dkey||'';LIFE.challenge=opt.challenge||null;GS.born();FUNNEL.track('birth',LIFE);
   const L=LIFE,dx=loadDex();
+  FATE_UI.birth(L,dx);
   const rows=[
     {k:TT_("bnmntt",'출신'),ic:ORIGIN_ICON(L.origin),name:L.origin.name,sub:TT_("w0v58s",'이곳에서 태어난다'),p:share(ORIGINS,L.origin)},
     {k:TT_("1ky84po",'집안'),ic:FAM_ICON[L.family.id],name:famName(L.family,dx),sub:L.family.id==='demonkin'&&!dx.secret?TT_("1pnjklv",'뭔가 숨기는 게 있는 것 같다'):TT_("dhjkdc",'자라날 집'),p:share(FAMILIES,L.family)},
@@ -3925,6 +3932,7 @@ window.addEventListener('resize',()=>{if(screen==='s-life')fitCanvas()});
 document.querySelectorAll('.spd button').forEach(b=>b.onclick=()=>{speed=+b.dataset.s;document.querySelectorAll('.spd button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
 
 function startLife(){
+  FUNNEL.track('life_started',LIFE);
   const nm=$('#b-name').value.trim();if(nm)LIFE.name=nm.slice(0,NAME_MAX);
   GEN=lifeScript(LIFE);$('#l-log').innerHTML='';$('#hist-n').textContent='';$('#l-name').textContent=LIFE.name;where=LIFE.origin.name;
   dlgShow({age:0,text:'',icon:'star',d:[]});
@@ -3941,13 +3949,13 @@ async function runLife(){
     if(s.t==='scene'){VIEW=lifeView(s.theme,s.mode,s.banner);music(s.mode==='walk'?'road':'home');where=s.banner.text===TT_("1tw8lhm",'탄생')?LIFE.origin.name:s.banner.text;updateHud();await sleep(DELAY[speed]*0.9)}
     else if(s.t==='log'){logItem(s.e);if(!VIEW.C)VIEW.bubble={icon:s.e.icon||'star',t:1.3};updateHud();await dlgWait(DELAY[speed]*0.7)}
     else if(s.t==='choice'){send=await askChoice(s.e);updateHud()}
-    else if(s.t==='mini'){send=await askMini(s.kind);updateHud()}
+    else if(s.t==='mini'){FUNNEL.track('exam_started',LIFE);send=await askMini(s.kind);FUNNEL.track('exam_completed',LIFE);updateHud()}
     else if(s.t==='battle'){send=await fight(s);updateHud()}
     else if(s.t==='end'){await sleep(DELAY[speed]*1.2);if(token===runToken)showEnd();return}
   }
 }
 function updateHud(){
-  const L=LIFE;if(VIEW&&!VIEW.C)VIEW.form=L.form||null;$('#l-name').textContent=L.name+(L.form?` · ${FORMS[L.form].name}`:'');$('#l-age').textContent=TT_("mdgp4j",`${L.age}세`,[L.age]);$('#l-where').textContent=where;
+  const L=LIFE;FATE_UI.hud(L);if(VIEW&&!VIEW.C)VIEW.form=L.form||null;$('#l-name').textContent=L.name+(L.form?` · ${FORMS[L.form].name}`:'');$('#l-age').textContent=TT_("mdgp4j",`${L.age}세`,[L.age]);$('#l-where').textContent=where;
   const hp=L.W?`<b>${L.W.hp}</b>/${L.W.max}`:`<b>${L.st.hp}</b>`;
   const grow=L.W?[['star','Lv',`<b>${L.W.lv}</b>`],[WPI(L),WP(L),`<b>+${L.staff}</b>`]]:[];
   const pal=L.allies.length?[[L.allies[L.allies.length-1],TT_("1b78r2g",'동료'),`<b>${L.allies.length}</b>`]]:[];
@@ -3992,6 +4000,7 @@ function askChoice(e){
     b.onclick=()=>{box.remove();dlgFinish();SFX_HOOK('pop');
     for(const host of [li.lastElementChild,$('#dlg-extra')]){const p=document.createElement('div');p.className='picked';p.textContent='→ '+o;host.appendChild(p)}done(i)};box.appendChild(b)});
   $('#dlg-extra').appendChild(box);
+  updateHud();
   let done;return new Promise(r=>done=r);
 }
 const MINI={
@@ -4217,7 +4226,7 @@ document.addEventListener('keydown',e=>{
 // ---------- ending ----------
 const CREDIT='dorivoltgames';
 const allyName=sp=>{for(const r of Object.values(REGIONS)){if(r.boss.s===sp)return r.boss.n;const m=r.mobs.find(x=>x.s===sp);if(m)return m.n}return TT_("1c0cyz9",'친구')};
-const WIN_ENDS=['hero','vampire','werewolf','frank','ghost','beastking','shadow','gourmet','talkshow','king','archmage','dragonrider','chosen','peace','family'];
+const WIN_ENDS=['hero','vampire','werewolf','frank','ghost','beastking','shadow','gourmet','talkshow','king','archmage','dragonrider','chosen','peace','family',...FATE.endings.map(e=>e.id)];
 // Eight moments for the recap comic: birth, childhood, the exam, school, the fork at 18, the road, the climax, the ending.
 function comicMoments(L,end){
   const log=L.log.filter(e=>e.text),used=new Set();
@@ -4228,14 +4237,14 @@ function comicMoments(L,end){
   const add=(cap,e,extra={})=>{if(!e&&!extra.text)return;out.push(Object.assign({cap,cls:L.cls,form:L.form&&(L.formAge===undefined||(e?e.age:L.age)>=L.formAge)?L.form:null,age:e?e.age:L.age,text:e?e.text+(e.picked?` → ${e.picked}`:''):'',icon:e&&e.icon||'star',theme:e&&e.theme||L.origin.theme},extra))};
   used.add(log[0]);add(TT_("1tw8lhm",'탄생'),log[0]);
   add(TT_("152hg87",'어린 시절'),pick(x=>age(1,6)(x)&&x.major,age(1,6)));
-  add(TT_("1wd9758",'입단 시험'),pick(x=>x.age===7&&/합격|들어갔다|떨어져/.test(KO(x.text)),age(7,7)));
+  add(FATE.state(L).learned==='hero'?TT_("1wd9758",'입단 시험'):FATE.tr('첫 배움','First lessons','最初の学び'),pick(x=>x.age===7&&/합격|들어갔다|떨어져/.test(KO(x.text)),age(7,7)));
   add(TT_("1ddkv2l",'학창 시절'),pick(x=>age(8,15)(x)&&x.major,x=>x.age===12&&/반응/.test(KO(x.text)),age(8,15)));
   add(TT_("1niq0f7",'성인식'),pick(x=>x.age===18&&x.opts,age(16,18)));
   if(L.adventure){
     add(TT_("15fb3vh",'모험'),pick(x=>x.age>18&&x.major&&!/쓰러/.test(KO(x.text)),x=>x.age>18&&/강화 성공|달성/.test(KO(x.text)),x=>x.age>18));
     add(TT_("8tt8dt",'결전'),pick([x=>x.age>18&&BOSS_SPRITES.has(x.icon)],[x=>x.age>18&&x.major],[x=>x.age>18]));
   }else{
-    add(TT_("ob31bm",'고향에서'),pick(x=>x.age>18&&x.major,x=>x.age>18));
+    add(FATE.paths[FATE.state(L).path||'home'].name,pick(x=>x.age>18&&x.major,x=>x.age>18));
     add(TT_("1q3byp",'세월이 흘러'),pick([x=>x.age>18]));
   }
   while(out.length<7){const e=pick(x=>x.major,x=>true);if(!e)break;add(TT_("gitsnx",'그때 그 일'),e)}
@@ -4252,6 +4261,7 @@ function showEnd(){
   const newEnd=got('end',L.ending);got('o',L.origin.id);got('f',L.family.id);got('e',L.element.id);L.traits.forEach(t=>got('t',t.id));
   if(L.family.id==='demonkin'&&(L.flags.horn2||L.stage>=4))dx.secret=1;
   if(L.mode==='daily'){dx.daily=dx.daily||{};dx.daily[L.dkey]=L.ending}
+  FATE_UI.remember(L,dx);FUNNEL.track('life_completed',L);
   saveDex(dx);GS.life(L.ending,fresh);music(null);SFX_HOOK(L.ending.startsWith('death')?'lose':'fanfare');
   const n=dexCount(dx),odds=birthOdds(L),fam=famName(L.family,dx);
   const story=L.log.filter(e=>e.major);
@@ -4293,6 +4303,7 @@ function showEnd(){
     $('#btn-sheet').onclick=()=>openSheet(cm.sheet,TT_("1sejmm0",`${L.name}의-일생-8컷.png`,[L.name]),'',txt,linkOf(L));
   }catch(err){console.error(err);document.querySelector('.comicwrap').remove()}
   wireShare(L,end,odds,fam,n,txt);
+  FATE_UI.ending(L,dx);
   GS.paintEnd(L.ending);GS.refresh().then(ok=>{if(ok&&screen==='s-end')GS.paintEnd(L.ending)});
   show('s-end');
 }
@@ -4320,6 +4331,7 @@ function showDex(back){
     ${sec(TT_("1ky84po",'집안'),'f',FAMILIES,f=>FAM_ICON[f.id],f=>famName(f,dx),f=>TT_("1i7maq2",`확률 ${pct(share(FAMILIES,f))}`,[pct(share(FAMILIES,f))]))}
     ${sec(TT_("1vav87f",'속성'),'e',ELEMENTS,e=>ELEM_ICON[e.id],e=>e.name,e=>TT_("1i7maq2",`확률 ${pct(share(ELEMENTS,e))}`,[pct(share(ELEMENTS,e))]))}
     ${sec(TT_("kzln1b",'특성'),'t',TRAITS,t=>TRAIT_ICON[t.id],t=>t.name,t=>TT_("1i7maq2",`확률 ${pct(traitChance(t))}`,[pct(traitChance(t))]))}`,[n.got,n.all,n.got/n.all*100,GS.note(),sec(TT_("1micvoe",'엔딩'),'end',ENDINGS,e=>e.icon,e=>e.name,()=>'???'),sec(TT_("bnmntt",'출신'),'o',ORIGINS,ORIGIN_ICON,o=>o.name,o=>TT_("1i7maq2",`확률 ${pct(share(ORIGINS,o))}`,[pct(share(ORIGINS,o))])),sec(TT_("1ky84po",'집안'),'f',FAMILIES,f=>FAM_ICON[f.id],f=>famName(f,dx),f=>TT_("1i7maq2",`확률 ${pct(share(FAMILIES,f))}`,[pct(share(FAMILIES,f))])),sec(TT_("1vav87f",'속성'),'e',ELEMENTS,e=>ELEM_ICON[e.id],e=>e.name,e=>TT_("1i7maq2",`확률 ${pct(share(ELEMENTS,e))}`,[pct(share(ELEMENTS,e))])),sec(TT_("kzln1b",'특성'),'t',TRAITS,t=>TRAIT_ICON[t.id],t=>t.name,t=>TT_("1i7maq2",`확률 ${pct(traitChance(t))}`,[pct(traitChance(t))]))]);
+  FATE_UI.dex(dx);
   show('s-dex');
   GS.refresh().then(ok=>{if(ok&&screen==='s-dex')showDex(dexBack)});
 }
@@ -4350,13 +4362,13 @@ function endFight(){FIGHT=false;document.body.classList.remove('fighting');clear
 
 // ===== SHARING: a link that carries the fate, a text, and a card image =====
 const codeOf=L=>'f'+(L.seed>>>0).toString(36);
-const linkOf=L=>L.mode==='daily'?SHARE_URL+'#today':SHARE_URL+'#'+codeOf(L);
+const linkOf=L=>FATE_UI.link(L);
 const mdOf=key=>{const m=/-(\d\d)-(\d\d)$/.exec(key||'');return m?TT_("1tlh7eg",`${+m[1]}월 ${+m[2]}일`,[+m[1],+m[2]]):''};
 function makeShareText(L,end,odds,fam,n){
   const head=L.mode==='daily'?TT_("1r9xn9h",`📅 오늘의 운명(${mdOf(L.dkey)}) · ${L.name}의 일생 「${end.name}」`,[mdOf(L.dkey),L.name,end.name]):TT_("15204cn",`🧙 ${L.name}의 일생 「${end.name}」`,[L.name,end.name]);
   return [head,TT_("rtg7lj",`🎲 이 탄생이 나올 확률 ${oddsText(odds)} (${oddsTier(odds)})`,[oddsText(odds),oddsTier(odds)]),GS.rareLine(L.ending),
     TT_("1q8owyu",`${L.origin.name} · ${fam} · ${L.element.name} 속성${L.form?TT_("13a2p3a",` · ${FORMS[L.form].name} 변신`,[FORMS[L.form].name]):''} · ${L.traits.map(t=>t.name).join(' · ')}`,[L.origin.name,fam,L.element.name,L.form?TT_("13a2p3a",` · ${FORMS[L.form].name} 변신`,[FORMS[L.form].name]):'',L.traits.map(t=>t.name).join(' · ')]),
-    `"${L.epitaph}"`,TT_("1ak5971",`엔딩 도감 ${n.ends}/${ENDINGS.length} · ${L.mode==='daily'?TT_("18daol9",'너의 오늘의 운명은?'):TT_("ilovlo",'같은 운명으로 살아 볼래?')}`,[n.ends,ENDINGS.length,L.mode==='daily'?TT_("18daol9",'너의 오늘의 운명은?'):TT_("ilovlo",'같은 운명으로 살아 볼래?')]),linkOf(L)].filter(Boolean).join('\n');
+    FATE.paths[FATE.state(L).path||'hero'].name,`"${L.epitaph}"`,TT_("1ak5971",`엔딩 도감 ${n.ends}/${ENDINGS.length} · ${L.mode==='daily'?TT_("18daol9",'너의 오늘의 운명은?'):TT_("ilovlo",'같은 운명으로 살아 볼래?')}`,[n.ends,ENDINGS.length,L.mode==='daily'?TT_("18daol9",'너의 오늘의 운명은?'):TT_("ilovlo",'같은 운명으로 살아 볼래?')]),linkOf(L)].filter(Boolean).join('\n');
 }
 function makeBirthText(L,odds){
   return [TT_("z864o1",`🎲 ${L.name}의 탄생! 이 탄생이 나올 확률 ${oddsText(odds)} (${oddsTier(odds)})`,[L.name,oddsText(odds),oddsTier(odds)]),
@@ -4369,10 +4381,11 @@ function copyText(txt,msg){
 }
 // the link goes on its own: chat apps drop the text when an image rides along, so a plain link share is the sure way
 async function shareLink(txt,url){
+  if(LIFE)FUNNEL.track('share_started',LIFE);
   const body=txt.split('\n').slice(0,-1).join('\n');
   // inside an embed that may not share (or on a desktop without it) the call rejects, and the text with the link is copied instead
   if(navigator.share){
-    try{await navigator.share({title:TT_("r8bvvo",'선택받은 마법사'),text:body,url});return}
+    try{await navigator.share({title:TT_("r8bvvo",'선택받은 마법사'),text:body,url});if(LIFE)FUNNEL.track('share_completed',LIFE);return}
     catch(e){if(e&&e.name==='AbortError')return}
   }
   copyText(txt,TT_("1g8qkru",'링크가 든 문구를 복사했어! 붙여넣어 보내 줘'));
@@ -4470,11 +4483,7 @@ function wireShare(L,end,odds,fam,n,txt){
 
 // ===== TODAY'S FATE and FRIEND CHALLENGES =====
 let CHAL=null;
-function readHash(){
-  const h=(location.hash||'').slice(1);CHAL=null;
-  if(h==='today')CHAL={daily:true};
-  else if(/^f[0-9a-z]{1,8}$/.test(h)){const seed=parseInt(h.slice(1),36)>>>0;if(seed)CHAL={seed}}
-}
+function readHash(){CHAL=FATE_UI.parseHash(location.hash)}
 const dailyKey=()=>new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
 function dailySeed(key){let h=2166136261;for(const ch of key+'|chosen-wizard'){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
 function startDaily(){const key=dailyKey();startBirth({seed:dailySeed(key),mode:'daily',dkey:key})}
@@ -4486,6 +4495,7 @@ function blip(){if(++blipN%2===0)SFX_HOOK('talk')}
 
 paintIcons();
 readHash();
+FUNNEL.track(CHAL?'challenge_opened':'visit');
 renderTitle();
 
 </script>
