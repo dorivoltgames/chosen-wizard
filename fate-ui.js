@@ -61,7 +61,7 @@ function createFateUI({fate:F,context}) {
     return true;
   }
   function targetPanel(dx,L,host) {
-    const selected=dx.crossroads?.target, target=selected&&!dx.end?.[selected]&&c().endings.some(e=>e.id===selected)?selected:F.target(dx,L);
+    const selected=dx.crossroads?.target, target=selected&&!dx.end?.[selected]&&!F.endings.some(e=>e.id===selected)&&c().endings.some(e=>e.id===selected)?selected:F.target(dx,L);
     if(!target)return;
     const box=document.createElement('div');box.className='fate-target';
     box.innerHTML=`<p class="eyebrow">${esc(t('다음 인생의 작은 목표','A little goal for your next life','次の人生の小さな目標'))}</p><p>${esc(F.hint(target))}</p><button class="btn soft fate-small">${esc(t('이 단서로 다시 태어나기','Start another life with this clue','この手がかりでもう一度'))}</button>`;
@@ -72,28 +72,19 @@ function createFateUI({fate:F,context}) {
     const hero=document.querySelector('.hero');
     let badge=document.getElementById('fate-version');
     if(!badge){badge=document.createElement('p');badge.id='fate-version';badge.className='fate-version';hero.querySelector('h1').after(badge)}
-    badge.textContent=t('운명의 갈림길 · 2.0','Fate Crossroads · 2.0','運命の分かれ道 · 2.0');
-    hero.querySelector('.lede').textContent=t('태어난 운명은 랜덤. 영웅이 될지, 금서를 펼칠지, 고향을 바꿀지는 네 선택이야.','Your birth is random. Becoming a hero, opening a forbidden book, or changing your village is your choice.','生まれ持った運命はランダム。英雄になるか、禁書を開くか、故郷を変えるかは君次第。');
+    badge.textContent=t('마법 공명 · 여섯 구간','Spell resonance · six stages','魔法の共鳴 · 全6区間');
+    hero.querySelector('.lede').textContent=t('태어난 운명은 랜덤. 시험으로 성장하고, 뜻밖의 인연을 만나고, 나만의 마법으로 모험해.','A random birth. School trials, unexpected encounters, and an adventure with your own magic.','生まれ持った運命はランダム。試験で成長し、思いがけない縁に出会い、自分だけの魔法で冒険へ。');
     const how=document.querySelectorAll('.how li');
-    how[1].querySelector('b').textContent=t('서로 다른 세 가지 삶','Three different lives','三つの異なる人生');
-    how[1].querySelector('span').textContent=t('영웅의 전투, 금지마법의 대가, 고향의 생업. 고른 길에 따라 배움부터 달라져.','Heroic battles, the price of forbidden magic, a life at home. Even your education changes.','英雄の戦い、禁術の代償、故郷の暮らし。選ぶ道で学びから変わる。');
-    let preview=document.getElementById('fate-paths');
-    if(!preview){preview=document.createElement('div');preview.id='fate-paths';preview.className='fate-path-preview';document.getElementById('btn-daily').after(preview)}
-    preview.innerHTML=F.pathOrder.map(id=>`<span>${c().icon(F.paths[id].icon,2)}${esc(F.paths[id].name)}${dx.crossroads?.paths?.[id]?' <i>✓</i>':''}</span>`).join('');
-    let daily=document.getElementById('fate-daily-goal');
-    if(!daily){daily=document.createElement('p');daily.id='fate-daily-goal';daily.className='fate-daily-goal';preview.after(daily)}
-    const key=c().dailyKey();daily.textContent=(dx.crossroads?.daily?.[key]?'✓ ':'')+F.dailyGoal(key).text;
+    how[1].querySelector('b').textContent=t('시험으로 자라는 마법사','A wizard shaped by trials','試験で育つ魔法使い');
+    how[1].querySelector('span').textContent=t('입학시험, 빗자루 비행, 체력장. 직접 해낸 결과가 모험의 힘이 돼.','Entrance exams, broom flight, fitness. Your results shape your adventure.','入学試験、ほうき飛行、体力測定。自分の結果が冒険の力になる。');
+    document.getElementById('fate-paths')?.remove();
+    document.getElementById('fate-daily-goal')?.remove();
     let memory=document.getElementById('fate-legacy');
     if(!memory){memory=document.createElement('div');memory.id='fate-legacy';memory.className='fate-legacy';document.getElementById('best').before(memory)}
     const m=legacy(dx);memory.hidden=!m;
     if(m)memory.innerHTML=`${c().icon('book',2)}<span>${esc(t('마을 도서관에 남은 전생','A past life in the village library','村の図書館に残った前世'))}<b>${esc(m.name)} · ${esc(name(m.end))}</b></span>`;
   }
-  function hud(L) {
-    const s=F.state(L);let box=document.getElementById('fate-hud');
-    if(!box){box=document.createElement('div');box.id='fate-hud';box.className='fate-hud';document.getElementById('l-stats').after(box)}
-    box.hidden=!s.path;
-    if(s.path)box.textContent=[F.paths[s.path].name,s.path==='forbidden'?t(`신뢰 ${s.trust} · 연구 ${s.research}`,`Trust ${s.trust} · Research ${s.research}`,`信頼 ${s.trust} · 研究 ${s.research}`):s.path==='home'?t(`이웃 ${s.care} · 생업 ${s.work}`,`Community ${s.care} · Craft ${s.work}`,`隣人 ${s.care} · 仕事 ${s.work}`):t(`인연 ${s.bonds}`,`Bonds ${s.bonds}`,`絆 ${s.bonds}`)].join(' · ');
-  }
+  function hud(L) {document.getElementById('fate-hud')?.remove()}
   function ending(L,dx) {
     const host=document.getElementById('endcard'), s=F.state(L);
     const path=document.createElement('p');path.className='fate-ending-path';path.textContent=F.paths[s.path||'hero'].name;
@@ -119,20 +110,22 @@ function createFateUI({fate:F,context}) {
     const existing=host.querySelector('.dexsec');
     const section=document.createElement('section');section.className='fate-clues';
     section.innerHTML=`<h3>${esc(t('엔딩으로 가는 단서','Clues to another ending','別の結末への手がかり'))}</h3><p>${esc(t('결말은 비밀로, 다음 선택은 선명하게. 하나를 골라 다음 인생의 목표로 삼아 봐.','Keep the ending a mystery. Pick a clue as your next life’s goal.','結末は秘密のまま。手がかりを一つ選び、次の人生の目標にしよう。'))}</p>`;
-    const ids=F.endings.map(e=>e.id).concat(['bakery','teacher','merchant','dragonrider','peace','gourmet','shadow']);
+    const ids=['hero','chosen','dragonrider','peace','family','gourmet','shadow','beastking','bakery','teacher','merchant','guard'];
     for(const id of ids) {
       const found=!!dx.end?.[id],row=document.createElement('details');row.className='fate-clue';
       row.innerHTML=`<summary>${esc(found?'✓ '+name(id):t('미발견 이야기','An undiscovered story','まだ見ぬ物語')+' · '+String(c().endings.findIndex(e=>e.id===id)+1).padStart(2,'0'))}</summary><p>${esc(F.hint(id))}</p>`;
       if(!found){const b=document.createElement('button');b.className='btn soft fate-small';b.textContent=dx.crossroads?.target===id?t('현재 목표 ✓','Current goal ✓','現在の目標 ✓'):t('다음 인생의 목표로','Make this my next goal','次の人生の目標にする');b.setAttribute('aria-pressed',String(dx.crossroads?.target===id));b.onclick=()=>{const d=c().loadDex();d.crossroads=d.crossroads||{};d.crossroads.target=id;c().saveDex(d);for(const other of section.querySelectorAll('button')){other.setAttribute('aria-pressed','false');other.textContent=t('다음 인생의 목표로','Make this my next goal','次の人生の目標にする')}b.setAttribute('aria-pressed','true');b.textContent=t('현재 목표 ✓','Current goal ✓','現在の目標 ✓');};row.appendChild(b)}
       section.appendChild(row);
     }
+    const archived=F.endings.filter(e=>dx.end?.[e.id]);
+    if(archived.length){const p=document.createElement('p');p.className='fate-caption';p.textContent=t('이전 버전에서 발견한 이야기: ','Stories discovered in the previous version: ','以前のバージョンで発見した物語：')+archived.map(e=>e.name).join(' · ');section.appendChild(p)}
     host.insertBefore(section,existing);
   }
   function birth(L,dx) {
     let p=document.getElementById('fate-birth-goal');
     if(!p){p=document.createElement('p');p.id='fate-birth-goal';p.className='fate-birth-goal';document.getElementById('btn-live').before(p)}
     const target=dx.crossroads?.target;
-    p.hidden=!target||!!dx.end?.[target];p.textContent=target?F.hint(target):'';
+    p.hidden=!target||!!dx.end?.[target]||F.endings.some(e=>e.id===target);p.textContent=target?F.hint(target):'';
     L.legacy=legacy(dx);
     document.getElementById('btn-same-fate')?.remove();
   }

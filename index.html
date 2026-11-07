@@ -1,10 +1,12 @@
 <!doctype html><!-- 선택받은 마법사 (c) dorivoltgames. All rights reserved. Do not copy or re-upload. Original: https://dorivoltgames.github.io/chosen-wizard/ --><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>선택받은 마법사 · 도트 인생 시뮬레이터</title><meta name="description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta name="theme-color" content="#ece9ff">
+<title>선택받은 마법사 · 도트 인생 시뮬레이터</title><meta name="description" content="태어난 운명은 랜덤. 시험으로 성장하고, 마법을 조합해 모험하는 도트 인생 시뮬레이터. · A pixel wizard life simulator. 한국어 · English · 日本語"><meta name="theme-color" content="#ece9ff">
 <meta property="og:type" content="website"><meta property="og:site_name" content="dorivoltgames"><meta property="og:locale" content="ko_KR">
-<meta property="og:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta property="og:description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta property="og:url" content="https://dorivoltgames.github.io/chosen-wizard/"><meta property="og:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta name="twitter:description" content="태어난 운명은 랜덤, 살아갈 길은 네 선택. 영웅·금지마법·고향의 세 인생과 47개 엔딩. · Three life paths and 47 endings. 한국어 · English · 日本語"><meta name="twitter:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png">
+<meta property="og:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta property="og:description" content="태어난 운명은 랜덤. 시험으로 성장하고, 마법을 조합해 모험하는 도트 인생 시뮬레이터. · A pixel wizard life simulator. 한국어 · English · 日本語"><meta property="og:url" content="https://dorivoltgames.github.io/chosen-wizard/"><meta property="og:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="선택받은 마법사 · The Chosen Wizard · 選ばれし魔法使い"><meta name="twitter:description" content="태어난 운명은 랜덤. 시험으로 성장하고, 마법을 조합해 모험하는 도트 인생 시뮬레이터. · A pixel wizard life simulator. 한국어 · English · 日本語"><meta name="twitter:image" content="https://dorivoltgames.github.io/chosen-wizard/og.png">
 <link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="fate-update.css">
+<link rel="stylesheet" href="resonance.css">
+<link rel="stylesheet" href="story-scenes.css">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style><script>(function(){var h=location.hostname;if(!/^https?:$/.test(location.protocol)||h==='dorivoltgames.github.io'||h==='localhost'||h==='127.0.0.1'||/(^|\.)itch\.zone$/.test(h)||/\.hwcdn\.net$/.test(h))return;   // our own pages: GitHub Pages and the itch.io embed
 addEventListener('DOMContentLoaded',function(){var d=document.createElement('div');d.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#2b1a4a;color:#fff;font:600 13px system-ui;padding:8px 12px;text-align:center';
 var l=((function(){try{return localStorage.getItem('chosen-wizard-lang')}catch(e){}})()||navigator.language||'ko').slice(0,2),a='<a href="https://dorivoltgames.github.io/chosen-wizard/" style="color:#ffd35c">dorivoltgames.github.io/chosen-wizard</a>';d.innerHTML=(l==='ja'?'このゲームの本家は '+a+' にあります':l==='ko'?'이 게임의 원본은 '+a+' 에 있어요':'The original game lives at '+a)+' · made by dorivoltgames';document.body.appendChild(d)})})()</script></head><body>
@@ -546,6 +548,9 @@ html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3{letter-spacing:0}
 </div>
 <div id="cd" class="countdown" hidden></div>
 <div id="toast" class="toast" hidden></div>
+<script src="story-scenes.js"></script>
+<script src="stage-expansion.js"></script>
+<script src="resonance.js"></script>
 <script src="fate-update.js"></script>
 <script src="fate-ui.js"></script>
 <script src="fate-telemetry.js"></script>
@@ -1434,12 +1439,16 @@ ghostwiz:["............", ".....vv.....", "....vvvv....", "...vvvvvv...", "..VVV
 // the transformed wizards walk like the wizard: a second frame with the feet swapped
 const FORM_SPR={vampire:'vampire',werewolf:'werewolf',frank:'frank',ghost:'ghostwiz'};
 for(const k of Object.values(FORM_SPR))SPR[k+'2']=SPR[k].map((r,i,a)=>i===a.length-1?r.split('').reverse().join(''):r);
+Object.assign(SPR,createStageExpansion(LANG).sprites);
 // ===== SPRITES END =====
 
 // Crossroads content is pure story logic; browser integrations are passed lazily.
+const STORY=createStoryScenes(LANG);
+const EXPANSION=createStageExpansion(LANG);
+const RESONANCE=createResonance(LANG);
 const FATE=createFateUpdate({lang:LANG,context:()=>({say,chapter,finish,applyD,has,
-  ending:id=>ENDINGS.find(e=>e.id===id)?.name||id,track:(event,L)=>FUNNEL.track(event,L)})});
-const FATE_UI=createFateUI({fate:FATE,context:()=>({endings:ENDINGS,icon:ic,loadDex,saveDex,
+  ending:id=>[...ENDINGS,...FATE.endings].find(e=>e.id===id)?.name||id,track:(event,L)=>FUNNEL.track(event,L)})});
+const FATE_UI=createFateUI({fate:FATE,context:()=>({endings:[...ENDINGS,...FATE.endings],icon:ic,loadDex,saveDex,
   newLife,startBirth,shareURL:SHARE_URL,dailyKey,dailySeed,showDex:()=>showDex(dexBack)})});
 
 // ===== CORE (battle engine and scenery data; no DOM, also used by the simulators) =====
@@ -1566,8 +1575,8 @@ const unlockSkills=(set,lv,iq,early)=>{const open=set.filter((s,i)=>lv>=LV_UNLOC
 // what the first locked slot still needs, e.g. 'Lv.7' or 'Lv.7 지능100'
 const lockHint=(i,lv,iq)=>[lv<LV_UNLOCK[i]?'Lv.'+LV_UNLOCK[i]:'',iq<INT_UNLOCK[i]?TT_("19kb6kw",`지능${INT_UNLOCK[i]}`,[INT_UNLOCK[i]]):''].filter(Boolean).join(' ');
 const WANTED_HP=2.4;
-const HIT_CAP=[1,1,0.40,0.40,0.40], HIT_INV=0.5, BOSS_ATK=[1.2,1.1,0.9,0.85,1.1];   // share of max health a single hit can take, by stage; seconds of invulnerability after a hit; a boss's attack by stage
-const CLASH_TIME=4.6, CLASH_PUSH=0.05, CLASH_PULL=[0.30,0.32,0.34,0.36,0.38], CLASH_WIN=0.06, CLASH_LOSE=1.0;   // clash: longest it lasts, line moved per tap, the boss's pull per second by stage, boss health lost on a win, share of a special hit taken on a loss   // a wanted monster has this much more health than a normal one
+const HIT_CAP=[1,1,0.40,0.40,0.40,0.40], HIT_INV=0.5, BOSS_ATK=[1.2,1.1,0.9,0.85,0.95,1.1];   // share of max health a single hit can take, by stage; seconds of invulnerability after a hit; a boss's attack by stage
+const CLASH_TIME=4.6, CLASH_PUSH=0.05, CLASH_PULL=[0.30,0.31,0.33,0.35,0.36,0.38], CLASH_WIN=0.06, CLASH_LOSE=1.0;   // clash: longest it lasts, line moved per tap, the boss's pull per second by stage, boss health lost on a win, share of a special hit taken on a loss   // a wanted monster has this much more health than a normal one
 // Path traits: a knight is sturdy but must close in; a ranger shoots fast and crits often but is fragile.
 const CLASS_MOD={wizard:{hp:1,taken:1,atk:1,range:9999,crit:0,spd:640},warrior:{hp:1.18,taken:0.85,atk:1,range:330,crit:0,spd:520},archer:{hp:0.9,taken:1,atk:0.87,range:9999,crit:0.08,spd:820}};
 const CLASS_NAME={wizard:TT_("1sfxyhq",'마법사'),warrior:TT_("yz5kmx",'기사'),archer:TT_("1qygi9o",'궁수')};
@@ -1629,21 +1638,24 @@ const REGIONS={
     {s:'zombie',n:TT_("16ssdkx",'좀비'),hp:40,atk:8,sp:40,ai:1.1,size:47}],
     boss:{s:'demon',n:TT_("h435om",'마왕'),hp:520,atk:24,sp:30,ai:1.3,rng:300,size:173,acts:1}},
 };
+Object.assign(REGIONS,EXPANSION.regions);
 for(const id in REGIONS)REGIONS[id].id=id;
 // The route: one region per tier; forks offer two of a tier's regions.
-const TIERS=[['grass','forest'],['desert','swamp','coast'],['ice','volcano'],['dungeon','ruins'],['castle']];
-const HPMUL=[1,2.2,4.4,10,24], ATKMUL=[1.4,2.3,3.7,6.2,13.2];
+const TIERS=[['grass','forest'],['desert','swamp','coast'],['ice','volcano','crystal'],['dungeon','ruins','clockwork'],['astral'],['castle']];
+const LAST_STAGE=TIERS.length-1;
+const HPMUL=[1,2.2,4.4,10,15.5,24], ATKMUL=[1.4,2.3,3.7,6.2,9,13.2];
 // Extra toughness so monsters walk well into the screen before they drop (early stages were one-shot at the edge).
-// Toughness also follows the wizard's damage per second against a typical wizard (DPS_REF), so strong wizards meet sturdier monsters.
-const MOB_HP=[11,9,7,5,3.3], BOSS_HP=[2.4,2.4,2.2,2,1.7], DPS_REF=[82,125,207,344,594];
+// DPS_REF follows six stages of earned cards/levels; it is lower than the discarded eight-stage preview.
+// Toughness also follows the wizard's damage per second, so strong wizards meet sturdier monsters.
+const MOB_HP=[11,9,7,5,4,3.3], BOSS_HP=[2.4,2.4,2.2,2,1.85,1.7], DPS_REF=[82,125,207,344,460,650];
 // waves: smaller per-monster HP since there are more of them; boss specials: wind-up time, the last stretch where a tap blocks, damage as a share of max HP
-const SPECIAL_HIT=[0.1,0.12,0.15,0.17,0.2];
+const SPECIAL_HIT=[0.10,0.11,0.13,0.17,0.18,0.20];
 // one-on-one rhythm fights. three lanes (top, middle, bottom); a monster throws notes down them
 // by stage: tempo of the chart, seconds a note flies, fastest tap (the wizard's hop gets faster too), rest between patterns in beats, damage per note, monster/boss health
-const LANE_Y=[WY-66,WY-10,WY+46], BPM_N=[88,96,104,112,122], TRAVEL_N=[1.0,0.9,0.82,0.74,0.66], TAP_MIN=[0.2,0.18,0.16,0.14,0.12], HOP_K=[14,17,20,24,28];
+const LANE_Y=[WY-66,WY-10,WY+46], BPM_N=[88,94,102,112,116,122], TRAVEL_N=[1.0,0.94,0.84,0.76,0.72,0.68], TAP_MIN=[0.20,0.19,0.17,0.15,0.14,0.13], HOP_K=[14,16,20,24,26,28];
 const ATK_KIND={rat:'fang',boar:'rock',bee:'needle',wolf:'claw',shroom:'spore',fox:'flame',sprite:'star',treant:'leaf',scorpion:'needle',snake:'poison',beetle:'rock',golem:'boulder',frog:'poison',slime:'slime',mosquito:'needle',toadking:'bubble',crab:'bubble',gull:'feather',pirate:'cannon',kraken:'wave',snowman:'snow',penguin:'ice',seal:'ice',mammoth:'boulder',salamander:'flame',magma:'lava',firebird:'flame',firegiant:'lava',bat:'sonic',skeleton:'bone',spider:'web',ghost:'wisp',dragon:'flame',harpy:'wind',armor:'slash',griffin:'bolt',imp:'orb',ogre:'shock',zombie:'poison',demon:'orb'};
-const UNFAIR_N=[0,0.18,0.34,0.44,0.5];
-const REST_N=[2.2,2.0,1.8,1.6,1.5], HAZ_DMG=[1.8,2.3,2.7,2.9,2.2], MONOX=[5,5,5,5,5], BOSSX=[15,12,10,11,9];
+const UNFAIR_N=[0,0.10,0.20,0.28,0,0.35];
+const REST_N=[2.2,2.1,1.9,1.7,1.6,1.5], HAZ_DMG=[1.8,2.0,2.4,2.8,2.6,2.2], MONOX=[5,5,5,5,5,5], BOSSX=[15,12,10,10,9,9];
 // the demon king: extra health for three acts, switching at these shares of it
 const ACT_HP=3.0, ACT_AT=[0.66,0.33];
 const IMP=REGIONS.castle.mobs[0];
@@ -1666,6 +1678,8 @@ const THEME={
   sky:    {sky:['#7fb6ff','#ffe9f7'],far:'#ffffff',mid:'#f3eefe',ground:['#ffffff','#e6defa'],speck:'rgba(150,130,210,.18)',deco:['house2','flower','house_big','flower2'],path:['#f7e7ff','#e2cff5'],fore:['flower','flower2'],clouds:1},
   school: {sky:['#c79a72','#e3c39b'],ground:['#c99a6a','#a87a4c'],speck:'rgba(90,50,20,.18)',deco:['shelf','shelf','candle','shelf'],wall:'brick',wallDeco:'window',path:['#b54a5e','#ffd34d'],carpet:1,fore:['candle']},
 };
+
+Object.assign(THEME,EXPANSION.themes);
 
 function makeScene(key,rng){
   const rr=(a,b)=>a+rng()*(b-a),th=THEME[key];
@@ -1716,7 +1730,7 @@ function createBattle(st,seed,o){
   const tapMin=TAP_MIN[s]*Math.max(0.55,1-(MD.swift||0)*0.06),tapNow=()=>tapMin*(B.hasteT>0?0.62:1),armor=Math.min(0.45,(MD.armor||0)*0.05);
   const B={t:0,stage:s,region:RG.id,route:o.route||[RG.id],boss:!!o.boss,phase:'walk',phaseT:1.0,mobs:[],shots:[],fx:[],texts:[],zones:[],queue:[],spawnT:0,stopT:0,
     result:null,killedBy:null,scroll:0,shake:0,kills:0,fade:0,banner:null,wiz,C,stats:st,potion:(o.mods&&o.mods.potion)||0,revive:!!o.revive,reviveBy:o.reviveBy||'',revived:false,potionUsed:0,
-    shieldHP:MD.manashield?Math.round(o.wiz.max*0.2):0,famT:1,familiar:!!MD.familiar,clashOn:!!(o.boss||o.wanted),clash:null,clashT:rr(9,12),clashN:0,
+    starGuard:MD.starlamp?3:0,clockDodges:0,shieldHP:MD.manashield?Math.round(o.wiz.max*0.2):0,famT:1,familiar:!!MD.familiar,clashOn:!!(o.boss||o.wanted),clash:null,clashT:rr(9,12),clashN:0,
     wave:1,waves:(o.boss||o.wanted)?1:(s<=1?2:3),notes:[],dodges:0,combo:0,bestCombo:0,noteN:0,tapMin,tut:null,guardUsed:false,unyieldUsed:false,inv:0,burnT:0.5,hasteT:0,mightT:0,critT:0,slowT:0,curseT:0,lsT:0,form:o.form||null,
     cls:C.cls,traits:[...TR],allies:allies.map((a,i)=>({s:a,t:0.8+i*0.5})),rally:0,stopLook:'time',
     // trait tricks: a sneeze blast, a dragon's breath
@@ -1726,7 +1740,7 @@ function createBattle(st,seed,o){
   const text=(x,y,s,color,size=22,life=0.9)=>B.texts.push({x,y,s,color,size,t:life,life});
   function mkMob(d,boss,wanted){
     const size=(d.size||40)*(boss?1:1.9);
-    const hb=(boss?(sm.bossHp||1)*BOSS_HP[s]*(d.acts?ACT_HP:1)*BOSSX[s]:MOB_HP[s]*MONOX[s]*(wanted?WANTED_HP:1))*tough;
+    const hb=(boss?(sm.bossHp||1)*BOSS_HP[s]*(d.acts?ACT_HP:1)*BOSSX[s]*(d.combat?.hp||1):MOB_HP[s]*MONOX[s]*(wanted?WANTED_HP:1))*tough;
     // health is compressed so a rat and an ogre last about as long
     const hp=30*Math.pow(d.hp/30,0.45)*HPMUL[s]*hb,y=LANE_Y[1]+(d.fly?-26:boss?-6:0);
     return {d,name:(wanted?TT_("1n70oxe",'현상범 '):'')+d.n,boss:!!boss,elite:!!wanted,wanted:!!wanted,x:W+70,y,ty:y,lane:1,jy:0,stopX:boss?W-250:W-190,hp,max:hp,
@@ -1749,12 +1763,19 @@ function createBattle(st,seed,o){
     if(B.result||B.inv>0||wiz.ifr>0)return;
     if(!sure&&rng()<C.dodge*0.5){text(WX+10,wiz.y-70,TT_("1lfnlm7",'휙!'),'#5fb4ff',20);snd('dodge');return}
     if(MD.guardian&&!B.guardUsed){B.guardUsed=true;text(WX+10,wiz.y-70,TT_("8v8x9s",'결계!'),'#8fe3ff',22);snd('block');return}
+    const starProtected=B.starGuard>0;
+    if(starProtected){
+      B.starGuard--;text(WX,wiz.y-92,EXPANSION.tr('별의 반격!','Star counter!','星の反撃！'),'#fff4a8',20);
+      if(src&&!src.dead)B.shots.push({type:'missile',look:'star',x:WX,y:wiz.y-35,tg:src,tx:src.x,ty:src.y,spd:720,dmg:P()*1.1});snd('block');
+    }
     dmg*=C.CM.taken*(1-armor)*(B.mightT>0?0.85:1);
     dmg=Math.min(dmg,HIT_CAP[s]*wiz.max);
+    if(starProtected)dmg*=0.7;
     if(MD.thorns&&src&&!src.dead)hurtMob(src,dmg*0.3,'#c6f26a');
     if(B.shieldHP>0){const a=Math.min(B.shieldHP,dmg);B.shieldHP-=a;dmg-=a;if(dmg<=0){text(WX+10,wiz.y-70,TT_("175spco",'보호막'),'#8fe3ff',18);snd('block');return}}
     dmg=Math.round(dmg);
     if(MD.unyield&&!B.unyieldUsed&&wiz.hp-dmg<=0){B.unyieldUsed=true;B.inv=3;wiz.hp=1;text(WX,wiz.y-90,TT_("1nbuh6w",'불굴!'),'#ffd34d',28,1.4);snd('heal');return}
+    if(dmg>0&&B.resonance)B.resonance.hit();
     wiz.hp-=dmg;wiz.hit=0.18;wiz.ifr=HIT_INV;B.shake=Math.min(8,B.shake+3);snd('hurt');
     text(WX+rr(-14,14),wiz.y-60,'-'+dmg,'#ff5c8a',20);
     if(wiz.hp<=0&&B.revive){B.revive=false;B.revived=true;wiz.hp=Math.round(wiz.max*0.5);text(WX,wiz.y-90,TT_("7kb0xe",'다시 일어났다!'),'#ffb000',26,1.6);B.banner={text:TT_("7kb0xe",'다시 일어났다!'),sub:B.reviveBy==='undying'?TT_("1dco9z1",'불사신 체질'):TT_("bnt508",'불사조의 깃털'),t:1.8};snd('heal');return}
@@ -1813,6 +1834,31 @@ function createBattle(st,seed,o){
   const P=()=>C.power*wiz.pow*eDmg*(B.rally>0?1.3:1)*(B.mightT>0?1.4:1)*(1+Math.min(0.3,B.combo*0.015));
   const staff=()=>({x:WX+12,y:wiz.y-5});
 
+
+  // Cards combine with the birth element. Only genuinely dodged threats charge it.
+  // The original lane tap, automatic spells, bosses and life outcomes stay in charge.
+  if(o.resonance)B.resonance=RESONANCE.meter(o.resonance,r=>{
+    const targets=alive().filter(m=>!(m.lock>0));if(!targets.length)return false;
+    const t=nearest(targets),k=1+(r.rank-1)*0.25,R=B.resonance;
+    const hit=(m,n)=>hurtResonance(m,n,r.color);
+    const heal=n=>{const before=wiz.hp;wiz.hp=Math.min(wiz.max,wiz.hp+Math.round(wiz.max*n*k));R.healed+=wiz.hp-before};
+    B.fx.push({type:'resonance',id:r.id,x:t.x,y:t.y,t:0,life:0.85,col:r.color});
+    B.resonanceFlash={name:r.name,rank:r.rank,t:1.3,color:r.color};
+    wiz.callout={s:r.name+'!',icon:r.icon,t:1.2};B.shake=Math.max(B.shake,4);snd(r.effect==='ward'?'heal':'cast');
+    if(r.effect==='burst'){hit(t,P()*2.6*k);if(!t.dead)t.stun=Math.max(t.stun,0.65)}
+    if(r.effect==='storm')B.zones.push({look:'resonance-storm',col:r.color,x:t.x,y:t.y,r:105,t:3,tick:0,dmg:P()*0.4*k,resonance:true});
+    if(r.effect==='chain'){
+      for(let j=0;j<3;j++)if(!t.dead){B.shots.push({type:'fire',look:'bolt',col:r.color,rgb:'255,211,77',x:WX-22-j*22,y:wiz.y-12-j*20,tg:t,tx:t.x,ty:t.y,spd:620-j*100,dmg:P()*0.9*k,r:20,resonance:true})}
+    }
+    if(r.effect==='ward'){
+      heal(0.05);const before=B.shieldHP;B.shieldHP=Math.min(wiz.max*0.25,B.shieldHP+Math.round(wiz.max*0.08*k));R.shield+=Math.max(0,B.shieldHP-before);
+    }
+    if(r.effect==='drain'){hit(t,P()*2.2*k);heal(0.04)}
+    if(r.effect==='glacier'){hit(t,P()*2.2*k);B.slowT=Math.max(B.slowT,2.5)}
+    if(MD.prismcore)for(let i=0;i<2;i++)B.shots.push({type:'fire',look:'ice',col:'#b4e4ff',rgb:'180,228,255',x:WX,y:wiz.y-35+i*25,tg:t,tx:t.x,ty:t.y,spd:650-i*90,dmg:P()*0.65,r:20,resonance:true});
+  });
+  function hurtResonance(m,dmg,color){const before=m.hp;hurtMob(m,dmg,color);if(B.resonance)B.resonance.damage+=Math.max(0,before-m.hp)}
+
   // ---- notes ----
   function addNote(n){n.dur=n.t;n.born=B.t;n.threat=wiz.lane===n.lane;n.done=false;B.notes.push(n);B.noteN++;return n}
   function spawnNote(m,p){
@@ -1831,6 +1877,8 @@ function createBattle(st,seed,o){
       B.combo=0;hurtWiz(n.dmg,m,n.sure);
     }else if(n.threat){
       if(n.tut){B.tut.done++;text(WX+20,wiz.y-80,TT_("2mpusx",'좋아!'),'#ffd34d',24,1.0);snd('block');return}
+      if(B.resonance)B.resonance.dodge();
+      if(MD.clockspring){B.clockDodges++;if(B.clockDodges%4===0){for(const id in wiz.cds)wiz.cds[id]=Math.max(0,wiz.cds[id]-1.5);text(WX,wiz.y-110,EXPANSION.tr('태엽 재장전!','Clockwork reload!','ぜんまい再装填！'),'#ffd34d',20);snd('cast')}}
       B.dodges++;B.combo++;B.bestCombo=Math.max(B.bestCombo,B.combo);wiz.joy=0.5;snd('dodge');
       text(WX+rr(-6,6),wiz.y-72,TT_("rywkzg",'회피!'),'#5fb4ff',20,0.8);
     }
@@ -1854,9 +1902,19 @@ function createBattle(st,seed,o){
     fan2:g=>[0,1,2].map((l,i)=>({lane:l,b:i*g})).concat([2,1,0].map((l,i)=>({lane:l,b:3.2*g+i*g}))),
     rain:()=>{const r=[];let l=lean();for(let i=0;i<7;i++){r.push({lane:l,b:i*0.35});l=other(l)}return r},
   };
+  Object.assign(PATS,{
+    prism:g=>{const safe=Math.floor(rng()*3);return [0,1,2].filter(l=>l!==safe).map(l=>({lane:l,b:0})).concat([{lane:safe,b:1.6}])},
+    refraction:g=>{const safe=Math.floor(rng()*3);return [0,1].flatMap(j=>[0,1,2].filter(l=>l!==(safe+j)%3).map(l=>({lane:l,b:j*Math.max(1.4,g*2.5)})))},
+    pendulum:g=>{const a=rng()<0.5?0:2,fast=Math.max(0.85,g*2+0.2);return [{lane:a,b:0},{lane:2-a,b:2.2},{lane:1,b:2.2+fast},{lane:a,b:2.2+fast*2}]},
+    clockrush:g=>[0,1,2,1,0].map((lane,i)=>({lane,b:i*g})),
+    starfall:g=>{const safe=Math.floor(rng()*3);return [0,1,2].flatMap(j=>[0,1,2].filter(l=>l!==(safe+j)%3).map(l=>({lane:l,b:j*Math.max(1.2,g*2.5)})))},
+    orbitfall:g=>{const safe=Math.floor(rng()*3);return [0,2,1,0].flatMap((j,i)=>[0,1,2].filter(l=>l!==(safe+j)%3).map(l=>({lane:l,b:i*Math.max(1.2,g*2.5)})))},
+    comettail:g=>{const start=Math.floor(rng()*3);return [0,1,2,0].map((j,i)=>({lane:(start+j)%3,b:i*g}))},
+  });
   function patPool(m){
+    if(m.d.patterns)return m.enraged&&m.d.phase2?m.d.phase2:m.d.patterns;
     if(m.d.acts){const a=m.act||1;return a===1?['single','double','pair','stairD','big','fanD']:a===2?['pair','stairD','stairU','zig','double','big','fanD','fanU','rain']:['zig','burst','pair','stairU','stairD','big2','big','fanD','fanU','fanZ','fan2','rain']}
-    const base=[['single','single','single','double'],['single','single','double','pair','fanD'],['single','double','pair','stairD','stairU','fanD','fanU'],['double','pair','stairD','stairU','zig','fanD','fanU','fanZ','rain'],['pair','stairD','stairU','zig','burst','double','fanD','fanU','fanZ','fan2','rain']][s];
+    const base=[['single','single','single','double'],['single','single','double','pair','fanD'],['single','double','pair','stairD','stairU','fanD','fanU'],['double','pair','stairD','stairU','zig','fanD','fanU','fanZ','rain'],['pair','stairD','stairU','zig','burst','double','fanD','fanU','fanZ','fan2','rain']][Math.min(4,Math.floor(s*4/LAST_STAGE))];
     return (m.boss||m.wanted)?base.concat(['big']):base;
   }
   // can a player who taps at this stage's pace dodge the pattern? (a tap hops one lane down, so any lane is at most two taps away)
@@ -1885,11 +1943,14 @@ function createBattle(st,seed,o){
     return true;
   }
   function planPattern(m){
-    const beat=beat0*(m.act===2?0.92:m.act===3?0.85:1);let notes=null;
+    const pace=m.d.combat?(m.enraged?m.d.combat.phaseTempo:m.d.combat.tempo)||1:1;
+    const beat=beat0*(m.act===2?0.92:m.act===3?0.85:1)/pace;let notes=null;
     // a fraction of the unfair patterns is let through (more of them later in the game)
     const g=Math.max(tapMin+0.105,0.22)/beat;
-    for(let i=0;i<10&&!notes;i++){const nm=pick(patPool(m)),c=PATS[nm](g);if(feasible(c,beat)||rng()<UNFAIR_N[s]){notes=c;m.patName=nm}}
+    for(let i=0;i<10&&!notes;i++){const pool=patPool(m),nm=m.phaseOpening?pool[pool.length-1]:m.d.patterns&&!(m.patternN%3)?pool[0]:pick(pool),c=PATS[nm](g);if(feasible(c,beat)||(!m.d.fair&&!EXPANSION.regions[RG.id]&&rng()<UNFAIR_N[s])){notes=c;m.patName=nm}}
     if(!notes){notes=PATS.single();m.patName='single'}
+    m.phaseOpening=false;m.patternN=(m.patternN||0)+1;B.patternCounts=B.patternCounts||{};B.patternCounts[m.patName]=(B.patternCounts[m.patName]||0)+1;
+    if(m.boss&&EXPANSION.patternNames[m.patName])B.intent={name:EXPANSION.patternNames[m.patName],t:2.2};
     m.sched=notes.map(n=>({lane:n.lane,at:n.b*beat,big:n.big,vol:n.vol,pat:m.patName})).sort((a,b)=>a.at-b.at);m.patT=0;m.beat=beat;
   }
 
@@ -1953,12 +2014,15 @@ function createBattle(st,seed,o){
 
   B.update=function(dt){
     B.t+=dt;
+    if(B.intent){B.intent.t-=dt;if(B.intent.t<=0)B.intent=null}
+    if(B.resonance&&!B.tut&&!B.result)B.resonance.tick(dt);
     if(B.banner){B.banner.t-=dt;if(B.banner.t<=0)B.banner=null}
     if(B.fade>0)B.fade=Math.max(0,B.fade-dt*1.5);
     B.shake=Math.max(0,B.shake-dt*30);
     for(const x of B.texts){x.t-=dt;x.y-=36*dt}
     B.texts=B.texts.filter(x=>x.t>0);
     if(wiz.callout){wiz.callout.t-=dt;if(wiz.callout.t<=0)wiz.callout=null}
+    if(B.resonanceFlash){B.resonanceFlash.t-=dt;if(B.resonanceFlash.t<=0)B.resonanceFlash=null}
     wiz.hit=Math.max(0,wiz.hit-dt);wiz.ifr=Math.max(0,(wiz.ifr||0)-dt);wiz.cast=Math.max(0,wiz.cast-dt);wiz.hop=Math.max(0,wiz.hop-dt);wiz.joy=Math.max(0,(wiz.joy||0)-dt);
     wiz.y+=(LANE_Y[wiz.lane]-wiz.y)*Math.min(1,dt*HOP_K[s]);
     for(const f of B.fx)f.t+=dt;
@@ -2058,6 +2122,7 @@ function createBattle(st,seed,o){
       if(!m.ready){m.x=Math.max(m.stopX,m.x-420*dt);m.ph+=dt*8;if(m.x<=m.stopX){m.ready=true;m.rest=1.0}continue}
       m.ph+=dt*2;
       if(B.tut)continue;
+      if(m.d.phase2&&!m.enraged&&m.hp/m.max<=0.5){m.enraged=true;m.phaseOpening=true;m.sched=[];m.rest=1.0;B.intent={name:EXPANSION.tr('패턴 변화!','New pattern!','パターン変化！'),t:1.8};snd('boss')}
       if(m.stun>0){m.stun-=dt;continue}
       if(m.lock>0){m.lock-=dt;continue}
       if(B.clash)continue;   // locked in the clash: no new attacks
@@ -2065,13 +2130,13 @@ function createBattle(st,seed,o){
       if(m.sched.length){
         m.patT+=dt;
         while(m.sched.length&&m.sched[0].at<=m.patT)spawnNote(m,m.sched.shift());
-        if(!m.sched.length)m.rest=Math.max(0.6,REST_N[s]*m.beat*rr(0.9,1.15)*(MD.chill?1.12:1));
+        if(!m.sched.length)m.rest=Math.max(0.6,REST_N[s]*m.beat*rr(0.9,1.15)*(MD.chill?1.12:1)*(m.d.combat?(m.enraged?m.d.combat.phaseRest:m.d.combat.rest)||1:1));
       }else{m.rest-=dt;if(m.rest<=0)planPattern(m)}
     }
 
     for(const z of B.zones){
       z.t-=dt;z.tick-=dt;
-      if(z.tick<=0){z.tick=0.5;for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-z.x,(m.y-z.y)*1.4)<z.r){m.slow=0.7;hurtMob(m,z.dmg,z.col||'#5fb4ff');if(z.heal)wiz.hp=Math.min(wiz.max,wiz.hp+wiz.max*0.012);if(z.ls)wiz.hp=Math.min(wiz.max,wiz.hp+z.dmg*0.3)}}
+      if(z.tick<=0){z.tick=0.5;for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-z.x,(m.y-z.y)*1.4)<z.r){m.slow=0.7;(z.resonance?hurtResonance:hurtMob)(m,z.dmg,z.col||'#5fb4ff');if(z.heal)wiz.hp=Math.min(wiz.max,wiz.hp+wiz.max*0.012);if(z.ls)wiz.hp=Math.min(wiz.max,wiz.hp+z.dmg*0.3)}}
     }
     B.zones=B.zones.filter(z=>z.t>0);
 
@@ -2084,7 +2149,8 @@ function createBattle(st,seed,o){
           if(sh.tg&&!sh.tg.dead){hurtMob(sh.tg,sh.dmg,'#ff5c8a');if(sh.bite)wiz.hp=Math.min(wiz.max,wiz.hp+sh.dmg*0.08);if(sh.arc)hurtMob(sh.tg,sh.dmg*0.35,'#ffd34d')}
           else{const l=alive();if(l.length){sh.done=false;sh.tg=nearest(l)}}
         }else if(sh.type==='fire'){
-          for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-sh.tx,(m.y-sh.ty)*1.3)<sh.r){hurtMob(m,sh.dmg,sh.col||'#ff8a3d');if(sh.ls)wiz.hp=Math.min(wiz.max,wiz.hp+sh.dmg*0.25)}
+          if(sh.resonance){if(sh.tg&&!sh.tg.dead)hurtResonance(sh.tg,sh.dmg,sh.col)}
+          else for(const m of B.mobs)if(!m.dead&&Math.hypot(m.x-sh.tx,(m.y-sh.ty)*1.3)<sh.r){hurtMob(m,sh.dmg,sh.col||'#ff8a3d');if(sh.ls)wiz.hp=Math.min(wiz.max,wiz.hp+sh.dmg*0.25)}
           B.fx.push({type:'boom',x:sh.tx,y:sh.ty,r:sh.r,t:0,life:0.35,c:sh.rgb||'255,150,60'});
         }
       }else{sh.x+=dx/d*step;sh.y+=dy/d*step}
@@ -2213,8 +2279,8 @@ const ENDINGS=[
   {id:'court',   name:TT_("v4ifvm",'궁정 마법사'),              icon:'scroll'},
   {id:'teacher', name:TT_("14goxfo",'마을의 인기 선생님'),       icon:'book'},
   {id:'quiet',   name:TT_("sxeup9",'평범하고 행복한 인생'),     icon:'heart'},
-  ...FATE.endings,
 ];
+ENDINGS.push(...EXPANSION.endings);
 const NAMES=[TT_("ehgrp",'포포'),TT_("1cbr01p",'루미'),TT_("1qjvri9",'모찌'),TT_("13jpzbk",'콩이'),TT_("mpuyot",'보리'),TT_("5ygict",'누리'),TT_("1wnwezh",'하루'),TT_("1s2mx",'소금'),TT_("6emjz9",'별이'),TT_("psb99l",'토리'),TT_("18w3dbx",'미루'),TT_("eq7biq",'호떡'),TT_("1jvqix5",'꼬미'),TT_("ccutt5",'단비'),TT_("fy2e2t",'라라'),TT_("1bmonv9",'솔이'),TT_("tykp0d",'우유'),TT_("zqpy70",'찹쌀'),TT_("mrgntp",'두부'),TT_("1wd50ct",'감자'),TT_("g3h37j",'도토리'),TT_("1kb81bd",'까미'),TT_("eagj9w",'몽이'),TT_("1v8re2p",'쿠키'),TT_("nmv36h",'버터'),TT_("xp8j9h",'라떼'),TT_("15gf0u0",'망고'),TT_("1ctq8ux",'초코'),TT_("17j46yl",'유자'),TT_("ybvdz5",'레몬'),TT_("fdjmqx",'깨비'),TT_("kyfvck",'뭉치'),TT_("edih9p",'다람'),TT_("sbnuid",'호두'),TT_("uq3281",'밤톨')];
 const CAT_NAMES=[TT_("juylnd",'나비'),TT_("1uyuhkt",'치즈'),TT_("jsgupu",'까망이'),TT_("1v8q4m2",'고등어'),TT_("wseee",'삼색이')];
 const DRAKE_NAMES=[TT_("13lcim0",'불꽃이'),TT_("1yfd2xl",'용용이'),TT_("1yb1fs5",'꼬리'),TT_("1t1dvb3",'비늘이')];
@@ -2245,6 +2311,7 @@ const WANTED={
   dungeon:[{n:TT_("1rybkl4",'해골 기사단장 본'),s:'skeleton',k:'bone'},{n:TT_("wmwbw",'거미 여왕 아라'),s:'spider',k:'web'}],
   ruins:[{n:TT_("1y0yoj4",'하피 여왕 세이렌'),s:'harpy',k:'wind'},{n:TT_("1egy7cb",'유적 망령 두목'),s:'ghost',k:'wisp'}],
 };
+for(const [rid,rg] of Object.entries(EXPANSION.regions))WANTED[rid]=rg.mobs.slice(0,2).map(m=>({n:m.n,s:m.s,k:m.k}));
 const wantedDef=w=>Object.assign({},Object.values(REGIONS).flatMap(r=>r.mobs).find(m=>m.s===w.s),{n:w.n,k:w.k});
 
 // Korean particles: J('포포','은/는') -> '포포는'
@@ -2632,7 +2699,7 @@ const EV=[
 {id:'manaspring',ph:'adv',w:16,cls:'wizard',icon:'potion',t:TT_("1lsp90c",`반짝이는 마나 샘을 발견했다.`,[]),
   choice:[{l:TT_("j1w7cx",'벌컥벌컥 마신다'),t:TT_("cp0qvc",'머리가 맑아졌다. 손끝에서 불꽃이 튄다.'),d:{int:8,cur:0.1}},{l:TT_("1soxt10",'병에 담아 간다'),t:TT_("1tlpl66",'위급할 때 마실 물약이 생겼다.'),d:{mods:{potion:1}}}]},
 // ===== trait tricks on the road =====
-{id:'befriend',ph:'adv',w:L=>(has(L,'chatty')?30:0)+(has(L,'beastspeak')?30:0),c:L=>L.allies.length<3&&L.region&&L.stage<4,icon:L=>L.flags._mob||'heart',major:1,
+{id:'befriend',ph:'adv',w:L=>(has(L,'chatty')?30:0)+(has(L,'beastspeak')?30:0),c:L=>L.allies.length<3&&L.region&&L.region!=='castle',icon:L=>L.flags._mob||'heart',major:1,
   t:L=>{const m=REGIONS[L.region].mobs[Math.floor(L.rng()*REGIONS[L.region].mobs.length)];L.flags._mob=m.s;return has(L,'beastspeak')?TT_("gd018g",`${J(m.n,'이/가')} 다친 다리를 보여 줬다. 치료해 줬더니 졸졸 따라온다. 같이 싸워 주겠단다!`,[m.n]):TT_("158hzqm",`${m.n}에게 날씨 얘기를 걸었다. 세 시간 수다 끝에 친구가 됐다. 같이 싸워 주겠단다!`,[m.n])},
   d:L=>({ally:L.flags._mob})},
 {id:'sleepwalk',ph:'adv',w:25,c:L=>has(L,'sleepy'),icon:'ghost',t:TT_("pjg44t",`자다가 몽유병으로 걸었다. 눈떠 보니 몬스터 소굴 한가운데를 지나쳐 와 있었다.`,[]),d:{sm:{waveCut:1}}},
@@ -2648,7 +2715,7 @@ const EV=[
 {id:'dice',ph:'adv',w:9,c:L=>L.gold>=30,icon:'coin',t:TT_("1qg8j6a",`고블린이 주사위 도박판을 펼쳤다. "30골드 걸면 두 배!"`,[]),
   choice:[{l:TT_("1dfafnp",'건다'),t:L=>{L.flags._dice=L.rng()<(has(L,'lucky')?0.8:0.45);return L.flags._dice?TT_("16dfcik",'주사위 6이 두 개! 고블린이 울면서 돈을 줬다.'):TT_("ya0qeq",'고블린이 주사위를 바꿔치기했다. 30골드가 사라졌다.')},d:L=>L.flags._dice?{gold:60}:{gold:-30}},
           {l:TT_("lpz9sl",'안 건다'),t:TT_("y8lqwh",'고블린이 "겁쟁이~" 하고 놀렸다.')}]},
-{id:'bounty',ph:'adv',w:9,c:L=>L.stage<4,icon:'scroll',t:L=>{const list=WANTED[L.region]||WANTED.grass,i=Math.floor(L.rng()*list.length),W=list[i];L.flags['wanted_'+L.region]=i;return TT_("ok5ob6",`현상수배 포스터: 「${W.n}」 · 현상금 ${150+40*L.stage}골드. 이 근처 어딘가에 숨어 있다고 한다.`,[W.n,150+40*L.stage])},
+{id:'bounty',ph:'adv',w:9,c:L=>L.region!=='castle',icon:'scroll',t:L=>{const list=WANTED[L.region]||WANTED.grass,i=Math.floor(L.rng()*list.length),W=list[i];L.flags['wanted_'+L.region]=i;return TT_("ok5ob6",`현상수배 포스터: 「${W.n}」 · 현상금 ${150+40*L.stage}골드. 이 근처 어딘가에 숨어 있다고 한다.`,[W.n,150+40*L.stage])},
   choice:[{l:TT_("1rj9hg6",'현상금을 노린다'),t:TT_("1mhzbhh",'포스터를 뜯어 주머니에 넣었다.'),d:L=>({f:'bounty_'+L.region})},{l:TT_("7vj9r9",'못 본 척한다'),t:TT_("bzyqvz",'포스터가 바람에 날아갔다.')}]},
 {id:'cafe',ph:'adv',w:8,icon:'coin',t:TT_("st1e5a",`몬스터 카페에서 하루 아르바이트를 했다. 슬라임 손님이 팁을 줬다.`,[]),d:{gold:45,fame:2}},
 {id:'fortune',ph:'adv',w:8,c:L=>L.gold>=20,icon:'star',t:TT_("r552c9",`길가의 점쟁이 할머니가 손짓한다. "20골드면 앞날을 봐 주지."`,[]),
@@ -2711,20 +2778,22 @@ function pickEvent(L,phs){
 // ---------- the life script ----------
 // A generator: it yields steps for the UI (or the simulator) and receives choices, minigame results and battle outcomes back.
 const val=(x,L)=>typeof x==='function'?x(L):x;
-function* say(L,text,icon,d,major){
-  const e={age:L.age,text,icon,d:applyD(L,d),major:!!major,theme:L.theme};
+function* say(L,text,icon,d,major,scene){
+  const before=STORY.snapshot(L),deltas=applyD(L,d),visuals=STORY.changes(before,L);
+  if(scene?.kind&&['relic','spell','forge'].includes(scene.kind))visuals.unshift(scene);
+  const e={age:L.age,text,icon,d:deltas,major:!!major,theme:L.theme,visuals,scene};
   L.log.push(e);yield {t:'log',e};
 }
 function* doEvent(L,ev){
   L.used[ev.id]=1;
   const text=val(ev.t,L),icon=typeof ev.icon==='function'?ev.icon(L):ev.icon;
   if(ev.choice){
-    const e={age:L.age,text,icon,d:[],major:!!ev.major,opts:ev.choice.map(o=>val(o.l,L)),theme:L.theme};
+    const e={age:L.age,text,icon,d:[],major:!!ev.major,opts:ev.choice.map(o=>val(o.l,L)),theme:L.theme,eventId:ev.id};
     L.log.push(e);
     const k=yield {t:'choice',e};
     const o=ev.choice[k]||ev.choice[0];e.picked=val(o.l,L);
-    yield* say(L,val(o.t,L),icon,val(o.d,L),false);
-  }else yield* say(L,text,icon,val(ev.d,L),ev.major);
+    yield* say(L,val(o.t,L),icon,val(o.d,L),false,STORY.choice(e,k,L));
+  }else yield* say(L,text,icon,val(ev.d,L),ev.major,STORY.plan({eventId:ev.id,icon},L));
 }
 function* chapter(L,theme,mode,title,sub){L.theme=theme;yield {t:'scene',theme,mode,banner:{text:title,sub}}}
 
@@ -2738,10 +2807,8 @@ function* lifeScript(L){
   L.age=ages[0];yield* doEvent(L,EVI.firstmagic);
   for(const a of ages.slice(1)){L.age=a;const ev=pickEvent(L,'child');if(ev)yield* doEvent(L,ev)}
   L.age=6;yield* FATE.memory(L);
-  L.age=7;L.cls='wizard';
-  const learned=yield* FATE.choosePath(L);
-  if(learned==='hero'){
   // 7: the entrance exam (arithmetic)
+  L.age=7;L.cls='wizard';
   const SC=SCHOOL[L.cls];
   yield* say(L,byCls(L,{wizard:TT_("172nc5z",'마법학교 입학시험 날이 밝았다. 연필을 꼭 쥐었다.'),warrior:TT_("rvakfe",'기사학교 입단 시험 날. 연습장에 통나무가 줄지어 서 있다.'),archer:TT_("16yd7v3",'궁술 학교 입단 시험 날. 멀리서 과녁이 흔들린다.')}),byCls(L,{wizard:'book',warrior:'sword',archer:'i_arrow'}));
   const q=yield {t:'mini',kind:byCls(L,{wizard:'quiz',warrior:'chop',archer:'aim'})};
@@ -2770,20 +2837,32 @@ function* lifeScript(L){
   const grad=L.tier==='royal'?(L.st.int>=150?TT_("1btvpq8",`${J(SC.royal,'을/를')} 수석으로 졸업했다.`,[SC.royal]):TT_("nppyyr",`${J(SC.royal,'을/를')} 무사히 졸업했다.`,[SC.royal])):L.tier==='local'?TT_("bdc6s5",`${J(SC.local,'을/를')} 졸업했다. 동기는 세 명이었다.`,[SC.local]):fl(L,'transfer')?TT_("1czwhcx",`늦깎이로 들어간 ${J(SC.local,'을/를')} 졸업했다.`,[SC.local]):TT_("ipwwok",`대장간 견습을 마쳤다. 망치질로 ${J(ART(L),'을/를')} 익혔다.`,[ART(L)]);
   yield* say(L,grad,'scroll',{fame:L.tier==='royal'&&L.st.int>=150?15:0});
   {const ev=pickEvent(L,'teen');if(ev)yield* doEvent(L,ev)}
-  }else{yield* FATE.upbringing(L)}
+  // 18: the fork
   L.age=18;FUNNEL.track('coming_of_age',L);
-  const path=yield* FATE.choosePath(L,true);
-  if(path==='home'){yield* homeLife(L);return}
-  if(path==='forbidden'){yield* FATE.forbiddenLife(L);return}
+  const fork={age:18,text:has(L,'chosen')?TT_("1ms9wq5",'성인식 날, 손등의 표식이 뜨겁게 빛났다. 마왕을 쓰러뜨리러 떠날까?'):has(L,'coward')?TT_("2zt0k5",'성인식 날. 다리가 후들거린다. 정말 모험을 떠날까?'):fl(L,'prophecy')?TT_("7pqp5u",'성인식 날. 꿈속의 목소리가 떠오른다. 모험을 떠날까?'):TT_("18r5c2f",'성인식 날. 마왕을 쓰러뜨리러 모험을 떠날까?'),icon:'sword',d:[],major:true,sceneKind:'adult-fork',opts:[TT_("1mgar23",'모험을 떠난다'),TT_("f6u202",'고향에 남는다')]};
+  L.log.push(fork);
+  const k=yield {t:'choice',e:fork};fork.picked=fork.opts[k];
+  FATE.state(L).path=k===1?'home':'hero';
+  FUNNEL.track(k===1?'adult_home':'adult_hero',L);
+  if(k===1){yield* homeLife(L);return}
   yield* adventure(L);
 }
 
-function* homeLife(L){yield* FATE.villageLife(L)}
+function* homeLife(L){
+  const R=L.rng;
+  yield* chapter(L,L.origin.theme,'idle',TT_("ob31bm",'고향에서'),L.origin.name);
+  yield* say(L,TT_("hbrcia",`고향에 남기로 했다. ${has(L,'coward')?TT_("xlaxsc",'솔직히 조금 안심했다.'):TT_("1u1qw5u",'모험은 다른 사람에게 맡기기로.')}`,[has(L,'coward')?TT_("xlaxsc",'솔직히 조금 안심했다.'):TT_("1u1qw5u",'모험은 다른 사람에게 맡기기로.')]),'house_big',null,true);
+  for(const a of [24,31,42,55,68]){L.age=a+Math.floor(R()*4);const ev=pickEvent(L,'home');if(ev)yield* doEvent(L,ev)}
+  L.age=82+Math.floor(R()*16);
+  const end=fl(L,'end_merchant')?'merchant':fl(L,'end_guard')?'guard':fl(L,'end_hunter')?'hunter':fl(L,'end_court')?'court':fl(L,'end_bakery')?'bakery':fl(L,'end_potato')?'potato':fl(L,'end_teacher')?'teacher':'quiet';
+  yield* finish(L,end,TT_("1ra27k",`${L.age}세, 따뜻한 침대에서 천수를 누리고 잠들었다.`,[L.age]));
+}
 
 // Regional dishes for the 대식가: eat now for a big heal and more max HP, or pack it as a lunchbox (a potion).
 // Risky dishes upset the stomach unless it is made of iron.
 const FOODS={grass:[TT_("kyy7tg",'꿀벌집 토스트'),'flower'],forest:[TT_("19yiwkt",'요정 버섯 꼬치'),'mushroom',1],desert:[TT_("7znl4g",'선인장 스테이크'),'cactus'],swamp:[TT_("ycmsfh",'늪지 개구리 수프'),'potion',1],coast:[TT_("kygqgb",'크라켄 다리 구이'),'boat'],
   ice:[TT_("156n9ar",'매머드 아이스크림'),'snowflake'],volcano:[TT_("p8d950",'용암 군고구마'),'fire'],dungeon:[TT_("1xqpx2u",'미믹 젤리'),'chest',1],ruins:[TT_("5ob0yu",'구름 솜사탕'),'cloudi'],castle:[TT_("1xi887l",'마왕성 디저트'),'lolly']};
+Object.assign(FOODS,EXPANSION.foods);
 function* feast(L,rid){
   const [food,icon,risky]=FOODS[rid];
   const e={age:L.age,text:TT_("3sled3",`${REGIONS[rid].name} 명물 「${food}」 냄새가 난다. 대식가의 코가 벌름거린다.`,[REGIONS[rid].name,food]),icon,d:[],theme:L.theme,opts:[TT_("zynp4i",'그 자리에서 먹는다'),TT_("12qffk8",'도시락으로 싼다')]};
@@ -2824,11 +2903,10 @@ function* adventure(L){
   L.W={hp:mx,max:mx,lv:1,exp:0,pow:1};
   yield* say(L,TT_("9shgla",`${N(L,'는')} ${J(WP(L),'을/를')} 챙겨 마왕성으로 떠났다.`,[L.name,WP(L)]),'sword',null,true);
   if(has(L,'genius')){L.mods.early=(L.mods.early||0)+1;yield* say(L,TT_("kugue0",`천재 기질 발동! 아직 배우지 않은 기술 하나를 이미 쓸 줄 안다.`,[]),'book')}
-  for(let s=0;s<5;s++){
+  for(let s=0;s<TIERS.length;s++){
     L.stage=s;L.age+=s===0?1:1+Math.floor(R()*2);
     const rid=yield* chooseRoute(L,s),RG=REGIONS[rid];L.region=rid;L.route.push(rid);
     yield* chapter(L,RG.key,'walk',RG.name,TT_("mdgp4j",`${L.age}세`,[L.age]));
-    yield* FATE.heroBeat(L,s);
     if(has(L,'diligent'))applyD(L,{int:3});
     yield* forge(L);
     const ev1=pickEvent(L,[rid,'adv']);if(ev1)yield* doEvent(L,ev1);
@@ -2845,7 +2923,7 @@ function* adventure(L){
     if(has(L,'glutton')&&(s===0||R()<0.75))yield* feast(L,rid);
     const ev2=R()<(has(L,'curious')?0.7:0.35)?pickEvent(L,[rid,'adv']):null;if(ev2)yield* doEvent(L,ev2);
     if(L.ending)return yield* finish(L,L.ending,endEpitaph(L));
-    if(s===4){const fin=yield* castleTwist(L);if(fin)return}
+    if(rid==='castle'){const fin=yield* castleTwist(L);if(fin)return}
     if(fl(L,'bounty_'+rid)){
       const W=WANTED[rid][L.flags['wanted_'+rid]||0];
       yield* say(L,TT_("1udajha",`길목을 막고 선 그림자. 현상수배범 「${W.n}」이다!`,[W.n]),W.s,null,true);
@@ -2855,15 +2933,16 @@ function* adventure(L){
       yield* levelPerk(L,{levels:1,min:'r',title:TT_("17iruen",`「${W.n}」 체포 기념! 보상 카드를 한 장 고르자.`,[W.n])});
     }
     if(fl(L,'peace_'+rid)){yield* say(L,TT_("192nwuc",`${J(RG.boss.n,'과/와')}는 싸우지 않고 지나갔다.`,[RG.boss.n]),RG.boss.s,{fame:10});continue}
-    const act=s<4?yield* bossChoice(L,s,RG):'fight';
+    const act=rid!=='castle'?yield* bossChoice(L,s,RG):'fight';
     if(act!=='fight')continue;
     r=yield {t:'battle',stage:s,region:rid,boss:true};
     if(!r.win)return yield* died(L,s,r);
-    yield* say(L,TT_("12ww8j3",`${J(RG.boss.n,'을/를')} 쓰러뜨렸다!`,[RG.boss.n]),RG.boss.s,{fame:10*(s+1),cur:0.25},s===4);
+    yield* say(L,TT_("12ww8j3",`${J(RG.boss.n,'을/를')} 쓰러뜨렸다!`,[RG.boss.n]),RG.boss.s,{fame:10*(s+1),cur:0.25},rid==='castle');
+    yield* awardStageRelic(L,rid);
     yield* levelPerk(L,r);
-    if(s<4)yield* levelPerk(L,{levels:1,min:'r',title:TT_("13dal6b",'보스 격파 보상! 카드를 한 장 고르자.')});
+    if(s<LAST_STAGE)yield* levelPerk(L,{levels:1,min:'r',title:TT_("13dal6b",'보스 격파 보상! 카드를 한 장 고르자.')});
   }
-  const end=FATE.heroEnding(L)||(has(L,'chosen')?'chosen':L.form==='vampire'?'vampire':L.form==='werewolf'?'werewolf':L.form==='frank'?'frank':L.form==='ghost'?'ghost':L.allies.length>=3?'beastking':fl(L,'dragonfriend')?'dragonrider':L.sneaked>=3?'shadow':L.family.id==='royal'?'king':L.family.id==='archmage'&&L.cls==='wizard'?'archmage':'hero');
+  const end=(has(L,'chosen')?'chosen':L.form==='vampire'?'vampire':L.form==='werewolf'?'werewolf':L.form==='frank'?'frank':L.form==='ghost'?'ghost':L.allies.length>=3?'beastking':fl(L,'dragonfriend')?'dragonrider':L.sneaked>=3?'shadow':L.family.id==='royal'?'king':L.family.id==='archmage'&&L.cls==='wizard'?'archmage':'hero');
   const text={oathkeeper:FATE.tr('약속했던 아이들 곁으로 친구와 함께 돌아왔다. 마을은 영웅의 이름보다 지켜 낸 약속을 오래 기억했다.','You return with your friend to the waiting children. The village remembers your promise longer than your fame.','待っていた子どもたちの元へ友だちと帰った。村は名声より、守られた約束を長く覚えていた。'),
     unchosen:FATE.tr('표식이 없어도, 좋은 집안이 아니어도 괜찮았다. 운명은 태어날 때가 아니라 선택할 때 완성됐다.','No mark or noble birth was needed. Your fate was made by your choices.','印も立派な家柄も必要なかった。運命を完成させたのは、生まれではなく選択だった。'),
     chosen:TT_("163z5lz",'표식의 예언이 이루어졌다. 이제 온 세상이 그 이름을 안다.'),
@@ -2918,6 +2997,7 @@ function* castleTwist(L){
 // Level-up spell cards: after a fight that gained levels, draw 3 cards (4 after a big jump) and keep one.
 // 일반 = small stat steps (repeatable). 희귀/전설 = one-of-a-kind cards that change how the battles play (core.js reads L.mods[id]).
 const CARDS=[
+  ...EXPANSION.relics,
   {id:'power',r:'n',name:TT_("1t12j77",'마력 강화'),icon:'book',desc:TT_("12pdze2",'공격력 +6%'),apply:L=>{L.mods.dmg*=1.06}},
   {id:'vital',r:'n',name:TT_("16n2rli",'체력 단련'),icon:'heart',desc:TT_("1ynj7fh",'최대 HP +8%'),apply:L=>{const a=Math.round(L.W.max*0.08);L.W.max+=a;L.W.hp+=a}},
   {id:'haste',r:'n',name:TT_("1hf05gn",'빠른 시전'),icon:'bolt',desc:TT_("4nyyrv",'공격 속도 +5%'),apply:L=>{L.mods.haste=(L.mods.haste||0)+0.05}},
@@ -2976,10 +3056,16 @@ function drawCards(L,n,min){
   for(let i=0;i<n;i++){const x=L.rng();let r=x<pL?'l':x<pL+pR?'r':'n';
     if(r==='l'&&hand.some(c=>c.r==='l'))r='r';
     if(min==='r'&&r==='n')r='r';
-    const ok=c=>(CARD_CLS[L.cls]||{})[c.id]!==null;
+    const ok=c=>!c.bossOnly&&(CARD_CLS[L.cls]||{})[c.id]!==null;
     let pool=CARDS.filter(c=>c.r===r&&ok(c)&&!hand.includes(c)&&(c.r==='n'||!L.mods[c.id]));
     if(!pool.length)pool=CARDS.filter(c=>c.r==='n'&&!hand.includes(c));
     hand.push(pool[Math.floor(L.rng()*pool.length)])}
+  // One useful bridge is offered with the first earned reward, alongside the
+  // original random cards. Nothing is awarded until the player wins and chooses.
+  if(!L.cards.length&&!RESONANCE.active(L)){
+    const bridges=RESONANCE.bridge(L,CARDS).filter(c=>!hand.includes(c));
+    if(bridges.length)hand[0]=bridges[Math.floor(L.rng()*bridges.length)];
+  }
   return hand;
 }
 function* levelPerk(L,r){
@@ -2987,12 +3073,21 @@ function* levelPerk(L,r){
   const big=r.levels>=2,hand=drawCards(L,big?4:3,r.min);
   const views=hand.map(c=>cardView(L,c));
   const e={age:L.age,text:r.title||TT_("fk4bsn",`레벨 ${L.W.lv} 달성! 카드를 한 장 고르자.${big?TT_("1iq6kdx",' 레벨이 많이 올라서 한 장 더!'):''}`,[L.W.lv,big?TT_("1iq6kdx",' 레벨이 많이 올라서 한 장 더!'):'']),icon:'star',d:[],theme:L.theme,
-    opts:views.map(v=>v.name),cards:views};
+    opts:views.map(v=>v.name),cards:views,buildCards:hand.map(c=>RESONANCE.project(L,c))};
   L.log.push(e);const k=yield {t:'choice',e};const c=hand[k]||hand[0],cv=views[k]||views[0];e.picked=cv.name;
+  const nextResonance=RESONANCE.project(L,c);
   if(c.r!=='n')L.mods[c.id]=1;if(c.apply)c.apply(L);L.cards.push(c.id);
-  const done={age:L.age,text:TT_("s8c6lg",`${CARD_RARITY[c.r]} 카드 「${cv.name}」! ${cv.desc}`,[CARD_RARITY[c.r],cv.name,cv.desc]),icon:cv.icon,d:[],snd:c.r==='l'?'fanfare':'levelup',major:c.r==='l',theme:L.theme};
+  if(nextResonance)L.resonance=nextResonance.id;
+  const done={age:L.age,text:TT_("s8c6lg",`${CARD_RARITY[c.r]} 카드 「${cv.name}」! ${cv.desc}`,[CARD_RARITY[c.r],cv.name,cv.desc]),icon:cv.icon,d:[],snd:c.r==='l'?'fanfare':'levelup',major:c.r==='l',theme:L.theme,visuals:[{kind:'spell',id:c.id,icon:cv.icon,recipe:nextResonance}]};
   L.log.push(done);yield {t:'log',e:done};
 }
+function* awardStageRelic(L,rid){
+  const id=EXPANSION.regions[rid]?.relic,c=CARDS.find(c=>c.id===id);
+  if(!c||L.cards.includes(id))return;
+  const next=RESONANCE.project(L,c);L.cards.push(id);L.mods[id]=1;if(next)L.resonance=next.id;
+  yield* say(L,EXPANSION.tr(`보스 유물 「${c.name}」 획득! ${c.desc}`,`Boss relic acquired: ${c.name}! ${c.desc}`,`ボスの遺物「${c.name}」を獲得！ ${c.desc}`),c.icon,{cur:0.10},true,{kind:'relic',id:c.id});
+}
+
 // Staff 강화 with gold: a wandering smith at the start of each area; odds fall as the staff climbs, up to 3 tries per visit.
 const FORGE_RATE=[100,90,80,70,55,45,35,25,20,15];
 const forgeCost=L=>20+L.staff*15;
@@ -3005,7 +3100,7 @@ function* forge(L){
     if(k!==0)return;
     L.gold-=cost;
     const ok=L.rng()*100<rate;if(ok){L.staff++;L.mods.dmg*=1.08}
-    const res={age:L.age,text:ok?TT_("h1m502",`깡! ${w} +${L.staff} 강화 성공! 공격력 +8%`,[w,L.staff]):TT_("io0bv9",`퍽… 강화 실패. ${cost}골드가 연기처럼 사라졌다.`,[cost]),icon:'anvil',d:[[TT_("1awoeoh",'골드'),-cost]],major:ok&&L.staff>=6,snd:ok?'fanfare':'lose'};
+    const res={age:L.age,text:ok?TT_("h1m502",`깡! ${w} +${L.staff} 강화 성공! 공격력 +8%`,[w,L.staff]):TT_("io0bv9",`퍽… 강화 실패. ${cost}골드가 연기처럼 사라졌다.`,[cost]),icon:'anvil',d:[[TT_("1awoeoh",'골드'),-cost]],visuals:[ok?{kind:'forge',level:L.staff}:{kind:'trade',amount:-cost}],major:ok&&L.staff>=6,snd:ok?'fanfare':'lose'};
     L.log.push(res);yield {t:'log',e:res};
   }
 }
@@ -3019,7 +3114,7 @@ function* chooseRoute(L,t){
   const opts=pool.slice();
   while(opts.length>2){const drop=opts.filter(id=>!keep(id));const id=drop.length?drop[Math.floor(L.rng()*drop.length)]:opts[opts.length-1];opts.splice(opts.indexOf(id),1)}
   if(L.rng()<0.5)opts.reverse();
-  const e={age:L.age,text:t===0?TT_("10gk985",'마을 어귀의 갈림길. 어느 쪽으로 떠날까?'):TT_("cw1l2w",'갈림길이 나왔다. 어느 길로 갈까?'),icon:'scroll',d:[],theme:L.theme,
+  const e={age:L.age,text:t===0?TT_("10gk985",'마을 어귀의 갈림길. 어느 쪽으로 떠날까?'):TT_("cw1l2w",'갈림길이 나왔다. 어느 길로 갈까?'),icon:'scroll',d:[],theme:L.theme,regionChoices:opts.slice(),
     opts:opts.map(id=>`${REGIONS[id].name} · ${id===home?TT_("1r39ib2",'그리운 고향 가는 길'):REGIONS[id].hint}${has(L,'prophet')?(goodSign(L,id)?TT_("1f9veln",' · 꿈: 좋은 예감'):TT_("137ccpt",' · 꿈: 먹구름')):''}`)};
   L.log.push(e);const k=yield {t:'choice',e};let pick=opts[k]||opts[0];e.picked=REGIONS[pick].name;
   if(has(L,'lost')&&L.rng()<0.3){const other=opts.find(id=>id!==pick);if(other){pick=other;yield* say(L,TT_("7519x9",`길치 본능 발동! 정신 차려 보니 ${REGIONS[pick].name}였다.`,[REGIONS[pick].name]),'leaf')}}
@@ -3042,10 +3137,14 @@ function* finish(L,end,epitaph){
 
 // Battle hookup shared by the page and the simulator
 function battleFor(L,step,seed){
-  return createBattle(L.st,seed,{cls:L.cls,form:L.form||null,wanted:step.wanted?wantedDef(step.wanted):null,traits:L.traits.map(t=>t.id),allies:L.allies,stage:step.stage,region:step.region,route:L.route.slice(),boss:step.boss,wiz:L.W,mods:L.mods,sm:L.sm[step.region],elem:L.element.id,revive:(has(L,'undying')||!!L.mods.phoenix)&&!L.flags.revived,reviveBy:has(L,'undying')?'undying':'phoenix'});
+  return createBattle(L.st,seed,{cls:L.cls,form:L.form||null,wanted:step.wanted?wantedDef(step.wanted):null,traits:L.traits.map(t=>t.id),allies:L.allies,stage:step.stage,region:step.region,route:L.route.slice(),boss:step.boss,wiz:L.W,resonance:step.noResonance?null:RESONANCE.active(L),mods:L.mods,sm:L.sm[step.region],elem:L.element.id,revive:(has(L,'undying')||!!L.mods.phoenix)&&!L.flags.revived,reviveBy:has(L,'undying')?'undying':'phoenix'});
 }
 function afterBattle(L,B){
   const lv0=L.W.lv,win=B.result==='win';
+  if(B.resonance){
+    L.resonanceTotals=L.resonanceTotals||{procs:0,damage:0,healed:0,shield:0};
+    for(const k of Object.keys(L.resonanceTotals))L.resonanceTotals[k]+=Math.round(B.resonance[k]||0);
+  }
   L.W=B.wizOut();L.kills+=B.kills;L.dodges=(L.dodges||0)+(B.dodges||0);
   if(B.revived){L.flags.revived=1;L.log.push({age:L.age,text:B.reviveBy==='phoenix'?TT_("pnx1",'쓰러졌지만 불사조의 깃털 덕분에 다시 일어났다!'):TT_("p8erel",'쓰러졌지만 불사신 체질 덕분에 다시 일어났다!'),icon:'heart',d:[],major:true})}
   if(B.potionUsed)L.mods.potion=Math.max(0,L.mods.potion-B.potionUsed);
@@ -3181,7 +3280,7 @@ function buildSceneArt(sc){
 function strip(img,factor,scroll){const o=Math.round(((scroll*SC*factor)%STRIP+STRIP)%STRIP);L2.drawImage(img,-o,0);L2.drawImage(img,STRIP-o,0)}
 function drawScene(B,time){
   const sc=B.scene,th=THEME[sc.key],art=sceneArt.get(sc)||buildSceneArt(sc),s=B.scroll;
-  L2.drawImage(art.sky,0,0);
+  L2.drawImage(art.sky,0,0);drawExpansionBackdrop(sc.key,time,s);
   if(['grass','desert','town','harbor','royal','sky','coast','ruins','forest'].includes(sc.key))for(let i=0;i<(th.clouds?7:4);i++){const x=((i*90-time*3-s*SC*0.08)%360+360)%360-40;blit('cloud',x,10+(i*19)%(th.clouds?60:30))}
   if(th.wall)for(let k=0;k<5;k++){const x=((k*78-s*SC*0.5)%390+390)%390-50;
     if(th.wallDeco==='candle'){const fl=Math.round(Math.sin(time*9+k*2)*1.5);disc(x,33,13+fl,'rgba(255,214,120,.14)');disc(x,33,7+fl,'rgba(255,214,120,.22)');blit('candle',x,36)}
@@ -3236,22 +3335,24 @@ function drawFormWeapon(B,x,cy,time){
   }
 }
 function drawWizard(B,time){
-  const w=B.wiz,x=lp(WX),wy=w.y===undefined?WY:w.y,y=lp(wy),walking=B.phase==='walk'&&!B.result,step=walking?Math.floor(time*8)%2:0;
+  const w=B.wiz,x=lp(WX+(!B.C?(B.story?.heroX||0):0)),wy=w.y===undefined?WY:w.y,y=lp(wy),walking=B.phase==='walk'&&!B.result,step=walking?Math.floor(time*8)%2:0;
   const fr=wizSprite(B,step),half=Math.floor(SP[fr].h/2);
   const feet=y+10,cy=feet-half;
   // hopping between lanes: a small arc, and the lane it left keeps a faint echo of the wizard
   const hopK=w.hop>0?w.hop/(w.hopDur||0.2):0,arc=hopK?-Math.round(Math.sin((1-hopK)*Math.PI)*4):0;
+  if(B.starGuard>0)for(let i=0;i<B.starGuard;i++){const a=time*1.4+i*2.094;blit('star',x+Math.round(Math.cos(a)*17),y-13+Math.round(Math.sin(a)*8),{alpha:0.8})}
   const joy=(w.joy||0)>0&&!B.result?-Math.abs(Math.round(Math.sin(time*18)*3)):0;
   const coward=!B.C&&!walking&&(B.traits||[]).includes('coward')?Math.round(Math.sin(time*40)*0.6):0;
   oval(x,feet+1,9,2,'rgba(59,42,85,.25)');
   if(B.stats)ring(x,feet+1,11,3,GRADE_RING[grades(B.stats).int]);
   if(hopK&&w.py!==undefined)blit(fr,x,lp(w.py)+10-half,{alpha:0.3*hopK});
   // the followers (befriended monsters and companions) fan out behind the wizard in two rows so all of them stay on screen; the owl hovers overhead
-  const fol=[...(B.allies||[]).map(a=>({s:a.s||a,ally:1})),...(B.pets||[]).filter(q=>q!=='owl').map(q=>({s:q}))].filter(q=>SP[q.s]).slice(0,5);
+  const joining=!B.C&&B.story?.plan?.kind==='companion'?B.story.plan.id:null;
+  const fol=[...(B.allies||[]).map(a=>({s:a.s||a,ally:1})),...(B.pets||[]).filter(q=>q!=='owl').map(q=>({s:q}))].filter(q=>SP[q.s]&&q.s!==joining).slice(0,5);
   fol.map((q,k)=>({q,k})).sort((a,b)=>(b.k>2)-(a.k>2)).forEach(({q,k})=>{
     const row=k>2?1:0,col=row?k-3:k,px=x-15-col*15-row*8,fy=feet-row*6-(q.ally?3:0),sp=SP[q.s],bob=walking?(Math.floor(time*7+k*2)%2?-1:0):(Math.sin(time*3+k)>0.6?-1:0)+(joy&&k%2?joy:0);
     oval(px,fy+1,Math.ceil(Math.min(sp.w,16)/2),2,'rgba(59,42,85,.2)');blit(q.s,px,fy-Math.floor(sp.h/2)+bob+(q.s==='drake'?-4:0),q.ally?{flip:true}:{})});
-  if((B.pets||[]).includes('owl'))blit('owl',x-12,y-22+Math.round(Math.sin(time*4)*2));
+  if((B.pets||[]).includes('owl')&&joining!=='owl')blit('owl',x-12,y-22+Math.round(Math.sin(time*4)*2));
   if(B.shieldHP>0&&!B.result){G.globalAlpha=0.5+0.2*Math.sin(time*5);ring(x,cy,11,Math.ceil(SP[fr].h/2)+3,'#8fe3ff');G.globalAlpha=1}
   if(B.result==='lose'){blit(fr,x,cy+1,{tint:'#b7b4cf'});blit('ghost',x,cy-16-Math.round((time*6)%8),{alpha:.85});return}
   const bob=walking?-step:(Math.sin(time*2.5)>0.7?-1:0);
@@ -3451,6 +3552,75 @@ const BOSS_ART={
     oval(x+12,f-14,8,10,cape);rect(x-10,f-34,20,2,'#6a5a9a');disc(x,f-27,2,'#ff5a6a');for(const sx of [-15,13])line(x+sx,f-39,x+sx+(sx<0?-2:2),f-42,steel,1)},
 };
 const BOSS_HALF={wolf:30,treant:24,golem:28,toadking:24,kraken:34,mammoth:30,firegiant:26,dragon:32,griffin:32,demon:28};
+// Installed after the original boss renderer. Shapes share its outline/flash passes.
+Object.assign(BOSS_ART,{
+  prismstag(x,f,t,ov){
+    const b=Math.round(Math.sin(t*2)*1.2),c='#8fe3ff',d='#7e82cb',h='#e9faff',p='#b47bff';
+    const parts=[['o',x+7,f-19+b,20,10,c],['l',x-3,f-14,x-7,f-1,4,d],['l',x+20,f-14,x+25,f-1,4,d],['l',x+8,f-14,x+10,f-1,3,c],['o',x-15,f-29+b,8,11,c],['o',x-21,f-24+b,8,5,h],
+      ['l',x-19,f-38+b,x-24,f-57+b,3,p],['l',x-24,f-49+b,x-34,f-55+b,3,p],['l',x-24,f-48+b,x-17,f-56+b,2,h],['l',x-10,f-38+b,x-6,f-59+b,3,c],['l',x-6,f-50+b,x+3,f-56+b,3,c],['l',x-6,f-48+b,x-12,f-56+b,2,h],['l',x+26,f-22+b,x+31,f-29+b,3,p]];
+    if(bparts(parts,ov))return;
+    line(x-20,f-36+b,x-17,f-21+b,h,2);line(x-2,f-26+b,x+10,f-16+b,h,1);line(x+10,f-27+b,x+23,f-18+b,d,1);
+    rect(x-22,f-31+b,3,2,'#38325e');rect(x-22,f-31+b,1,1,'#ffffff');rect(x-30,f-25+b,2,2,p);
+    for(let i=0;i<3;i++){const xx=x+2+i*8,yy=f-27+b-(i%2)*2;disc(xx,yy,3,p);rect(xx,yy-2,1,3,h)}
+    for(const xx of [-7,10,25])rect(x+xx-2,f-2,5,2,h);
+    const q=0.4+0.2*Math.sin(t*4);G.globalAlpha=q;ring(x-17,f-49+b,22,8,c);G.globalAlpha=1;
+  },
+  hourkeeper(x,f,t,ov){
+    const b=Math.round(Math.sin(t*2)),s=Math.round(Math.sin(t*2.6)*7),gold='#d9a85c',dark='#8a5a40',light='#ffe7a0',steel='#74769a';
+    const parts=[['r',x-13,f-13,9,13,dark],['r',x+5,f-13,9,13,dark],['l',x-22,f-37+b,x-29,f-20+b,6,gold],['c',x-29,f-17+b,5,steel],['l',x+22,f-37+b,x+29,f-20+b,6,gold],['c',x+29,f-17+b,5,steel],
+      ['r',x-18,f-40+b,36,28,dark],['c',x,f-40+b,21,gold],['c',x,f-40+b,17,light],['r',x-12,f-65+b,24,5,dark],['r',x-7,f-70+b,14,5,gold]];
+    if(bparts(parts,ov))return;
+    for(let i=0;i<12;i++){const a=i*Math.PI/6;rect(x+Math.round(Math.sin(a)*13)-1,f-40+b-Math.round(Math.cos(a)*13)-1,2,2,dark)}
+    line(x,f-40+b,x+Math.round(Math.sin(t*.6)*10),f-40+b-Math.round(Math.cos(t*.6)*10),dark,2);
+    line(x,f-40+b,x-7,f-36+b,'#c93a5a',2);disc(x,f-40+b,2,dark);
+    line(x,f-24+b,x+s,f-12+b,steel,1);disc(x+s,f-11+b,4,gold);rect(x+s-1,f-13+b,2,2,light);
+    rect(x-12,f-1,9,1,light);rect(x+5,f-1,9,1,light);rect(x-29,f-19+b,2,2,light);rect(x+29,f-19+b,2,2,light);
+  },
+  astrowhale(x,f,t,ov){
+    const b=Math.round(Math.sin(t*1.8)*3),tail=Math.round(Math.sin(t*2.3)*5),blue='#6874bc',navy='#41477d',lilac='#c9baff',star='#ffd34d';
+    const parts=[['l',x+25,f-29+b,x+41,f-42+b+tail,7,navy],['l',x+26,f-28+b,x+42,f-19+b-tail,7,navy],['o',x-1,f-30+b,30,18,blue],['o',x-7,f-22+b,23,8,lilac],['l',x-3,f-19+b,x+6,f-7+b,6,navy],['l',x-25,f-30+b,x-31,f-23+b,3,lilac]];
+    if(bparts(parts,ov))return;
+    line(x-24,f-22+b,x-10,f-22+b,navy,1);disc(x-17,f-35+b,3,'#ffffff');disc(x-18,f-35+b,1,navy);rect(x-23,f-29+b,4,2,'#ff9ab8');
+    for(const [xx,yy] of [[-4,-41],[10,-36],[18,-29],[4,-30]]){rect(x+xx-2,f+yy+b,5,1,star);rect(x+xx,f+yy+b-2,1,5,star)}
+    for(let i=0;i<3;i++){const a=t*2+i*2.1,xx=x-4+Math.round(Math.cos(a)*14),yy=f-57+b+Math.round(Math.sin(a)*4);disc(xx,yy,2,i%2?star:'#8fe3ff')}
+    ring(x-4,f-57+b,15,5,'#a9c7ff');line(x-5,f-49+b,x-7,f-54+b,'#8fe3ff',1);
+  },
+});
+Object.assign(BOSS_HALF,{prismstag:35,hourkeeper:35,astrowhale:44});
+
+function drawExpansionBackdrop(key,time,scroll){
+  if(key==='crystal'){
+    for(let i=0;i<9;i++){
+      const x=((i*43-scroll*.035)%300+300)%300-30,y=26+(i%3)*12,h=15+(i%4)*8;
+      line(x,y-h,x-7,y+h,'#727bb7',5);line(x,y-h,x+8,y+h,'#a1c9e9',4);line(x,y-h,x,y+h,'#cdeaff',1);
+      rect(x+12,y-12,1,1,Math.sin(time*2+i)>.2?'#ffffff':'#a1c9e9');
+    }
+  }else if(key==='clockwork'){
+    const x=143,y=39;
+    disc(x,y,27,'#8c6c80');ring(x,y,26,26,'#f4d6a0');ring(x,y,22,22,'#c49b80');
+    for(let i=0;i<12;i++){const a=i*Math.PI/6;rect(x+Math.sin(a)*20,y-Math.cos(a)*20,2,2,'#f4d6a0')}
+    line(x,y,x+Math.sin(time*.12)*17,y-Math.cos(time*.12)*17,'#f4d6a0',2);line(x,y,x-10,y-5,'#d1af88',2);disc(x,y,2,'#f4d6a0');
+    for(let j=0;j<3;j++){const gx=25+j*92,gy=24+(j%2)*28,r=10+j*2;for(let i=0;i<8;i++){const a=i*Math.PI/4+time*.2*(j%2?-1:1);rect(gx+Math.cos(a)*r-2,gy+Math.sin(a)*r-2,4,4,'#a17d87')}ring(gx,gy,r-2,r-2,'#b59a99');ring(gx,gy,4,4,'#b59a99')}
+  }else if(key==='astral'){
+    for(let i=0;i<42;i++){const x=(i*67+13)%LW,y=(i*29+9)%74;rect(x,y,1+(i%11===0?1:0),1,Math.sin(time*1.4+i)>.3?'#fff4dc':'#b6a6d8')}
+    oval(177,31,29,9,'#a08ac4');disc(177,27,17,'#d7b3d8');oval(177,30,29,3,'#ead4e8');disc(172,23,3,'#e6c8e1');disc(182,30,2,'#b08fc2');
+    const xx=((time*12+scroll*.015)%300)-30;line(xx,18,xx+13,12,'#bdc4ef',1);rect(xx+13,12,2,2,'#fff4dc');
+  }
+}
+
+function drawExpansionIntent(B){
+  if(!B.intent||B.result)return;
+  const m=B.mobs.find(m=>!m.dead&&m.boss);if(!m)return;
+  hiText(B.intent.name,152,46,5.2,'#fff4dc');
+}
+function drawBossPhaseAura(m,B,time,x,f){
+  if(!m.enraged||!m.d.phase2)return;
+  const icon=m.d.s==='prismstag'?'gem':m.d.s==='hourkeeper'?'gear_deco':'star';
+  const radius=m.d.s==='astrowhale'?24:18;
+  for(let i=0;i<3;i++){const a=time*1.8+i*Math.PI*2/3;blit(icon,x+Math.cos(a)*radius,f-53+Math.sin(a)*8,{scale:icon==='gear_deco'?.35:.65,alpha:.85})}
+  ring(x,f-53,radius+2,9,m.d.s==='hourkeeper'?'#ffd34d':'#b4e4ff');
+}
+
 function drawBossArt(id,x,f,t,o={}){
   BOSS_ART[id](x,f,t);
   if(o.hit)BOSS_ART[id](x,f,t,{c:'#ffffff',a:0.55});
@@ -3466,6 +3636,7 @@ function drawMob(m,B,time){
     oval(lp(m.x),f+1,Math.round(hw*0.8),3,'rgba(59,42,85,.22)');
     const winding=m.windT>0;
     drawBossArt(m.d.s,x+(winding?Math.round(Math.sin(time*40)):0),f,frozen?0:time,{hit:m.hitT>0,frozen,rage:(m.act===3&&Math.floor(time*8)%2)||(winding&&Math.floor(time*10)%2),act:m.act,lock:m.lock>0});
+    drawBossPhaseAura(m,B,time,x,f);
     if(m.stun>0)for(let i=0;i<3;i++){const a=time*6+i*2.1;rect(x+Math.round(Math.cos(a)*10)-1,f-58+Math.round(Math.sin(a)*3),2,2,'#ffd34d')}
     return;
   }
@@ -3503,7 +3674,12 @@ function drawShots(B){
 function drawFx(B,time){
   for(const z of B.zones){
     const x=lp(z.x),y=lp(z.y),r=lp(z.r);
-    if(z.look==='quake'){oval(x,y,r,Math.round(r*0.42),'rgba(181,115,69,.32)');
+    if(z.look==='resonance-storm'){
+      oval(x,y,r,Math.round(r*0.42),'rgba(255,150,60,.16)');
+      for(let i=0;i<19;i++){const a=B.t*8+i*0.85,rr=4+(i%5)*r/6,yy=y-((B.t*25+i*5)%24)+Math.sin(a)*rr*0.35,xx=x+Math.cos(a)*rr;rect(xx,yy,2,3,i%2?'#ff8a3d':'#ffd34d');rect(xx,yy,1,1,'#fff4a8')}
+      ring(x,y,r*0.8,r*0.28,'#ffb369');
+    }
+    else if(z.look==='quake'){oval(x,y,r,Math.round(r*0.42),'rgba(181,115,69,.32)');
       for(let i=0;i<12;i++){const a=i*1.3,rr=(i%3+1)*r/3.4,j=(B.t*14+i*5)%10;rect(x+Math.cos(a)*rr,y-2+Math.sin(a)*rr*0.4-j*0.6,2,2,i%2?'#b57345':'#7f4d2f')}}
     else if(z.look==='arrows'){oval(x,y,r,Math.round(r*0.42),'rgba(255,211,77,.18)');
       for(let i=0;i<12;i++){const ax=x+Math.round(Math.cos(i*2.4)*r*0.8),fy=((B.t*90+i*13)%40);line(ax,y-40+fy,ax,y-34+fy,'#7f4d2f',1);rect(ax,y-34+fy,1,1,'#e4e6f5')}}
@@ -3514,6 +3690,7 @@ function drawFx(B,time){
   }
   for(const f of B.fx){
     const k=f.t/f.life;
+    if(f.type==='resonance'){drawResonanceFx(f,k,B);continue}
     if(f.type==='poof'){const r=lp(f.r);for(let i=0;i<6;i++){const a=i*1.05;disc(lp(f.x)+Math.cos(a)*r*k*1.4,lp(f.y)+Math.sin(a)*r*k*0.8,Math.round((1-k)*3)+1,`rgba(255,255,255,${(0.95*(1-k)).toFixed(2)})`)}}
     else if(f.type==='boom'){const r=lp(f.r)*(0.4+k*0.7);oval(lp(f.x),lp(f.y),r,r*0.5,`rgba(${f.c},${(0.6*(1-k)).toFixed(2)})`);oval(lp(f.x),lp(f.y),r*0.45*(1-k)+2,r*0.22*(1-k)+1,`rgba(255,240,180,${(0.9*(1-k)).toFixed(2)})`)}
     else if(f.type==='bolt'){for(let i=1;i<f.pts.length;i++){const a=f.pts[i-1],b=f.pts[i],mx=lp((a.x+b.x)/2)+Math.round(Math.random()*8-4),my=lp((a.y+b.y)/2)+Math.round(Math.random()*8-4);
@@ -3545,6 +3722,7 @@ function drawHud(B,time){
     rect(bx,by,bw,6,'#ff9ab8');rect(bx,by,Math.round(bw*c.pos),6,'#5fb4ff');rect(bx+Math.round(bw*c.pos)-1,by-2,3,10,'#38325e')}
   if(B.fade>0)rect(0,0,LW,LH,`rgba(255,255,255,${B.fade.toFixed(2)})`);
   if(!B.C)return;
+  drawResonanceHud(B,time);drawExpansionIntent(B);
   const w=B.wiz,C=B.C;
   panel(2,2,76,21,'#ffffff');
   blit('heart',9.5,9);pbar(17,4,58,9,w.hp/w.max,w.hp/w.max<0.3?'#ff6f9f':'#3fcf9f');
@@ -3552,8 +3730,9 @@ function drawHud(B,time){
   pbar(17,15,58,5,w.exp/(4+w.lv*3),'#ffd34d');hiText('Lv.'+w.lv,9.5,17.8,4.2,'#38325e',false);
   const x0=LW-2-69;panel(x0,2,69,23,'#ffffff');
   // route so far: chosen regions lit, the roads ahead still unknown
-  for(let i=0;i<5;i++){const cur=i===B.stage,rid=B.route[i];blit(rid?REGIONS[rid].icon:'lock',x0+9+i*12.8,9.5-(cur&&Math.sin(time*6)>0?1:0),{alpha:rid?1:0.35});if(cur)rect(x0+5+i*12.8,15,8,1,'#ff6f9f')}
-  hiText(REGIONS[B.region].name+' · '+(B.boss?'BOSS':B.waves>1?TT_("ija18x",`웨이브 ${B.wave}/${B.waves}`,[B.wave,B.waves]):TT_("1v2c5m5",'전투')),x0+34.5,20.2,4.4,'#38325e',false);
+  const routeStart=Math.max(0,Math.min(TIERS.length-5,B.stage-2));
+  for(let i=0;i<Math.min(5,TIERS.length);i++){const index=routeStart+i,cur=index===B.stage,rid=B.route[index],icon=rid?REGIONS[rid].icon:'lock',scale=Math.min(1,12/Math.max(SP[icon].w,SP[icon].h));blit(icon,x0+9+i*12.8,9.5-(cur&&Math.sin(time*6)>0?1:0),{alpha:rid?1:0.35,scale});if(cur)rect(x0+5+i*12.8,15,8,1,'#ff6f9f')}
+  hiText((B.stage+1)+'/'+TIERS.length+' '+REGIONS[B.region].name+' · '+(B.boss?'BOSS':B.waves>1?TT_("ija18x",`웨이브 ${B.wave}/${B.waves}`,[B.wave,B.waves]):TT_("1v2c5m5",'전투')),x0+34.5,20.2,4.4,'#38325e',false);
   // low HP: a pulsing red frame
   if(w.hp/w.max<0.3&&!B.result){G.globalAlpha=0.35+0.25*Math.sin(time*8);rect(0,0,LW,3,'#ff3a5a');rect(0,LH-3,LW,3,'#ff3a5a');rect(0,0,3,LH,'#ff3a5a');rect(LW-3,0,3,LH,'#ff3a5a');G.globalAlpha=1}
   const mon=B.mobs.find(m=>!m.dead);
@@ -3581,14 +3760,316 @@ function drawHud(B,time){
 function render(B,time){
   HI.length=0;G=L2;L2.imageSmoothingEnabled=false;L2.save();
   if(B.shake>0)L2.translate(Math.round((Math.random()-0.5)*B.shake*SC),Math.round((Math.random()-0.5)*B.shake*SC));
-  drawScene(B,time);drawLanes(B,time);
+  drawScene(B,time);drawStoryBackdrop(B,time);drawLanes(B,time);
   const ents=[...B.mobs.map(m=>({y:m.y,f:()=>drawMob(m,B,time)})),{y:(B.wiz&&B.wiz.y)||WY,f:()=>drawWizard(B,time)}].sort((a,b)=>a.y-b.y);
   for(const e of ents)e.f();
-  drawShots(B);drawFx(B,time);drawWeather(B,time);drawTexts(B);
+  drawShots(B);drawFx(B,time);drawWeather(B,time);drawStoryForeground(B,time);drawTexts(B);
   L2.restore();drawHud(B,time);
   ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(lo,0,0,cv.width,cv.height);
   for(const f of HI)f();
 }
+// Inlined into index.html by the preview build; uses the game's own sprites and UI.
+function appendResonancePreview(button,r){
+  if(!r)return;
+  const p=document.createElement('span');p.className='resonance-card-hint';
+  p.innerHTML=`${ic(RESONANCE.tags[r.parts[0]].icon,2)} + ${ic(RESONANCE.tags[r.parts[1]].icon,2)}<b></b><small></small>`;
+  p.querySelector('b').textContent=RESONANCE.tr('조합 완성 · ','Combo · ','組み合わせ · ')+r.name;
+  p.querySelector('small').textContent=r.desc;button.appendChild(p);
+}
+function updateSpellbook(L){
+  let box=document.getElementById('resonance-book');
+  if(!box){box=document.createElement('details');box.id='resonance-book';document.getElementById('l-stats').after(box)}
+  box.hidden=!L.adventure;
+  if(box.hidden)return;
+  const active=RESONANCE.active(L),counts=RESONANCE.parts(L),open=box.open;
+  if(VIEW?.story&&!VIEW.C)VIEW.story.combo=active;
+  box.innerHTML='<summary></summary><div class="resonance-book-body"></div>';
+  box.querySelector('summary').innerHTML=`${ic(active?.icon||'book',2)}<span></span><small></small>`;
+  box.querySelector('summary span').textContent=active?active.name+' · '+RESONANCE.tr('공명','Resonance','共鳴')+' '+active.rank:RESONANCE.tr('나의 마법 조합','My spell combinations','自分の魔法の組み合わせ');
+  box.querySelector('summary small').textContent=RESONANCE.tr('마법서 ▾','Spellbook ▾','魔法書 ▾');
+  const body=box.querySelector('.resonance-book-body'),p=document.createElement('p');
+  p.textContent=RESONANCE.tr('위험한 공격을 3번 피하면 준비한 조합 발동. 피해를 받으면 충전 1칸 감소.','Dodge 3 threatening attacks to trigger your prepared combo. Taking damage costs 1 charge.','危険な攻撃を3回避けると準備した組み合わせが発動。ダメージで1チャージ減少。');body.appendChild(p);
+  for(const r of RESONANCE.inspect(L)){
+    const b=document.createElement('button');b.type='button';b.className='resonance-recipe';b.disabled=r.have<2||FIGHT;
+    b.setAttribute('aria-pressed',String(active?.id===r.id));
+    b.innerHTML=`<span class="resonance-parts">${r.parts.map(id=>`<i class="${counts[id]?'owned':''}">${ic(RESONANCE.tags[id].icon,2)}</i>`).join('<em>+</em>')}</span><span><b></b><small></small></span><span class="resonance-state"></span>`;
+    b.querySelector('b').textContent=r.name;
+    b.querySelector('small').textContent=r.desc;
+    b.querySelector('.resonance-state').textContent=r.have<2?r.have+'/2':(active?.id===r.id?'✓ ':RESONANCE.tr('준비','Equip','準備'))+' '+r.rank;
+    b.onclick=()=>{if(FIGHT)return;L.resonance=r.id;SFX_HOOK('pop');updateSpellbook(L);box.open=true};
+    body.appendChild(b);
+  }
+  const cards=document.createElement('p');cards.className='resonance-owned';
+  cards.textContent=RESONANCE.tr('획득 카드: ','Earned cards: ','獲得カード：')+(L.cards.length?L.cards.map(id=>CARDS.find(c=>c.id===id)?.name||id).join(' · '):RESONANCE.tr('아직 없음','None yet','まだなし'));body.appendChild(cards);box.open=open;
+}
+function drawResonanceHud(B,time){
+  const R=B.resonance;if(!R||B.tut)return;
+  const r=R.recipe,x=91,y=2;
+  panel(x,y,77,22,'#ffffff');blit(r.icon,x+8,y+8);
+  hiText(r.name,x+44,y+7,LANG==='ko'?5:4.2,'#38325e',false);
+  for(let i=0;i<R.need;i++){
+    const lit=i<R.charge,xx=x+22+i*14;
+    rect(xx,y+14,9,5,lit?r.color:'#e3def1');rect(xx+1,y+13,7,1,lit?r.color:'#e3def1');
+    if(lit)rect(xx+2,y+14,3,1,'#ffffff');
+  }
+  if(B.resonanceFlash)hiText(B.resonanceFlash.name+'!',LW/2,57,7.2,r.color);
+}
+function drawResonanceFx(f,k,B){
+  const ward=f.id==='bloom',x=lp(ward?WX:f.x),y=lp(ward?B.wiz.y:f.y),a=1-k,r=8+k*30;
+  G.globalAlpha=a;
+  if(f.id==='thermal'){
+    ring(x,y,r,r*0.5,'#ff8a3d');ring(x,y,r*0.7,r*0.35,'#8fe3ff');
+    for(let i=0;i<10;i++){const t=i*Math.PI/5,xx=x+Math.cos(t)*r,yy=y+Math.sin(t)*r*0.6;line(xx,yy,xx-Math.cos(t)*6,yy-Math.sin(t)*5,i%2?'#8fe3ff':'#ff8a3d',2)}
+  }else if(f.id==='thunder'){
+    for(let i=0;i<2;i++){const xx=lp(WX)-12-i*10,yy=lp(B.wiz.y)-12-i*6;blit(heroSprite(B.cls,B.age||19),xx,yy,{alpha:a*0.45});line(xx,yy,x-4,y-8-i*8,'#ffd34d',2);line(xx,yy,x-4,y-8-i*8,'#ffffff',1)}
+  }else if(f.id==='bloom'){
+    ring(x,y-5,12+k*9,18+k*5,'#79dfaa');ring(x,y-5,10+k*9,16+k*5,'#ffffff');
+    for(let i=0;i<6;i++){const t=i*1.047+k*4;blit('leaf',x+Math.cos(t)*20,y+Math.sin(t)*14-9,{alpha:a})}
+  }else if(f.id==='glacier'){
+    for(let i=0;i<7;i++){const xx=x-24+i*8,hh=(i%3+1)*6*(1-k*0.7);line(xx,y+4,xx+3,y-hh,'#8fe3ff',3);line(xx+1,y+2,xx+3,y-hh,'#ffffff',1)}
+    ring(x,y+4,r,r*0.3,'#a6e8ff');
+  }else if(f.id==='eclipse'){
+    disc(x,y-18,12+k*8,'#b47bff');disc(x+5,y-21,11+k*8,'#38325e');
+    for(let i=0;i<8;i++){const t=i*Math.PI/4+k*2;disc(x+Math.cos(t)*r,y-12+Math.sin(t)*r*0.6,2,'#e6d6ff')}
+  }else{
+    for(let i=0;i<16;i++){const t=i*0.8+k*12,rr=6+(i%4)*6;disc(x+Math.cos(t)*rr,y-10+Math.sin(t)*rr*0.5,1+i%2,i%2?'#ff8a3d':'#fff4a8')}
+  }
+  G.globalAlpha=1;
+}
+function installResonanceUI(){
+  if(!PLAYTEST)return;
+  document.body.classList.add('playtest');
+  const b=document.createElement('button');b.className='btn sun';b.id='btn-combat-preview';b.textContent=RESONANCE.tr('새 마법 조합 · 전투 체험','Try the spell combos','新しい魔法の組み合わせを体験');
+  document.getElementById('btn-daily').before(b);b.onclick=showCombatMenu;
+  const stages=document.createElement('button');stages.className='btn sun';stages.id='btn-stage-preview';stages.textContent=RESONANCE.tr('새 지역 3곳 · 몬스터와 보스 체험','3 new regions · meet their bosses','新地域3か所・ボスに挑戦');b.before(stages);stages.onclick=showStageMenu;
+  const note=document.createElement('p');note.className='playtest-note';note.textContent=RESONANCE.tr('개선안 체험판 · 실제 서비스에는 아직 반영되지 않았습니다.','Playtest · not published to the live game.','改善案の体験版 · 本番には未反映です。');b.before(note);
+}
+function showStageMenu(){
+  document.getElementById('combat-preview-dialog')?.remove();
+  const d=document.createElement('dialog');d.id='combat-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p class="preview-lede"></p><div class="preview-loadouts stage-loadouts"></div>';
+  d.querySelector('h2').textContent=EXPANSION.tr('마왕성까지, 새로운 세 구간','Three new stops before the castle','魔王城へ、新たな三つの道');
+  d.querySelector('p').textContent=EXPANSION.tr('모험은 총 6구간. 여기서는 지역별 샘플 캐릭터로 몬스터전 → 카드 보상 → 보스전을 바로 해볼 수 있습니다.','The adventure has 6 stages. Try each region with a sample character: monsters, a card reward, then the boss.','冒険は全6区間。地域ごとの体験用キャラクターで、モンスター戦→カード報酬→ボス戦を体験できます。');
+  for(const [rid,rg] of Object.entries(EXPANSION.regions)){
+    const row=document.createElement('section');row.className='stage-preview-card';row.innerHTML=`<span class="stage-boss-icon">${ic(rg.boss.s,3)}</span><span><b></b><small></small><span class="stage-mini-mobs">${rg.mobs.map(m=>ic(m.s,1)).join('')}</span></span><div class="stage-actions"><button></button><button></button></div>`;
+    row.querySelector('b').textContent=rg.name;row.querySelector('small').textContent=rg.boss.n;
+    const [journey,boss]=row.querySelectorAll('button');journey.textContent=EXPANSION.tr('몬스터부터 체험','Play the region','地域を体験');boss.textContent=EXPANSION.tr('보스 바로 도전','Fight the boss','ボスに挑戦');
+    journey.onclick=()=>{d.close();startCombatPreview('thermal',false,rid)};boss.onclick=()=>{d.close();startCombatPreview('thermal',false,rid,true)};d.querySelector('.preview-loadouts').appendChild(row);
+  }
+  document.body.appendChild(d);d.showModal();
+}
+function showCombatMenu(){
+  document.getElementById('combat-preview-dialog')?.remove();
+  const d=document.createElement('dialog');d.id='combat-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p class="preview-lede"></p><div class="preview-loadouts"></div><label class="preview-compare"><input type="checkbox"> <span></span></label>';
+  d.querySelector('h2').textContent=RESONANCE.tr('조작은 그대로, 마법은 다르게','Same controls, different spells','操作はそのまま、魔法は違う');
+  d.querySelector('.preview-lede').textContent=RESONANCE.tr('기존 전투 2판을 바로 체험합니다. 승리하면 카드를 고르고 보스에게 도전합니다. 아래 조합은 체험용 샘플입니다.','Try two existing encounters. Win, choose a card, then challenge the boss. These are sample loadouts.','既存の戦闘を2回体験。勝ったらカードを選んでボスへ。以下は体験用の組み合わせです。');
+  d.querySelector('.preview-compare span').textContent=RESONANCE.tr('같은 조건에서 공명만 끄고 비교하기','Compare with resonance disabled','同じ条件で共鳴だけを無効にして比較');
+  for(const r of RESONANCE.recipes){
+    const b=document.createElement('button');b.type='button';b.innerHTML=`${r.parts.map(id=>ic(RESONANCE.tags[id].icon,3)).join('<em>+</em>')}<b></b><small></small>`;
+    b.querySelector('b').textContent=r.name;b.querySelector('small').textContent=r.desc;
+    b.onclick=()=>{const baseline=d.querySelector('input').checked;d.close();startCombatPreview(r.id,baseline)};
+    d.querySelector('.preview-loadouts').appendChild(b);
+  }
+  document.body.appendChild(d);d.showModal();
+}
+async function startCombatPreview(id,baseline=false,rid='grass',bossOnly=false){
+  const token=++runToken,r=RESONANCE.recipes.find(r=>r.id===id)||RESONANCE.recipes[0];
+  const rg=REGIONS[rid]||REGIONS.grass,stage=TIERS.findIndex(t=>t.includes(rg.id));rid=rg.id;
+  endFight();
+  const L=newLife(481516);LIFE=L;L.name=RESONANCE.tr('체험 마법사','Playtest wizard','体験魔法使い');L.age=19;L.adventure=true;
+  const birth={fire:'fire',ice:'ice',bolt:'bolt',echo:'none',wind:'wind',earth:'earth',life:'light',dark:'dark'};
+  const support={fire:'burn',ice:'chill',bolt:'chainplus',echo:'twin',wind:'swift',earth:'guardian',life:'regen',dark:'vampire'};
+  L.element=ELEMENTS.find(e=>e.id===birth[r.parts[0]]);L.traits=[];L.pets=[];L.allies=[];L.flags={};L.stage=stage;L.region=rid;L.route=TIERS.slice(0,stage).map(t=>t[0]).concat(rid);L.cards=[];L.mods={dmg:1+stage*0.1};L.st={int:110+stage*6,spd:55+stage*2,hp:850+stage*70};L.gold=0;
+  const lv=4+stage*2;L.W={hp:L.st.hp,max:L.st.hp,lv,exp:0,pow:stage?Math.pow(1.07,lv-1):1.1};L.resonance=id;FATE.state(L).path='hero';
+  const card=CARDS.find(c=>c.id===support[r.parts[1]]);L.cards.push(card.id);if(card.r!=='n')L.mods[card.id]=1;if(card.apply)card.apply(L);
+  if(stage)for(const id of (stage>=4?['twin','armor','flask','guardian']:['armor','flask'])){const c=CARDS.find(c=>c.id===id);L.cards.push(c.id);if(c.r!=='n')L.mods[c.id]=1;if(c.apply)c.apply(L)}
+  $('#l-log').innerHTML='';$('#hist-n').textContent='';where=rg.name+' · '+RESONANCE.tr('전투 체험','Combat playtest','戦闘体験');VIEW=lifeView(rg.key,'walk');resumeStage();updateHud();
+  const exit=document.createElement('button');exit.id='preview-exit';exit.className='btn soft';exit.textContent=RESONANCE.tr('체험 종료','Exit playtest','体験を終了');
+  document.getElementById('l-stats').before(exit);
+  const finish=()=>{++runToken;endFight();exit.remove();cancelAnimationFrame(raf);VIEW=null;show('s-title');renderTitle()};exit.onclick=finish;
+  logItem({age:L.age,text:RESONANCE.tr('화면을 탭하면 한 칸 회피. 내 줄로 날아오는 공격을 피하세요. '+(baseline?'공명을 끈 비교 전투입니다.':'세 번 피하면 '+r.name+' 발동!'),'Tap to hop one lane. Dodge attacks aimed at your lane. '+(baseline?'Resonance is disabled for comparison.':'Three dodges trigger '+r.name+'!'),'タップで1列移動。自分の列に飛んでくる攻撃を避けよう。'+(baseline?'共鳴を無効にした比較戦闘です。':'3回避けると'+r.name+'発動！')),icon:r.icon,d:[]});
+  let won=true;
+  for(let n=bossOnly?1:0;n<2;n++){
+    const result=await fight({stage,region:rid,boss:n===1,noResonance:baseline,seed:7381+stage*100+n});
+    if(token!==runToken)return;
+    if(!result.win){won=false;break}
+    {
+      const gen=n===0?levelPerk(L,{levels:Math.max(1,result.levels),min:'r',title:RESONANCE.tr('승리! 보스전 전에 카드를 한 장 고르자.','Victory! Choose a card before the boss.','勝利！ボス戦の前にカードを選ぼう。')}):awardStageRelic(L,rid);let answer;
+      for(;;){const step=gen.next(answer);answer=undefined;if(step.done)break;if(step.value.t==='choice')answer=await askChoice(step.value.e);else if(step.value.t==='log'){logItem(step.value.e);dlgFinish()}if(token!==runToken)return}
+      updateHud();
+    }
+  }
+  if(token!==runToken)return;
+  const totals=L.resonanceTotals||{procs:0,damage:0};
+  const e={age:L.age,icon:won?'star':'skull',d:[],major:true,noScene:true,text:RESONANCE.tr((won?'체험 완료! ':'쓰러졌습니다. ')+`공명 ${totals.procs}회 · 회피 ${L.dodges||0}회. 실제 인생에서는 태어난 속성과 획득한 카드로 조합이 만들어집니다.`,(won?'Playtest complete! ':'Defeated. ')+`${totals.procs} resonances · ${L.dodges||0} dodges. In a real life, your birth element and earned cards create the combinations.`,(won?'体験完了！':'倒れてしまった。')+`共鳴${totals.procs}回・回避${L.dodges||0}回。本編では生まれた属性と獲得カードから組み合わせが生まれます。`),opts:[RESONANCE.tr('같은 조합 다시','Retry this combo','同じ組み合わせでもう一度'),RESONANCE.tr('다른 조합 체험','Try another combo','別の組み合わせ'),RESONANCE.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
+  const trophy=won?CARDS.find(c=>c.id===EXPANSION.regions[rid]?.relic):null;
+  if(trophy){e.icon=trophy.icon;e.text=EXPANSION.tr(`${rg.boss.n} 격파! 유물 「${trophy.name}」 획득. ${trophy.desc}`,`${rg.boss.n} defeated! Relic acquired: ${trophy.name}. ${trophy.desc}`,`${rg.boss.n}撃破！ 遺物「${trophy.name}」を獲得。${trophy.desc}`)}
+  if(EXPANSION.regions[rid]){e.opts[0]=EXPANSION.tr('이 지역 다시 도전','Retry this region','この地域に再挑戦');e.opts[1]=EXPANSION.tr('다른 지역 가 보기','Try another region','別の地域へ')}
+  const choice=await askChoice(e);if(token!==runToken)return;exit.remove();
+  if(choice===0)startCombatPreview(id,baseline,rid,bossOnly);else{finish();if(choice===1)(EXPANSION.regions[rid]?showStageMenu:showCombatMenu)()}
+}
+
+// Pixel events share the original scene, palette, sprites and animation loop.
+function makeStoryView(L,theme){return {t:0,basePhase:null,plan:EXPANSION.regions[theme]?{kind:'arrival',region:theme}:null,mode:EXPANSION.regions[theme]?'effect':null,heroX:0,job:STORY.snapshot(L).job,school:L.tier||null,schoolLabel:schoolName(L),schoolIcon:L.tier==='none'?'anvil':L.tier==='royal'?'crown':CLASS_SPRITE[L.cls]||'book',combo:RESONANCE.active(L),relics:STORY.relics.filter(id=>L.mods?.[id])}}
+function setStoryPlan(B,p,mode='preview'){
+  if(!B||B.C)return;
+  B.story=B.story||makeStoryView(LIFE);B.story.t=0;B.story.plan=p;B.story.mode=mode;
+  if(['xwerewolf','xvampire'].includes(p?.eventId))B.story.atmosphere='moon';
+  else if(p?.kind!=='transform')B.story.atmosphere=null;
+  if(B.story.basePhase===null)B.story.basePhase=B.phase;
+  B.phase=mode==='action'?'walk':'idle';
+}
+function updateStoryScene(B,dt){
+  if(!B.story||B.C)return;const s=B.story;s.t+=dt;
+  const p=s.plan,k=Math.min(1,s.t/.75),moving=s.mode==='action';
+  let destination=0;
+  if(moving&&p?.kind==='route')destination=(130+p.pick*65)/SC-WX;
+  else if(moving&&p?.kind==='fork')destination=(129+p.pick*65)/SC-WX;
+  else if(moving&&p?.kind==='animal')destination=p.action==='approach'?75:0;
+  else if(moving&&['encounter','trade','mystery','workshop','forge','archive'].includes(p?.kind))destination=p.action==='engage'||p.action==='open'?200:15;
+  s.heroX+=(destination*k-s.heroX)*Math.min(1,dt*10);
+  if(s.mode==='effect'&&s.t>1.9){s.plan=null;s.mode=null;B.phase=s.basePhase||'idle';s.basePhase=null}
+}
+function storyLog(L,e,B){
+  if(!B||B.C||e.noScene)return;B.story=B.story||makeStoryView(L);
+  B.story.job=STORY.snapshot(L).job;B.story.school=L.tier||null;B.story.schoolLabel=schoolName(L);B.story.combo=RESONANCE.active(L);B.story.relics=STORY.relics.filter(id=>L.mods?.[id]);
+  const effects=e.visuals||[],p=effects.find(v=>['relic','transform','career','companion','spell','forge'].includes(v.kind))||effects[0];
+  if(p)setStoryPlan(B,{...p,icon:e.icon,label:e.visualLabel},'effect');
+  else if(e.scene?.kind)setStoryPlan(B,{...e.scene,icon:e.icon},'effect');
+}
+function storyChoicePreview(L,e,B){if(B&&!B.C)setStoryPlan(B,STORY.plan(e,L),'preview')}
+async function storyChoiceAction(L,e,pick,B){
+  if(!B||B.C)return;
+  setStoryPlan(B,STORY.choice(e,pick,L),'action');
+  await sleep(matchMedia('(prefers-reduced-motion: reduce)').matches?180:750);
+  if(B.story){B.story.plan=null;B.story.mode=null;B.story.heroX=0;B.phase=B.story.basePhase||'idle';B.story.basePhase=null}
+}
+function storySprite(id,x,y,o={}){if(SP[id])blit(id,x,y,o)}
+function storyEmote(icon,x,y,t){panel(x-7,y-7,14,14,'#ffffff');storySprite(icon,x,y);rect(x-2,y+7,3,2,'#ffffff')}
+function storyBread(x,y){oval(x,y,6,3,'#d9a85c');oval(x-1,y-1,5,2,'#f7d896');for(let i=-2;i<3;i+=2)line(x+i,y-2,x+i-1,y+1,'#b57345',1)}
+function storyShop(job,time){
+  const x=151,f=122,teacher=job==='teacher',farm=job==='farmer',watch=['guard','hunter'].includes(job);
+  if(farm){for(let i=0;i<9;i++){const xx=128+i%3*16,yy=105+Math.floor(i/3)*8;oval(xx,yy,6,2,'#9c7750');line(xx,yy,xx,yy-4,'#3fa65a',2);line(xx,yy-2,xx-3,yy-4,'#6ed46a',1)}storySprite('house2',194,88,{scale:2});return}
+  if(watch){storySprite('house_big',174,94,{scale:2});for(let i=0;i<3;i++)storySprite(job==='hunter'?'tree':'fence',130+i*30,105);storySprite('knight',120,110);storyEmote('gem',119,84,time);return}
+  rect(x-36,f-42,72,42,'#b57345');rect(x-33,f-39,66,37,'#fff4dc');
+  for(let i=0;i<5;i++)rect(x-40+i*16,f-48+i%2,16,10,i%2?'#ff9ab8':'#ff6f9f');
+  line(x-39,f-49,x,f-62,'#7f4d2f',3);line(x,f-62,x+39,f-49,'#7f4d2f',3);
+  rect(x-25,f-28,25,21,'#7f4d2f');rect(x+10,f-25,16,25,'#8a6cff');rect(x+22,f-14,2,2,'#ffd34d');
+  panel(x-14,f-56,28,14,'#ffffff');storySprite(teacher?'book':job==='bakery'?'heart':job==='court'?'crown':'coin',x,f-49);
+  if(teacher){rect(x-27,f-28,30,15,'#3f7558');for(let i=0;i<3;i++){storySprite('kid',x-25+i*23,f-8);storySprite('book',x-25+i*23,f-1)}storySprite('star',x-12+Math.sin(time*2)*4,f-21)}
+  else if(job==='bakery'){for(let i=0;i<3;i++)storyBread(x-21+i*13,f-12);rect(x-29,f-7,40,5,'#d9a85c');const bob=Math.sin(time*2);for(let i=0;i<3;i++)rect(x+19+i*3,f-35-i*4-bob*2,2,2,'rgba(255,255,255,.5)')}
+  else {storySprite('chest',x-16,f-10);storySprite('potion',x+2,f-11);storySprite('coin',x-1,f-2);storySprite('elder',x-31,f-8)}
+}
+function storyPortal(rid,x,selected,time){
+  const r=REGIONS[rid];if(!r)return;const c=THEME[r.key]?.sky?.[0]||'#8a6cff';
+  oval(x,92,23,31,OUTLINE);oval(x,92,20,28,c);ring(x,92,18,26,selected?'#ffd34d':'#d4c4ff');
+  for(let i=0;i<8;i++){const a=time*(selected?2:1)+i*Math.PI/4;rect(x+Math.cos(a)*18,92+Math.sin(a)*26,1,2,'#ffffff')}
+  storySprite(r.icon,x,84,{scale:Math.min(1,12/Math.max(SP[r.icon].w,SP[r.icon].h))});
+  storySprite(r.boss.s,x,103,{scale:.7});hiText(r.name,x,130,4.6,'#ffffff');
+}
+function drawStoryBackdrop(B,time){
+  if(B.C||!B.story)return;const s=B.story,p=s.plan,t=s.t,acting=s.mode==='action',k=Math.min(1,t/.75);
+  if(s.atmosphere==='moon'){
+    rect(0,0,LW,LH,'rgba(25,22,69,.53)');disc(190,30,16,'rgba(255,244,220,.12)');disc(190,30,10,'#fff4dc');
+    for(let i=0;i<13;i++)rect(12+i*17,15+i%4*11,1,1,i%2?'#ffffff':'#c4ade8');
+  }
+  if(s.job&&B.age>=18){storyShop(s.job,time);if(!p)hiText(STORY.labels[s.job]||'',151,52,5.1,'#fff4dc')}
+  else if(s.school&&B.age>=7&&B.age<18){
+    const royal=s.school==='royal';panel(120,37,82,25,royal?'#fff4dc':'#e4e6f5');storySprite(s.schoolIcon,135,49);
+    hiText(s.schoolLabel||'',169,49,4.2,'#38325e',false);
+    for(let i=0;i<(royal?3:2);i++)storySprite('kid',132+i*23,111);
+  }
+  if(!p)return;
+  if(p.kind==='arrival'){storyPortal(p.region,173,true,time);storySprite(REGIONS[p.region]?.mobs[0]?.s,132,112,{scale:1.1});return}
+  if(p.kind==='spell'&&s.mode==='preview'){
+    (p.cards||[]).forEach((c,i)=>{const xx=126+i*42,yy=94+Math.sin(time*2+i)*3;ring(xx,yy,13,17,'#c4ade8');storySprite(c.icon,xx,yy,{scale:1.4});hiText(c.name,xx,120,4.2,'#fff4dc')});return;
+  }
+  if(p.kind==='route'){p.regions.forEach((rid,i)=>storyPortal(rid,130+i*65,acting&&p.pick===i,time));return}
+  if(p.kind==='fork'){
+    for(let i=0;i<2;i++){const x=129+i*65;line(x,121,x,85,'#b57345',3);panel(x-23,70,46,23,acting&&p.pick===i?'#fff4a8':'#ffffff');storySprite(i?'house_big':'sword',x,81);storySprite('kid',x-8,111);storySprite('elder',x+8,112)}
+    hiText(STORY.labels[acting?p.destination:'adventure'],162,55,5.4,'#fff4dc');return;
+  }
+  if(p.kind==='archive'){storySprite('shelf',170,98,{scale:3});storySprite('book',144,109,{scale:2});storySprite('candle',124,112);if(acting&&p.action==='open'){disc(144,105,10+k*8,'rgba(180,123,255,.22)');for(let i=0;i<8;i++)rect(139+(i%3)*5,104-i*3-k*7,2,2,i%2?'#b47bff':'#ffd34d')}return}
+  if(p.kind==='forge'){storySprite('anvil',145,113,{scale:2});storySprite('elder',170,107);const a=acting?Math.sin(t*22)*5:0;line(164,96+a,151,101+a,'#7f4d2f',2);rect(146,97+a,9,4,'#a9accb');if(acting||s.mode==='effect')for(let i=0;i<9;i++){const an=i*.8;rect(145+Math.cos(an)*t*20,107+Math.sin(an)*t*13,2,1,'#ffd34d')}return}
+  if(p.kind==='spring'||p.kind==='heal'){oval(148,115,30,8,'#4f9dff');ring(148,115,23+Math.sin(time*2)*3,5,'#8fe3ff');storySprite('potion',148,109);return}
+  if(p.kind==='treasure'){storySprite('chest',153,111,{scale:2});if(acting)for(let i=0;i<5;i++)storySprite('coin',143+i*5,98-i%2*5-k*7);return}
+  if(p.kind==='workshop'){storyShop('bakery',time);if(acting)storyBread(112+k*20,95-Math.sin(k*Math.PI)*12);return}
+  if(['animal','encounter','mystery','trade'].includes(p.kind)){
+    const actor=SP[p.actor]?p.actor:'kid',xx=147-(acting&&p.action==='approach'?k*40:0),yy=113-(p.kind==='animal'&&acting?Math.abs(Math.sin(t*10))*3:0);
+    storySprite(actor,xx,yy,{scale:actor==='egg'?1.5:1.3});
+    if(p.kind==='animal'){storySprite('house2',188,90);if(acting)storyEmote(p.action==='approach'?'heart':'star',xx,87,time)}
+    else if(acting)storyEmote(p.kind==='mystery'?'ghost':p.kind==='trade'?'coin':'heart',xx,86,time);
+  }
+}
+function drawStoryForeground(B,time){
+  if(B.C||!B.story)return;const s=B.story,p=s.plan,x=lp(WX+s.heroX),y=lp(B.wiz.y??WY),t=s.t;
+  if(s.combo){
+    const r=s.combo;ring(x,y+10,12+Math.sin(time*2),3,r.color);
+    r.parts.forEach((part,i)=>{const a=time*1.4+i*Math.PI;storySprite(RESONANCE.tags[part].icon,x+Math.cos(a)*16,y-13+Math.sin(a)*8,{scale:.55})});
+  }
+  s.relics.forEach((id,i)=>{const icons={prismcore:'gem',clockspring:'gear_deco',starlamp:'star'},a=time*1.3+i*2.1;storySprite(icons[id],x+Math.cos(a)*17,y-19+Math.sin(a)*7,{scale:id==='clockspring'?.35:.7})});
+  if(!p||s.mode==='preview')return;
+  if(['spell','transform','relic','career','school','companion','hurt','trade'].includes(p.kind)){
+    const good=!(p.kind==='hurt'||p.kind==='trade'&&p.amount<0),color=good?'#ffd34d':'#ff6f9f';
+    for(let i=0;i<12;i++){const a=i*Math.PI/6+t*2,r=7+(t%1.8)*16;rect(x+Math.cos(a)*r,y-10+Math.sin(a)*r*.65,1+i%2,1+i%2,i%3?color:'#ffffff')}
+    if(p.kind==='spell'&&p.recipe){drawResonanceFx({id:p.recipe.id,x:600,y:WY,t:t%1,life:1,col:p.recipe.color},t%1,{...B,wiz:{...B.wiz,y:B.wiz.y??WY}});storySprite(p.recipe.icon,176,90,{scale:2});hiText(p.recipe.name,175,65,6,'#fff4a8')}
+    else if(p.kind==='relic'){const icons={prismcore:'gem',clockspring:'gear_deco',starlamp:'star'},icon=icons[p.id]||p.icon;ring(159,83,22,22,'#ffd34d');storySprite(icon,159,83,{scale:p.id==='clockspring'?1.2:3});const card=CARDS.find(c=>c.id===p.id);if(card)hiText(card.name,159,53,6,'#fff4a8')}
+    else if(p.kind==='companion'){const xx=x-24+Math.max(0,1-t/1.2)*45;storySprite(p.id,xx,y+6-Math.abs(Math.sin(t*9))*3);storyEmote('heart',xx,y-17,time)}
+    else if(p.kind==='transform'){ring(x,y-9,14+Math.sin(t*8)*3,21,'#b47bff');storyEmote('ghost',x+24,y-29,time)}
+    else if(p.icon)storySprite(p.icon,x+21,y-25,{scale:1.4});
+  }
+  if(s.mode==='action'&&p.kind==='spell'&&!p.recipe){storySprite(p.icon,x+Math.sin(t*4)*18,y-24,{scale:1.5});for(let i=0;i<3;i++)storySprite('i_missile',x+20+t*65+i*9,y-7+i*5)}
+}
+
+function installStoryPreview(){
+  if(!PLAYTEST)return;const b=document.createElement('button');b.id='btn-story-preview';b.className='btn soft';b.textContent=STORY.tr('선택 이벤트 · 장면 체험','Try the life-event scenes','選択イベント・場面を体験');document.getElementById('btn-combat-preview').after(b);b.onclick=showStoryMenu;
+}
+function showStoryMenu(){
+  document.getElementById('story-preview-dialog')?.remove();const d=document.createElement('dialog');d.id='story-preview-dialog';d.className='story-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p></p><div class="story-demo-grid"></div>';
+  d.querySelector('h2').textContent=STORY.tr('선택이 장면이 되는 순간','See your choices come to life','選択が場面になる瞬間');d.querySelector('p').textContent=STORY.tr('샘플 인생으로 연출만 바로 체험합니다. 본편의 확률·시험·분기 조건은 그대로입니다.','Preview scenes with a sample life. The main game keeps its odds, trials and conditions.','体験用の人生で演出を確認。本編の確率・試験・分岐条件はそのままです。');
+  const demos=[['fork','sword',STORY.tr('모험 / 고향','Adventure / home','冒険 / 故郷')],['pet','dog',STORY.tr('새 친구와의 만남','A new companion','新しい仲間')],['archive','book',STORY.tr('금지된 서고','The forbidden archive','禁じられた書庫')],['route','scroll',STORY.tr('여행의 갈림길','A fork in the road','旅の分かれ道')],['spell','i_fireball',STORY.tr('새 마법 조합','A new spell combo','新しい魔法の組み合わせ')],['relic','gem',STORY.tr('새 보스의 유물','A new boss relic','新ボスの遺物')],['transform','wolf',STORY.tr('보름달의 변신','A full-moon transformation','満月の変身')],['forge','anvil',STORY.tr('떠돌이 대장장이','The wandering smith','旅の鍛冶屋')]];
+  for(const [id,icon,name] of demos){const b=document.createElement('button');b.innerHTML=ic(icon,3)+'<b></b>';b.querySelector('b').textContent=name;b.onclick=()=>{d.close();if(id==='relic')showStoryRelics();else startStoryPreview(id)};d.querySelector('.story-demo-grid').appendChild(b)}document.body.appendChild(d);d.showModal();
+}
+function showStoryRelics(){
+  document.getElementById('story-preview-dialog')?.remove();const d=document.createElement('dialog');d.id='story-preview-dialog';d.className='story-preview-dialog';
+  d.innerHTML='<form method="dialog"><button class="preview-close" aria-label="Close">×</button></form><h2></h2><p></p><div class="story-demo-grid"></div>';
+  d.querySelector('h2').textContent=STORY.tr('세 보스의 유물','Relics of the three bosses','三体のボスの遺物');d.querySelector('p').textContent=STORY.tr('획득 연출 체험입니다. 본편에서는 해당 보스를 직접 격파해야 얻습니다.','Preview the acquisition scene. In the adventure, defeat each boss to earn its relic.','獲得演出の体験です。本編では各ボスを倒すと入手できます。');
+  for(const [rid,rg] of Object.entries(EXPANSION.regions)){const c=CARDS.find(c=>c.id===rg.relic),b=document.createElement('button');b.innerHTML=ic(c.icon,3)+'<b></b>';b.querySelector('b').textContent=c.name;b.onclick=()=>{d.close();startStoryPreview('relic',rid)};d.querySelector('.story-demo-grid').appendChild(b)}document.body.appendChild(d);d.showModal();
+}
+async function startStoryPreview(kind,rid='crystal'){
+  const token=++runToken;endFight();const L=newLife(6718);LIFE=L;L.age=kind==='pet'?5:kind==='archive'?10:kind==='fork'?18:19;L.tier='local';L.element=ELEMENTS.find(e=>e.id==='fire');L.cards=[];L.mods={dmg:1};L.flags={};L.pets=[];L.allies=[];
+  if(['spell','relic','route','transform','forge'].includes(kind)){L.adventure=true;L.W={hp:900,max:900,lv:7,exp:0,pow:1.5};L.stage=TIERS.findIndex(t=>t.includes(rid));L.region=rid;L.route=TIERS.slice(0,L.stage).map(t=>t[0]).concat(rid)}
+  $('#l-log').innerHTML='';$('#hist-n').textContent='';where=STORY.tr('선택 장면 체험','Life-scene preview','選択場面の体験');VIEW=lifeView(kind==='archive'?'school':kind==='relic'?rid:kind==='transform'?'forest':L.origin.theme,'idle');resumeStage();updateHud();
+  const exit=document.createElement('button');exit.id='preview-exit';exit.className='btn soft';exit.textContent=STORY.tr('체험 종료','Exit preview','体験を終了');document.getElementById('l-stats').before(exit);
+  const finish=()=>{++runToken;endFight();exit.remove();cancelAnimationFrame(raf);VIEW=null;show('s-title');renderTitle()};exit.onclick=finish;
+  function* demo(){
+    if(kind==='pet')yield* doEvent(L,EVI.find_dog_child);
+    if(kind==='archive')yield* doEvent(L,EVI.forbidden);
+    if(kind==='transform')yield* doEvent(L,EVI.xwerewolf);
+    if(kind==='forge')yield* forge(L);
+    if(kind==='route'){const rid=yield* chooseRoute(L,1);yield* chapter(L,REGIONS[rid].key,'walk',REGIONS[rid].name,'')}
+    if(kind==='spell')yield* levelPerk(L,{levels:1,min:'r',title:STORY.tr('새 카드를 골라 마법을 바꿔 봐.','Choose a card to shape your magic.','カードを選んで魔法を変えよう。')});
+    if(kind==='relic')yield* awardStageRelic(L,rid);
+    if(kind==='fork'){
+      const e={age:18,icon:'sword',d:[],text:STORY.tr('성인식. 모험을 떠날까, 고향에 남을까?','Coming of age. Adventure, or a life at home?','成人の日。冒険に出る？ 故郷に残る？'),sceneKind:'adult-fork',opts:[STORY.tr('모험을 떠난다','Go adventuring','冒険に出る'),STORY.tr('고향에 남는다','Stay at home','故郷に残る')]};
+      const k=yield {t:'choice',e};FATE.state(L).path=k?'home':'hero';L.age=19;
+      if(k){yield* chapter(L,'town','idle',STORY.labels.home,'');yield* say(L,STORY.tr('마을에 작은 빵집을 열었다.','You open a little bakery in the village.','村に小さなパン屋を開いた。'),'heart',{f:'end_bakery'},true)}
+      else yield* chapter(L,'grass','walk',STORY.labels.adventure,'');
+    }
+  }
+  const gen=demo();let send;
+  for(;;){const z=gen.next(send);send=undefined;if(z.done)break;const s=z.value;
+    if(s.t==='choice')send=await askChoice(s.e);
+    if(s.t==='log'){logItem(s.e);updateHud();await dlgWait(1600)}
+    if(s.t==='scene'){VIEW=lifeView(s.theme,s.mode,s.banner);resumeStage();updateHud();await sleep(900)}
+    if(token!==runToken)return;
+  }
+  const e={age:L.age,icon:'star',d:[],noScene:true,text:STORY.tr('선택의 결과는 다음 장면에도 이어집니다.','Your choice stays visible in the scenes ahead.','選択の結果が、この先の場面にも残ります。'),opts:[STORY.tr('다른 장면 체험','Try another scene','別の場面を体験'),STORY.tr('인생 시작 화면으로','Back to the title','タイトルへ')]};
+  const k=await askChoice(e);if(token!==runToken)return;finish();if(k===0)showStoryMenu();
+}
+
 // ---------- life recap comic: eight pixel panels with captions in one shareable image ----------
 const BOSS_SPRITES=new Set(Object.values(REGIONS).map(r=>r.boss.s));
 function comicPanel(m,seed){
@@ -3741,12 +4222,13 @@ const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a), ri=(a,b)=>Math.floor(rand(a,b+1)), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const SHARE_URL='https://dorivoltgames.github.io/chosen-wizard/';
-const STORE='chosen-wizard-life-v1';
+const PLAYTEST=new URLSearchParams(location.search).has('playtest');
+const STORE=PLAYTEST?'chosen-wizard-resonance-playtest':'chosen-wizard-life-v1';
 function loadDex(){try{const d=JSON.parse(localStorage.getItem(STORE));return d&&typeof d==='object'&&!Array.isArray(d)?d:{}}catch(e){return{}}}
 function saveDex(d){try{localStorage.setItem(STORE,JSON.stringify(d))}catch(e){}}
 // ---- global stats: anonymous counters from the stats Worker (stats-worker/). Every call is optional: with no URL or no network the game plays as before.
 // Local previews and downloaded builds must never inflate the production counters.
-const STATS_URL=/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)||location.protocol==='file:'?'':'https://chosen-wizard-stats.dorivoltgames.workers.dev';
+const STATS_URL=PLAYTEST?'':/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)||location.protocol==='file:'?'':'https://chosen-wizard-stats.dorivoltgames.workers.dev';
 const FUNNEL=createFateTelemetry({baseURL:STATS_URL,storage:{getItem:k=>{try{return localStorage.getItem(k)}catch{return null}},setItem:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}},fetcher:(...args)=>fetch(...args)});
 const GS=(()=>{
   const PID='chosen-wizard-pid',CACHE='chosen-wizard-gs',QUEUE='chosen-wizard-gq',MIN_PLAYERS=5;
@@ -3849,7 +4331,7 @@ function renderTitle(){
   music('home');paintSnd();
   $('#end-count').textContent=TT_("57d2b0",`엔딩 ${ENDINGS.length}가지`,[ENDINGS.length]);
   GS.visit();GS.paintTitle();GS.refresh().then(ok=>{if(ok)GS.paintTitle()});
-  $('#best').textContent=dx.lives?TT_("hax713",`지금까지 ${dx.lives}번의 인생 · 도감 ${n.got}/${n.all} · 엔딩 ${n.ends}/${ENDINGS.length}`,[dx.lives,n.got,n.all,n.ends,ENDINGS.length]):TT_("1vbubt8",'한 번의 인생은 3~5분. 어떤 운명이 나올까?');
+  $('#best').textContent=dx.lives?TT_("hax713",`지금까지 ${dx.lives}번의 인생 · 도감 ${n.got}/${n.all} · 엔딩 ${n.ends}/${ENDINGS.length}`,[dx.lives,n.got,n.all,n.ends,ENDINGS.length]):EXPANSION.tr('모험은 6구간. 어떤 운명이 기다릴까?','Six stages of adventure. What fate awaits?','冒険は全6区間。どんな運命が待っている？');
   const key=dailyKey(),done=dx.daily&&dx.daily[key];
   $('#btn-daily').textContent=done?TT_("emj9c6",`오늘의 운명 · ${mdOf(key)} · 완료 「${(ENDINGS.find(e=>e.id===done)||{}).name||'?'}」`,[mdOf(key),(ENDINGS.find(e=>e.id===done)||{}).name||'?']):TT_("1uvdlms",`오늘의 운명 · ${mdOf(key)} · 모두가 같은 탄생`,[mdOf(key)]);
   FATE_UI.title(dx);
@@ -3912,9 +4394,9 @@ let GEN=null,VIEW=null,raf=0,last=0,speed=1,runToken=0,where='';
 const DELAY={1:2300,2:1250,4:600};
 function lifeView(theme,mode,banner){
   return {scene:makeScene(theme,Math.random),scroll:0,phase:mode==='walk'?'walk':'idle',mobs:[],shots:[],fx:[],texts:[],zones:[],stopT:0,result:null,shake:0,
-    fade:banner?0.8:0,banner:banner?{text:banner.text,sub:banner.sub,t:2.3}:null,wiz:{hit:0,cast:0,callout:null},stats:LIFE.st,age:LIFE.age,pets:LIFE.pets,traits:LIFE.traits.map(t=>t.id),cls:LIFE.cls,allies:LIFE.allies,C:null,t:0,bubble:null,
-    update(dt){this.t+=dt;if(this.phase==='walk')this.scroll+=dt*55;if(this.banner){this.banner.t-=dt;if(this.banner.t<=0)this.banner=null}
-      if(this.fade>0)this.fade=Math.max(0,this.fade-dt*1.5);if(this.bubble)this.bubble.t-=dt;this.age=LIFE.age;this.cls=LIFE.cls}};
+    fade:banner?0.8:0,banner:banner?{text:banner.text,sub:banner.sub,t:2.3}:null,wiz:{hit:0,cast:0,callout:null},stats:LIFE.st,age:LIFE.age,form:LIFE.form||null,pets:LIFE.pets,traits:LIFE.traits.map(t=>t.id),cls:LIFE.cls,allies:LIFE.allies,C:null,t:0,bubble:null,story:makeStoryView(LIFE,theme),
+    update(dt){this.t+=dt;updateStoryScene(this,dt);if(this.phase==='walk')this.scroll+=dt*55;if(this.banner){this.banner.t-=dt;if(this.banner.t<=0)this.banner=null}
+      if(this.fade>0)this.fade=Math.max(0,this.fade-dt*1.5);if(this.bubble)this.bubble.t-=dt;this.age=LIFE.age;this.cls=LIFE.cls;this.form=LIFE.form||null}};
 }
 let beatT=0;
 function frame(now){
@@ -3955,7 +4437,7 @@ async function runLife(){
   }
 }
 function updateHud(){
-  const L=LIFE;FATE_UI.hud(L);if(VIEW&&!VIEW.C)VIEW.form=L.form||null;$('#l-name').textContent=L.name+(L.form?` · ${FORMS[L.form].name}`:'');$('#l-age').textContent=TT_("mdgp4j",`${L.age}세`,[L.age]);$('#l-where').textContent=where;
+  const L=LIFE;FATE_UI.hud(L);updateSpellbook(L);if(VIEW&&!VIEW.C)VIEW.form=L.form||null;$('#l-name').textContent=L.name+(L.form?` · ${FORMS[L.form].name}`:'');$('#l-age').textContent=TT_("mdgp4j",`${L.age}세`,[L.age]);$('#l-where').textContent=where;
   const hp=L.W?`<b>${L.W.hp}</b>/${L.W.max}`:`<b>${L.st.hp}</b>`;
   const grow=L.W?[['star','Lv',`<b>${L.W.lv}</b>`],[WPI(L),WP(L),`<b>+${L.staff}</b>`]]:[];
   const pal=L.allies.length?[[L.allies[L.allies.length-1],TT_("1b78r2g",'동료'),`<b>${L.allies.length}</b>`]]:[];
@@ -3989,16 +4471,16 @@ function logItem(e,cls=''){
   li.innerHTML=TT_("166lsl1",`<span class="age">${e.age}세</span><span class="ev-ic">${ic(e.icon||'star',2)}</span><div><p></p>${deltaHTML(e.d)}</div>`,[e.age,ic(e.icon||'star',2),deltaHTML(e.d)]);
   li.querySelector('p').textContent=e.text;
   $('#l-log').appendChild(li);$('#hist-n').textContent=$('#l-log').children.length;
-  dlgShow(e);SFX_HOOK(e.snd||(e.major?'cast':'tap'));return li;
+  dlgShow(e);storyLog(LIFE,e,VIEW);SFX_HOOK(e.snd||(e.major?'cast':'tap'));return li;
 }
 function askChoice(e){
-  const li=logItem(e),box=document.createElement('div');box.className=e.cards?'cards':e.paths?'cards paths':'choice';
+  const li=logItem(e),box=document.createElement('div');if(!e.noScene)storyChoicePreview(LIFE,e,VIEW);box.className=e.cards?'cards':e.paths?'cards paths':'choice';
   e.opts.forEach((o,i)=>{const b=document.createElement('button');
-    if(e.cards){const c=e.cards[i];b.className='card-'+c.r;b.innerHTML=`<span class="rar">${CARD_RARITY[c.r]}</span>${ic(c.icon,3)}<b></b><small></small>`;b.querySelector('b').textContent=c.name;b.querySelector('small').textContent=c.desc;b.style.animationDelay=i*0.08+'s'}
+    if(e.cards){const c=e.cards[i];b.className='card-'+c.r;b.innerHTML=`<span class="rar">${CARD_RARITY[c.r]}</span>${ic(c.icon,3)}<b></b><small></small>`;b.querySelector('b').textContent=c.name;b.querySelector('small').textContent=c.desc;b.style.animationDelay=i*0.08+'s';if(e.buildCards)appendResonancePreview(b,e.buildCards[i])}
     else if(e.paths){const p=e.paths[i];b.className='card-path';b.innerHTML=`${ic(p.icon,4)}<b></b><small></small>`;b.querySelector('b').textContent=p.name;b.querySelector('small').textContent=p.desc;b.style.animationDelay=i*0.08+'s'}
     else b.textContent=o;
-    b.onclick=()=>{box.remove();dlgFinish();SFX_HOOK('pop');
-    for(const host of [li.lastElementChild,$('#dlg-extra')]){const p=document.createElement('div');p.className='picked';p.textContent='→ '+o;host.appendChild(p)}done(i)};box.appendChild(b)});
+    b.onclick=async()=>{box.remove();dlgFinish();SFX_HOOK('pop');
+    for(const host of [li.lastElementChild,$('#dlg-extra')]){const p=document.createElement('div');p.className='picked';p.textContent='→ '+o;host.appendChild(p)}if(!e.noScene)await storyChoiceAction(LIFE,e,i,VIEW);done(i)};box.appendChild(b)});
   $('#dlg-extra').appendChild(box);
   updateHud();
   let done;return new Promise(r=>done=r);
@@ -4017,17 +4499,22 @@ function askMini(kind){
   return new Promise(res=>{b.onclick=async()=>{box.remove();const r=await MINI[kind].run();resumeStage();res(r)}});
 }
 async function fight(step){
-  const s=step.stage,B=battleFor(LIFE,step,(Math.random()*1e9)|0);
+  const currentRun=runToken;
+  const s=step.stage,B=battleFor(LIFE,step,step.seed??((Math.random()*1e9)|0));
   B.age=LIFE.age;B.pets=LIFE.pets;VIEW=B;music(step.boss||step.wanted?'boss':'battle');
   const RG=REGIONS[step.region];
-  const li=logItem({age:LIFE.age,text:step.boss?TT_("lux60z",`${RG.boss.n}와 1:1 대결! 날아오는 공격을 피해. 화면을 탭하면 한 칸씩 아래로 내려가!`,[RG.boss.n]):TT_("1kw9o8l",`${step.wanted?TT_("1jm2vs8",`현상범 「${step.wanted.n}」과 1:1 대결!`,[step.wanted.n]):TT_("ca3mr8",`${RG.name}의 몬스터와 1:1 대결!`,[RG.name])} 날아오는 공격을 피해서 화면을 탭해!`,[step.wanted?TT_("1jm2vs8",`현상범 「${step.wanted.n}」과 1:1 대결!`,[step.wanted.n]):TT_("ca3mr8",`${RG.name}의 몬스터와 1:1 대결!`,[RG.name])]),icon:step.boss?RG.boss.s:step.wanted?step.wanted.s:'sword',d:[]},'fight');
+  const li=logItem({age:LIFE.age,text:step.boss?TT_("lux60z",`${J(RG.boss.n,'과/와')} 1:1 대결! 날아오는 공격을 피해. 화면을 탭하면 한 칸씩 아래로 내려가!`,[RG.boss.n]):TT_("1kw9o8l",`${step.wanted?TT_("1jm2vs8",`현상범 「${step.wanted.n}」과 1:1 대결!`,[step.wanted.n]):TT_("ca3mr8",`${RG.name}의 몬스터와 1:1 대결!`,[RG.name])} 날아오는 공격을 피해서 화면을 탭해!`,[step.wanted?TT_("1jm2vs8",`현상범 「${step.wanted.n}」과 1:1 대결!`,[step.wanted.n]):TT_("ca3mr8",`${RG.name}의 몬스터와 1:1 대결!`,[RG.name])]),icon:step.boss?RG.boss.s:step.wanted?step.wanted.s:'sword',d:[]},'fight');
   startFight(B);
-  while(!B.result)await sleep(120);
+  while(!B.result){if(currentRun!==runToken){endFight();return {cancelled:true}}await sleep(120)}
   await sleep(1000);
+  if(currentRun!==runToken)return {cancelled:true};
   const hp0=LIFE.W.hp,r=afterBattle(LIFE,B);
   if(B.revived)logItem(LIFE.log[LIFE.log.length-1]);
   const p=document.createElement('div');p.className='deltas';
   p.innerHTML=r.win?TT_("1ws6jor",`<span>승리 · ${B.kills}마리 처치</span><span class="${LIFE.W.hp<LIFE.W.max*0.3?'neg':''}">HP ${LIFE.W.hp}/${LIFE.W.max}</span><span>Lv.${LIFE.W.lv}${r.levels?` (+${r.levels})`:''}</span><span>골드 +${r.gold}</span>`,[B.kills,LIFE.W.hp<LIFE.W.max*0.3?'neg':'',LIFE.W.hp,LIFE.W.max,LIFE.W.lv,r.levels?` (+${r.levels})`:'',r.gold]):TT_("1o6uzsf",`<span class="neg">패배</span>`,[]);
+  if(B.resonance&&B.resonance.procs){
+    const z=document.createElement('span');z.textContent=RESONANCE.tr(`${B.resonance.recipe.name} ${B.resonance.procs}회 발동`,`${B.resonance.recipe.name} ×${B.resonance.procs}`,`${B.resonance.recipe.name} ${B.resonance.procs}回`);p.appendChild(z);
+  }
   endFight();
   li.lastElementChild.appendChild(p);$('#dlg-extra').appendChild(p.cloneNode(true));dlgFinish();
   SFX_HOOK(r.win?(step.boss?'fanfare':'coin'):'lose');
@@ -4259,7 +4746,7 @@ function showEnd(){
   const fresh=[];
   const got=(cat,id)=>{dx[cat]=dx[cat]||{};const isNew=!dx[cat][id];dx[cat][id]=(dx[cat][id]||0)+1;if(isNew)fresh.push(cat+':'+id);return isNew};
   const newEnd=got('end',L.ending);got('o',L.origin.id);got('f',L.family.id);got('e',L.element.id);L.traits.forEach(t=>got('t',t.id));
-  if(L.family.id==='demonkin'&&(L.flags.horn2||L.stage>=4))dx.secret=1;
+  if(L.family.id==='demonkin'&&(L.flags.horn2||L.region==='castle'))dx.secret=1;
   if(L.mode==='daily'){dx.daily=dx.daily||{};dx.daily[L.dkey]=L.ending}
   FATE_UI.remember(L,dx);FUNNEL.track('life_completed',L);
   saveDex(dx);GS.life(L.ending,fresh);music(null);SFX_HOOK(L.ending.startsWith('death')?'lose':'fanfare');
@@ -4493,6 +4980,7 @@ window.addEventListener('hashchange',()=>{readHash();if(screen==='s-title')rende
 let blipN=0;
 function blip(){if(++blipN%2===0)SFX_HOOK('talk')}
 
+installResonanceUI();installStoryPreview();
 paintIcons();
 readHash();
 FUNNEL.track(CHAL?'challenge_opened':'visit');

@@ -184,9 +184,9 @@ function createFateUpdate({lang = 'ko', context}) {
       village_union:tr('고향의 삶에서 이웃을 두 번 이상 먼저 생각해 봐.','At home, put your neighbors first at least twice.','故郷で、二度以上隣人を優先してみよう。'),
       dream_school:tr('고향에서 가르치는 일을 배우고, 아이들과 인연을 쌓아 봐.','Learn to teach at home, and build bonds with the children.','故郷で教える仕事を学び、子どもたちと絆を結ぼう。'),
       bread_peace:tr('고향에서 빵집을 열고, 막힌 길 너머의 손님과 거래해 봐.','Open a bakery, then trade with those beyond the blocked road.','故郷でパン屋を開き、閉ざされた道の向こうと取引しよう。'),
-      bakery:tr('고향의 길에서 빵을 배우고 끝까지 가게를 키워 봐.','Learn baking at home and grow your shop to the end.','故郷でパンを学び、最後まで店を育てよう。'),
-      teacher:tr('고향에서 작은 학교를 열고 그 일을 이어가 봐.','Open a little school at home and continue teaching.','故郷で小さな学校を開き、教え続けよう。'),
-      merchant:tr('고향에서 장터 일을 배우고 가게를 키워 봐.','Learn trade at home and grow your shop.','故郷で商売を学び、店を育てよう。'),
+      bakery:tr('고향에 남아 빵집 제안을 만나 봐.','Stay at home and look for a bakery offer.','故郷に残り、パン屋の誘いを探そう。'),
+      teacher:tr('고향에 남아 아이들을 가르칠 기회를 찾아 봐.','Stay at home and look for a chance to teach.','故郷で子どもに教える機会を探そう。'),
+      merchant:tr('고향에서 상인의 제안에 귀를 기울여 봐.','At home, listen to the merchant’s offer.','故郷で商人の誘いに耳を傾けよう。'),
       guard:tr('고향이 위기에 처했을 때 방벽을 세워 봐.','Build a barrier when your village is in danger.','故郷の危機に結界を作ろう。'),
       potato:tr('감자밭 마을 출신이라면 고향의 명물을 떠올려 봐.','Born in Potato Field Village? Remember its specialty.','じゃがいも村の生まれなら、名物を思い出そう。'),
       court:tr('충분한 지능을 쌓고 고향의 마법을 왕궁에 전해 봐.','Reach 100 INT and bring your village’s magic to court.','知力を100まで高め、故郷の魔法を王宮に伝えよう。'),
@@ -206,16 +206,14 @@ function createFateUpdate({lang = 'ko', context}) {
     return tr('타고난 특성과 만난 사람들의 제안을 따라 다른 선택을 해 봐.','Follow your traits and the offers of people you meet. Try a different choice.','生まれ持った特性や出会った人の誘いから、違う選択を試そう。');
   }
   function target(dx,L) {
-    const s=L&&state(L);
-    const order=s?.path==='forbidden'?['truth','sealed','nameless']:s?.path==='home'?['bread_peace','dream_school','village_union','bakery','teacher','merchant']:['sealed','bread_peace','dream_school','oathkeeper','unchosen','truth','village_union','nameless'];
-    return order.find(id=>!dx.end?.[id])||endings.find(e=>!dx.end?.[e.id])?.id||null;
+    return ['dragonrider','peace','beastking','gourmet','shadow','bakery','teacher','hero'].find(id=>!dx.end?.[id])||null;
   }
   function dailyGoal(key) {
     let h=0;for(const c of key)h=(h*31+c.charCodeAt(0))>>>0;
     return [
       {id:'home',text:tr('오늘은 고향에 남아 하나의 삶을 완성하기','Today: finish a life at home','今日のお題：故郷で人生を完成させる'),check:L=>state(L).path==='home'},
-      {id:'forbidden',text:tr('오늘은 금지마법의 마지막 장까지 읽기','Today: reach the last forbidden page','今日のお題：禁術の最後のページまで読む'),check:L=>state(L).path==='forbidden'},
-      {id:'bonds',text:tr('오늘은 인연을 두 번 이상 선택하고 완주하기','Today: build two bonds and finish your life','今日のお題：絆を二つ以上結んで完走する'),check:L=>state(L).bonds>=2},
+      {id:'adventure',text:tr('오늘은 모험에서 세 지역 이상 가 보기','Today: explore at least three regions','今日のお題：冒険で三つ以上の地域へ'),check:L=>(L.route||[]).length>=3},
+      {id:'companion',text:tr('오늘은 동료와 함께 인생을 완성하기','Today: finish a life with a companion','今日のお題：仲間とともに人生を完成させる'),check:L=>(L.pets||[]).length+(L.allies||[]).length>0},
     ][h%3];
   }
   return {tr,paths,pathOrder,endings,state,choosePath,memory,upbringing,forbiddenLife,villageLife,heroBeat,heroEnding,hint,target,dailyGoal};

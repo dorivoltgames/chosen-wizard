@@ -1,0 +1,295 @@
+{
+  "source": "First three astral-entry snapshots from tools/compare-bosses.mjs; six-stage route, fixed trials, real battles and earned rewards.",
+  "cases": [
+    {
+      "group": "campaign",
+      "region": "astral",
+      "stage": 4,
+      "seed": 11001,
+      "life": {
+        "seed": 1,
+        "cls": "wizard",
+        "form": "vampire",
+        "st": {
+          "int": 127,
+          "spd": 84,
+          "hp": 740
+        },
+        "W": {
+          "hp": 1602,
+          "max": 1602,
+          "lv": 15,
+          "exp": 13.400000000000006,
+          "pow": 2.5785341502012487
+        },
+        "element": {
+          "id": "bolt",
+          "name": "번개",
+          "p": 18,
+          "color": "#ffd34d",
+          "perk": "번개 마법 · 체인 라이트닝, 정전기"
+        },
+        "traits": [
+          {
+            "id": "undying",
+            "name": "불사신 체질",
+            "p": 1,
+            "desc": "한 번 쓰러져도 다시 일어난다"
+          },
+          {
+            "id": "athlete",
+            "name": "운동 천재",
+            "p": 4,
+            "desc": "태어날 때부터 근육이 있었다",
+            "d": {
+              "spd": 8,
+              "hp": 40
+            }
+          }
+        ],
+        "allies": [],
+        "mods": {
+          "dmg": 2.598706015235763,
+          "potion": 2,
+          "dodge": 0,
+          "crit": 0.05,
+          "vampire": 2,
+          "mirror": 1,
+          "haste": 0.05,
+          "manashield": 1,
+          "frostarmor": 1,
+          "thorns": 1,
+          "timeheart": 1,
+          "swift": 6,
+          "slowNote": 4,
+          "critdmg": 1,
+          "archhat": 1,
+          "cdr": 0.2
+        },
+        "sm": {},
+        "route": [
+          "grass",
+          "swamp",
+          "ice",
+          "dungeon",
+          "astral"
+        ],
+        "flags": {
+          "cheater": 1,
+          "wanted_grass": 0,
+          "bounty_grass": 1,
+          "_chestwin": true
+        },
+        "cards": [
+          "vampire",
+          "flask",
+          "mirror",
+          "haste",
+          "manashield",
+          "frostarmor",
+          "thorns",
+          "flask",
+          "timeheart",
+          "swift",
+          "critdmg",
+          "archhat",
+          "keen"
+        ],
+        "resonance": "glacier"
+      }
+    },
+    {
+      "group": "campaign",
+      "region": "astral",
+      "stage": 4,
+      "seed": 11002,
+      "life": {
+        "seed": 2,
+        "cls": "wizard",
+        "st": {
+          "int": 160,
+          "spd": 65,
+          "hp": 655
+        },
+        "W": {
+          "hp": 1482,
+          "max": 1482,
+          "lv": 15,
+          "exp": 3.3999999999999915,
+          "pow": 2.5785341502012487
+        },
+        "element": {
+          "id": "ice",
+          "name": "얼음",
+          "p": 20,
+          "color": "#7fd6ff",
+          "perk": "얼음 마법 · 냉기와 빙벽"
+        },
+        "traits": [
+          {
+            "id": "singer",
+            "name": "노래쟁이",
+            "p": 10,
+            "desc": "흥얼거리는 게 버릇"
+          },
+          {
+            "id": "genius",
+            "name": "천재 기질",
+            "p": 4,
+            "desc": "한 번 본 건 잊지 않는다",
+            "d": {
+              "int": 15
+            }
+          }
+        ],
+        "allies": [],
+        "mods": {
+          "dmg": 1.6199342046720009,
+          "potion": 0,
+          "dodge": 0,
+          "crit": 0.04,
+          "dog": 1,
+          "early": 1,
+          "burn": 1,
+          "guardian": 1,
+          "timeheart": 1,
+          "swift": 5,
+          "slowNote": 4,
+          "manashield": 1,
+          "phoenix": 1,
+          "regen": 2,
+          "splitfire": 1,
+          "cdr": 0.04,
+          "clockspring": 1,
+          "frostarmor": 1,
+          "vampire": 1
+        },
+        "sm": {},
+        "route": [
+          "grass",
+          "desert",
+          "ice",
+          "clockwork",
+          "astral"
+        ],
+        "flags": {
+          "dog": 1,
+          "egg": 1,
+          "drake": 1,
+          "_chestwin": false
+        },
+        "cards": [
+          "burn",
+          "guardian",
+          "timeheart",
+          "manashield",
+          "phoenix",
+          "regen",
+          "splitfire",
+          "breath",
+          "clockspring",
+          "regen",
+          "frostarmor",
+          "vampire"
+        ],
+        "resonance": "eclipse"
+      }
+    },
+    {
+      "group": "campaign",
+      "region": "astral",
+      "stage": 4,
+      "seed": 11003,
+      "life": {
+        "seed": 3,
+        "cls": "wizard",
+        "st": {
+          "int": 136,
+          "spd": 65,
+          "hp": 860
+        },
+        "W": {
+          "hp": 2003,
+          "max": 2003,
+          "lv": 16,
+          "exp": 2.7200000000000344,
+          "pow": 2.7590315407153363
+        },
+        "element": {
+          "id": "bolt",
+          "name": "번개",
+          "p": 18,
+          "color": "#ffd34d",
+          "perk": "번개 마법 · 체인 라이트닝, 정전기"
+        },
+        "traits": [
+          {
+            "id": "glutton",
+            "name": "대식가",
+            "p": 10,
+            "desc": "뭐든 잘 먹는다",
+            "d": {
+              "hp": 40
+            }
+          },
+          {
+            "id": "curious",
+            "name": "호기심 대장",
+            "p": 10,
+            "desc": "모든 문을 열어본다"
+          }
+        ],
+        "allies": [],
+        "mods": {
+          "dmg": 2.4062092733664473,
+          "potion": 0,
+          "dodge": 0,
+          "crit": 0.04,
+          "mirror": 1,
+          "expmore": 1,
+          "vampire": 1,
+          "goldmore": 1,
+          "cdr": 0.24000000000000002,
+          "echo": 1,
+          "archhat": 1,
+          "familiar": 1,
+          "clockspring": 1,
+          "haste": 0.05,
+          "frostarmor": 1,
+          "regen": 1
+        },
+        "sm": {},
+        "route": [
+          "forest",
+          "desert",
+          "ice",
+          "clockwork",
+          "astral"
+        ],
+        "flags": {
+          "fairyfriend": 1,
+          "_chestwin": true,
+          "peace_forest": 1,
+          "wanted_clockwork": 0,
+          "bounty_clockwork": 1,
+          "cat": 1
+        },
+        "cards": [
+          "mirror",
+          "scholar",
+          "vampire",
+          "purse",
+          "breath",
+          "echo",
+          "archhat",
+          "familiar",
+          "clockspring",
+          "haste",
+          "frostarmor",
+          "regen"
+        ],
+        "resonance": "eclipse"
+      }
+    }
+  ]
+}
